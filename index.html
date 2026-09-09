@@ -103,15 +103,16 @@ table{width:100%;border-collapse:collapse;font-size:13px}th,td{border:1px solid 
 </div>
 <script>
 const SEED_PATIENTS=[{"id": "amelia-sung", "name": "Amelia Sung", "mrn": "SIM-201036", "dob": "12/08/XXXX", "room": "201", "provider": "Dr. Darnell", "allergies": ["penicillin", "shellfish"], "weightKg": 82, "barcode": "PT-SIM-201036", "active": true, "bloodType": "O+", "codeStatus": "Full Code"}, {"id": "jane-fowler", "name": "Jane Fowler", "mrn": "SIM-204051", "dob": "01/28/XXXX", "room": "204", "provider": "Dr. Smith", "allergies": ["nkda"], "weightKg": 60, "barcode": "PT-SIM-204051", "active": true, "bloodType": "A+", "codeStatus": "Full Code"}, {"id": "patient-1784228779067-hszw6", "name": "Fatima Sanogo", "mrn": "201038", "dob": "07/08/xx", "room": "211E", "provider": "Nelson", "weightKg": 71, "allergies": ["nkda"], "barcode": "PT-201038", "active": true, "bloodType": "", "codeStatus": "Full Code"}, {"id": "patient-1784228856986-9te05", "name": "Molly Thomas", "mrn": "20139", "dob": "07/05/xx", "room": "211C", "provider": "Henderson", "weightKg": 7, "allergies": ["nkda"], "barcode": "PT-20139", "active": true, "bloodType": "", "codeStatus": "Full Code"}, {"id": "patient-1784228908856-n5jsk", "name": "Stephanie Smith", "mrn": "201040", "dob": "07/14/xxxx", "room": "211E", "provider": "Henderson", "weightKg": 53.5, "allergies": ["nkda"], "barcode": "PT-201040", "active": true, "bloodType": "", "codeStatus": "Full Code"}, {"id": "patient-1784231132217-vm9de", "name": "Charles Jones", "mrn": "201041", "dob": "04/20/xx", "room": "211A", "provider": "Burris", "weightKg": 82, "allergies": ["nkda"], "barcode": "PT-201041", "active": true, "bloodType": "", "codeStatus": "Full Code"}, {"id": "patient-1784232786877-est66", "name": "BABY BOY  SUNG", "mrn": "201042", "dob": "TODAY", "room": "211E", "provider": "Craig", "weightKg": 4.37, "allergies": ["nkda"], "barcode": "PT-201042", "active": true, "bloodType": "", "codeStatus": "Full Code"}];
-const SEED_MEDS=[{"id":"cefazolin-2g","patientId":"jane-fowler","name":"Ancef (Cefazolin)","dose":"2 g","route":"IVPB","frequency":"On call to OR","scheduledTime":"On call to OR","status":"Due","barcode":"MED-CEFAZOLIN-2G","allergyKeywords":["cefazolin","cephalosporin","penicillin"],"highAlert":false,"indication":"Surgical prophylaxis","initialStatus":"Due","medType":"Scheduled","provider":"Smith","notes":"Ancef (Cefazolin) 2 grams IV on call to OR (at 1 hour rate)","isInsulin":false},{"id":"metoclopramide-10","patientId":"jane-fowler","name":"Reglan (Metoclopramide)","dose":"10 mg","route":"IV","frequency":"On call to OR","scheduledTime":"On call to OR","status":"Due","barcode":"MED-METOCLOPRAMIDE-10MG","allergyKeywords":["metoclopramide"],"highAlert":false,"indication":"Preoperative nausea prevention","initialStatus":"Due","medType":"Scheduled","provider":"Smith","notes":"Reglan (Metoclopramide) 10mg IV","isInsulin":false},{"id":"oxytocin","patientId":"amelia-sung","name":"Oxytocin","dose":"Per protocol","route":"IV infusion","frequency":"Continuous","scheduledTime":"Active labor","status":"Due","barcode":"MED-OXYTOCIN-INFUSION","allergyKeywords":["oxytocin"],"highAlert":true,"indication":"Labor augmentation","initialStatus":"Due","medType":"Scheduled","provider":"","notes":"","isInsulin":false},{"id":"ampicillin","patientId":"amelia-sung","name":"Ampicillin","dose":"2 g","route":"IVPB","frequency":"Every 4 hours","scheduledTime":"0800","status":"Due","barcode":"MED-AMPICILLIN-2G","allergyKeywords":["ampicillin","penicillin"],"highAlert":false,"indication":"GBS prophylaxis","initialStatus":"Due","medType":"Scheduled","provider":"","notes":"","isInsulin":false},{"id":"med-1784226784431-mnlv2","patientId":"amelia-sung","medType":"Scheduled","name":"Morphine Sulfate","dose":"2 mg","route":"IV","frequency":"Q 2 hours","scheduledTime":"prn","indication":"Pain","provider":"Darnell","status":"Due","initialStatus":"Due","allergyKeywords":[],"highAlert":false,"barcode":"MED-MORPHINE-SULFATE-2-MG-SIM-201036","notes":"","isInsulin":false},{"id":"med-1784226890085-0tkri","patientId":"amelia-sung","medType":"Scheduled","name":"Lidocaine 1%","dose":"per MD","route":"Subcutaneous","frequency":"as needed","scheduledTime":"at delivery","indication":"","provider":"Darnell","status":"Due","initialStatus":"Due","allergyKeywords":[],"highAlert":false,"barcode":"MED-LIDOCAINE-1-PER-MD-SIM-201036","notes":"Lidocaine 1% available at delivery for pain in perineum","isInsulin":false},{"id":"med-1784227218757-opurb","patientId":"amelia-sung","medType":"Scheduled","name":"Versed (Midazolam)","dose":"1 mg","route":"IV","frequency":"now","scheduledTime":"0800","indication":"","provider":"Smith","status":"Due","initialStatus":"Due","allergyKeywords":[],"highAlert":false,"barcode":"MED-VERSED-MIDAZOLAM-1-MG-SIM-201036","notes":"Versed (Midazolam) 1mg IV on call to OR","isInsulin":false},{"id":"med-1784228600541-qt0fp","patientId":"jane-fowler","medType":"PRN","name":"Morphine Sulfate","dose":"2 mg","route":"IV","frequency":"every 4 hours","scheduledTime":"Post op","indication":"for post of pain","provider":"Smith","status":"Due","initialStatus":"Due","allergyKeywords":[],"highAlert":false,"barcode":"MED-MORPHINE-SULFATE-2-MG-SIM-204051","notes":"Morphine 2mg IV prn, may repeat up to 10 mg every 4 hours as needed for post op pain","isInsulin":false},{"id":"med-1784228659520-mqnzs","patientId":"jane-fowler","medType":"PRN","name":"Zofran","dose":"4mg","route":"IV","frequency":"every 4 hours","scheduledTime":"post op","indication":"prn nausea","provider":"Smith","status":"Due","initialStatus":"Due","allergyKeywords":[],"highAlert":false,"barcode":"MED-ZOFRAN-4MG-SIM-204051","notes":"","isInsulin":false},{"id":"med-1784229027945-c7zui","patientId":"jane-fowler","medType":"Scheduled","name":"Lactated Ringer","dose":"125 ml/hr","route":"IV","frequency":"Continous","scheduledTime":"0800","indication":"","provider":"Smith","status":"Due","initialStatus":"Due","allergyKeywords":[],"highAlert":false,"barcode":"MED-LACTATED-RINGER-125-ML-HR-SIM-204051","notes":"","isInsulin":false},{"id":"med-1784229111953-nbrzw","patientId":"patient-1784228779067-hszw6","medType":"Scheduled","name":"Lactated Ringers","dose":"125ml/h","route":"IV","frequency":"Continuous","scheduledTime":"0800","indication":"","provider":"Nelson","status":"Due","initialStatus":"Due","allergyKeywords":[],"highAlert":false,"barcode":"MED-LACTATED-RINGERS-125ML-H-201038","notes":"","isInsulin":false},{"id":"med-1784229217472-1izfb","patientId":"patient-1784228779067-hszw6","medType":"Scheduled","name":"Pitocin 30 units added to 500ml Normal Saline","dose":"334 ml/hr for 30 mins then change to 95 mls per hour","route":"IV","frequency":"continuous","scheduledTime":"0800","indication":"","provider":"Nelson","status":"Due","initialStatus":"Due","allergyKeywords":[],"highAlert":false,"barcode":"MED-PITOCIN-30-UNITS-ADDED-TO-500ML-NORMAL-SALINE-334-ML-HR-FOR-30-MINS-THEN-CHANGE-TO-95-MLS-PER-HOUR-201038","notes":"Pitocin 30 units added to 500ml Normal Saline to infuse at 334 ml/hr. after delivery of placenta for for 100 mls then decrease rate to 95mls per hour until bag is complete.  May saline lock IV 3 hours after delivery if bleeding is scant.","isInsulin":false},{"id":"med-1784229303003-frkz3","patientId":"patient-1784228779067-hszw6","medType":"PRN","name":"Witch hazel pads","dose":"2 pad rounds","route":"Other","frequency":"every time change a pad","scheduledTime":"as needed","indication":"applied to hemorrhoids prn","provider":"Nelson","status":"Due","initialStatus":"Due","allergyKeywords":[],"highAlert":false,"barcode":"MED-WITCH-HAZEL-PADS-2-PAD-ROUNDS-201038","notes":"","isInsulin":false},{"id":"med-1784229402501-p5bap","patientId":"patient-1784228779067-hszw6","medType":"PRN","name":"Epifoam spray","dose":"2 sprays","route":"Other","frequency":"Every pad change","scheduledTime":"as needed","indication":"to perineum as needed for pain","provider":"Nelson","status":"Due","initialStatus":"Due","allergyKeywords":[],"highAlert":false,"barcode":"MED-EPIFOAM-SPRAY-2-SPRAYS-201038","notes":"","isInsulin":false},{"id":"med-1784229511725-ier9a","patientId":"patient-1784228779067-hszw6","medType":"PRN","name":"Percocet","dose":"1 tab","route":"PO","frequency":"every 4 hours","scheduledTime":"prn","indication":"pain","provider":"Nelson","status":"Due","initialStatus":"Due","allergyKeywords":[],"highAlert":false,"barcode":"MED-PERCOCET-1-TAB-201038","notes":"","isInsulin":false},{"id":"med-1784229566790-y6r3b","patientId":"amelia-sung","medType":"Scheduled","name":"Ibuprofen","dose":"600mg","route":"PO","frequency":"q 6 hours as needed for pain","scheduledTime":"prn","indication":"pain","provider":"Nelson","status":"Due","initialStatus":"Due","allergyKeywords":[],"highAlert":false,"barcode":"MED-IBUPROFEN-600MG-SIM-201036","notes":"","isInsulin":false},{"id":"med-1784230008873-oi841","patientId":"patient-1784228856986-9te05","medType":"Scheduled","name":"NS bolus","dose":"20ml/KG  to infuse over 30 mins","route":"IV","frequency":"now","scheduledTime":"0800","indication":"","provider":"Henderson","status":"Due","initialStatus":"Due","allergyKeywords":[],"highAlert":false,"barcode":"MED-NS-BOLUS-20ML-KG-TO-INFUSE-OVER-30-MINS-20139","notes":"","isInsulin":false},{"id":"med-1784230923472-7cufg","patientId":"patient-1784228908856-n5jsk","medType":"Scheduled","name":"Morphine","dose":"5mg IV","route":"IV","frequency":"every 4 hours","scheduledTime":"0800","indication":"prn pain","provider":"Henderson","status":"Due","initialStatus":"Due","allergyKeywords":[],"highAlert":false,"barcode":"MED-MORPHINE-5MG-IV-201040","notes":"","isInsulin":false},{"id":"med-1784231287424-cajgk","patientId":"patient-1784231132217-vm9de","medType":"Scheduled","name":"Lisinopril","dose":"20mg","route":"PO","frequency":"DAILY","scheduledTime":"0900","indication":"","provider":"BURRIS","status":"Due","initialStatus":"Due","allergyKeywords":[],"highAlert":false,"barcode":"MED-LISINOPRIL-20MG-201041","notes":"Lisinopril 20mg Po daily, hold if BP is less than 90/60. If you have to hold the medication, notify the provider.","isInsulin":false},{"id":"med-1784231342460-joo74","patientId":"patient-1784231132217-vm9de","medType":"Scheduled","name":"Warfarin","dose":"2.5 mg","route":"PO","frequency":"daily","scheduledTime":"0900","indication":"","provider":"BURRIS","status":"Due","initialStatus":"Due","allergyKeywords":[],"highAlert":false,"barcode":"MED-WARFARIN-2-5-MG-201041","notes":"","isInsulin":false},{"id":"med-1784231396094-qbo8v","patientId":"patient-1784231132217-vm9de","medType":"Scheduled","name":"Metformin","dose":"1000 mg","route":"PO","frequency":"daily","scheduledTime":"0900","indication":"","provider":"BURRIS","status":"Due","initialStatus":"Due","allergyKeywords":[],"highAlert":false,"barcode":"MED-METFORMIN-1000-MG-201041","notes":"","isInsulin":false},{"id":"med-1784231477665-g8imz","patientId":"patient-1784231132217-vm9de","medType":"Scheduled","name":"Metoprolol","dose":"50mg","route":"PO","frequency":"daily","scheduledTime":"0900","indication":"","provider":"BURRIS","status":"Due","initialStatus":"Due","allergyKeywords":[],"highAlert":false,"barcode":"MED-METOPROLOL-50MG-201041","notes":"Metoprolol 50mg po daily hold if BP is less than 90/60, If you have to hold the medication, notify the provider.","isInsulin":false},{"id":"med-1784231513432-ev3bc","patientId":"patient-1784231132217-vm9de","medType":"Scheduled","name":"Amiodarone","dose":"200 MG","route":"PO","frequency":"dAILY","scheduledTime":"0900","indication":"","provider":"BURRIS","status":"Due","initialStatus":"Due","allergyKeywords":[],"highAlert":false,"barcode":"MED-AMIODARONE-200-MG-201041","notes":"Amiodarone 200 mg po daily","isInsulin":false},{"id":"med-1784231562220-36ges","patientId":"patient-1784231132217-vm9de","medType":"Scheduled","name":"Digoxin","dose":"0.125 mg","route":"PO","frequency":"DAILY","scheduledTime":"0900","indication":"","provider":"BURRIS","status":"Due","initialStatus":"Due","allergyKeywords":[],"highAlert":false,"barcode":"MED-DIGOXIN-0-125-MG-SIM-201036","notes":"Digoxin 0.125 mg PO do not give if heart rate is less than 50","isInsulin":false},{"id":"med-1784231658312-hytwb","patientId":"patient-1784231132217-vm9de","medType":"Scheduled","name":"NORMAL SALINE","dose":"25 ML/HR","route":"IV infusion","frequency":"CONTINUOUS","scheduledTime":"0900","indication":"","provider":"BURRIS","status":"Due","initialStatus":"Due","allergyKeywords":[],"highAlert":false,"barcode":"MED-NORMAL-SALINE-25-ML-HR-SIM-201036","notes":"normal saline at KVO","isInsulin":false},{"id":"med-1784231885589-0kvib","patientId":"patient-1784231132217-vm9de","medType":"Scheduled","name":"REGULAR INSULIN","dose":"SEE SLIDING SCALE","route":"Subcutaneous","frequency":"AC AND HS","scheduledTime":"0800","indication":"","provider":"BURRIS","status":"Due","initialStatus":"Due","allergyKeywords":[],"highAlert":true,"barcode":"MED-REGULAR-INSULIN-SEE-SLIDING-SCALE-201041","notes":"Sliding Scale Insulin (Regular or Rapid-Acting): BG < 150 → No insulin 150–199 → 2 units SQ 200–249 → 4 units SQ 250–299 → 6 units SQ 300–349 → 8 units SQ ≥ 350 → 10 units SQ & notify provider","isInsulin":true,"glucoseSchedule":["AC Breakfast","AC Lunch","AC Dinner","HS","PRN"],"insulinScale":[{"min":0,"max":149,"dose":0,"instruction":"No insulin"},{"min":150,"max":199,"dose":2,"instruction":"Give 2 units SQ"},{"min":200,"max":249,"dose":4,"instruction":"Give 4 units SQ"},{"min":250,"max":299,"dose":6,"instruction":"Give 6 units SQ"},{"min":300,"max":349,"dose":8,"instruction":"Give 8 units SQ"},{"min":350,"max":9999,"dose":10,"instruction":"Give 10 units SQ and notify provider"}]},{"id":"med-1784233185643-eng9a","patientId":"patient-1784232786877-est66","medType":"Scheduled","name":"Aquamephyton  (Vitamin K)","dose":"1 mg","route":"IM","frequency":"now","scheduledTime":"1300","indication":"","provider":"Criag","status":"Due","initialStatus":"Due","allergyKeywords":[],"highAlert":false,"barcode":"MED-AQUAMEPHYTON-VITAMIN-K-1-MG-201042","notes":"","isInsulin":false},{"id":"med-1784233275225-xnk81","patientId":"patient-1784232786877-est66","medType":"Scheduled","name":"Erythromycin ophthalmic ointment","dose":"0.5 ml ribbon x 1 both conjunctivae","route":"Other","frequency":"now","scheduledTime":"1300","indication":"","provider":"Craig","status":"Due","initialStatus":"Due","allergyKeywords":[],"highAlert":false,"barcode":"MED-ERYTHROMYCIN-OPHTHALMIC-OINTMENT-0-5-ML-RIBBON-X-1-BOTH-CONJUNCTIVAE-201042","notes":"Erythromycin ophthalmic ointment 0.5 ml ribbon x 1 both conjunctivae","isInsulin":false},{"id":"med-1784233344406-md3c3","patientId":"patient-1784232786877-est66","medType":"Scheduled","name":"Hepatitis B vaccine","dose":"0.5 ml","route":"IM","frequency":"now","scheduledTime":"1300","indication":"","provider":"Criag","status":"Due","initialStatus":"Due","allergyKeywords":[],"highAlert":false,"barcode":"MED-HEPATITIS-B-VACCINE-0-5-ML-201042","notes":"Hepatitis B vaccine 0.5 ml IM anterior thigh x 1 if > 2000 gm with consent","isInsulin":false},{"id":"med-1784233401776-1ly23","patientId":"patient-1784232786877-est66","medType":"Scheduled","name":"Glucose gel","dose":"per policy","route":"PO","frequency":"as need per policy","scheduledTime":"as need for low blood sugar","indication":"","provider":"Criag","status":"Due","initialStatus":"Due","allergyKeywords":[],"highAlert":false,"barcode":"MED-GLUCOSE-GEL-PER-POLICY-201042","notes":"See policy in patient chart","isInsulin":false},{"patientId":"patient-1784228779067-hszw6","name":"Methylergonovine (Methergine)","dose":"0.2 mg","route":"IM","frequency":"Every 2–4 hours as needed","scheduledTime":"","status":"As Needed","allergyKeywords":[],"highAlert":false,"indication":"Postpartum hemorrhage / uterine atony — MD/provider order required","initialStatus":"As Needed","medType":"PRN","provider":"Nelson","notes":"Specific MD/provider order required before administration. 0.2 mg IM every 2–4 hours as needed.","isInsulin":false,"id":"med-v21-methylergonovine-methergine-1","barcode":"MED-METHYLERGONOVINE-METHERGINE-0-2-MG-201038"},{"patientId":"patient-1784228779067-hszw6","name":"Carboprost (Hemabate)","dose":"250 mcg","route":"IM","frequency":"Every 15–90 minutes as needed","scheduledTime":"","status":"As Needed","allergyKeywords":[],"highAlert":false,"indication":"Postpartum hemorrhage / uterine atony — MD/provider order required","initialStatus":"As Needed","medType":"PRN","provider":"Nelson","notes":"Specific MD/provider order required before administration. 250 mcg IM every 15–90 minutes; maximum approximately 2 mg total.","isInsulin":false,"id":"med-v21-carboprost-hemabate-2","barcode":"MED-CARBOPROST-HEMABATE-250-MCG-201038"},{"patientId":"patient-1784228779067-hszw6","name":"Misoprostol","dose":"600–1000 mcg","route":"Other","frequency":"As needed per protocol","scheduledTime":"","status":"As Needed","allergyKeywords":[],"highAlert":false,"indication":"Postpartum hemorrhage / uterine atony — MD/provider order required","initialStatus":"As Needed","medType":"PRN","provider":"Nelson","notes":"Specific MD/provider order required before administration. 600–1000 mcg PR / SL / PO per protocol.","isInsulin":false,"id":"med-v21-misoprostol-3","barcode":"MED-MISOPROSTOL-600-1000-MCG-201038"},{"patientId":"patient-1784228779067-hszw6","name":"Tranexamic acid (TXA)","dose":"1 g","route":"IV","frequency":"Once when PPH diagnosed; may repeat once","scheduledTime":"","status":"As Needed","allergyKeywords":[],"highAlert":false,"indication":"Postpartum hemorrhage — MD/provider order required","initialStatus":"As Needed","medType":"PRN","provider":"Nelson","notes":"Specific MD/provider order required before administration. 1 g IV over 10 minutes once PPH is diagnosed; repeat 1 g after 30 minutes–24 hours if bleeding persists, per protocol.","isInsulin":false,"id":"med-v21-tranexamic-acid-txa-4","barcode":"MED-TRANEXAMIC-ACID-TXA-1-G-201038"},{"patientId":"patient-1784232786877-est66","name":"Narcan (Naloxone)","dose":"0.1 mg/kg","route":"Other","frequency":"As needed","scheduledTime":"","status":"As Needed","allergyKeywords":[],"highAlert":false,"indication":"Opioid reversal","initialStatus":"As Needed","medType":"PRN","provider":"Craig","notes":"Narcan (naloxone) 0.1 mg/kg.","isInsulin":false,"id":"med-v21-narcan-naloxone-5","barcode":"MED-NARCAN-NALOXONE-0-1-MG-KG-201042"},{"id":"required-jane-fowler-versed-midazolam","patientId":"jane-fowler","name":"Versed (Midazolam)","dose":"2 mg","route":"IV","frequency":"On call to OR","scheduledTime":"On call to OR","status":"Due","barcode":"MED-VERSED-MIDAZOLAM-2-MG-SIM-204051","allergyKeywords":[],"highAlert":true,"indication":"Preoperative sedation","initialStatus":"Due","medType":"Scheduled","provider":"Dr. Smith","notes":"Versed (Midazolam) 2 mg IV on call to OR.","isInsulin":false},{"id":"required-fatima-sanogo-ibuprofen","patientId":"patient-1784228779067-hszw6","name":"Ibuprofen","dose":"800 mg","route":"PO","frequency":"Every 8 hours as needed","scheduledTime":"","status":"As Needed","barcode":"MED-IBUPROFEN-800-MG-201038","allergyKeywords":[],"highAlert":false,"indication":"Pain","initialStatus":"As Needed","medType":"PRN","provider":"Nelson","notes":"Ibuprofen 800 mg PO every 8 hours as needed for pain.","isInsulin":false}];
+const SEED_MEDS=[{"id":"cefazolin-2g","patientId":"jane-fowler","name":"Ancef (Cefazolin)","dose":"2 g","route":"IVPB","frequency":"On call to OR","scheduledTime":"On call to OR","status":"Due","barcode":"MED-CEFAZOLIN-2G","allergyKeywords":["cefazolin","cephalosporin","penicillin"],"highAlert":false,"indication":"Surgical prophylaxis","initialStatus":"Due","medType":"Scheduled","provider":"Smith","notes":"Ancef (Cefazolin) 2 grams IV on call to OR (at 1 hour rate)","isInsulin":false,"manualCode":"8896"},{"id":"metoclopramide-10","patientId":"jane-fowler","name":"Reglan (Metoclopramide)","dose":"10 mg","route":"IV","frequency":"On call to OR","scheduledTime":"On call to OR","status":"Due","barcode":"MED-METOCLOPRAMIDE-10MG","allergyKeywords":["metoclopramide"],"highAlert":false,"indication":"Preoperative nausea prevention","initialStatus":"Due","medType":"Scheduled","provider":"Smith","notes":"Reglan (Metoclopramide) 10mg IV","isInsulin":false,"manualCode":"8604"},{"id":"oxytocin","patientId":"amelia-sung","name":"Oxytocin","dose":"Per protocol","route":"IV infusion","frequency":"Continuous","scheduledTime":"Active labor","status":"Due","barcode":"MED-OXYTOCIN-INFUSION","allergyKeywords":["oxytocin"],"highAlert":true,"indication":"Labor augmentation","initialStatus":"Due","medType":"Scheduled","provider":"","notes":"","isInsulin":false,"manualCode":"8372"},{"id":"ampicillin","patientId":"amelia-sung","name":"Ampicillin","dose":"2 g","route":"IVPB","frequency":"Every 4 hours","scheduledTime":"0800","status":"Due","barcode":"MED-AMPICILLIN-2G","allergyKeywords":["ampicillin","penicillin"],"highAlert":false,"indication":"GBS prophylaxis","initialStatus":"Due","medType":"Scheduled","provider":"","notes":"","isInsulin":false,"manualCode":"5023"},{"id":"med-1784226784431-mnlv2","patientId":"amelia-sung","medType":"Scheduled","name":"Morphine Sulfate","dose":"2 mg","route":"IV","frequency":"Q 2 hours","scheduledTime":"prn","indication":"Pain","provider":"Darnell","status":"Due","initialStatus":"Due","allergyKeywords":[],"highAlert":false,"barcode":"MED-MORPHINE-SULFATE-2-MG-SIM-201036","notes":"","isInsulin":false,"manualCode":"6433"},{"id":"med-1784226890085-0tkri","patientId":"amelia-sung","medType":"Scheduled","name":"Lidocaine 1%","dose":"per MD","route":"Subcutaneous","frequency":"as needed","scheduledTime":"at delivery","indication":"","provider":"Darnell","status":"Due","initialStatus":"Due","allergyKeywords":[],"highAlert":false,"barcode":"MED-LIDOCAINE-1-PER-MD-SIM-201036","notes":"Lidocaine 1% available at delivery for pain in perineum","isInsulin":false,"manualCode":"6453"},{"id":"med-1784227218757-opurb","patientId":"amelia-sung","medType":"Scheduled","name":"Versed (Midazolam)","dose":"1 mg","route":"IV","frequency":"now","scheduledTime":"0800","indication":"","provider":"Smith","status":"Due","initialStatus":"Due","allergyKeywords":[],"highAlert":false,"barcode":"MED-VERSED-MIDAZOLAM-1-MG-SIM-201036","notes":"Versed (Midazolam) 1mg IV on call to OR","isInsulin":false,"manualCode":"6796"},{"id":"med-1784228600541-qt0fp","patientId":"jane-fowler","medType":"PRN","name":"Morphine Sulfate","dose":"2 mg","route":"IV","frequency":"every 4 hours","scheduledTime":"Post op","indication":"for post of pain","provider":"Smith","status":"Due","initialStatus":"Due","allergyKeywords":[],"highAlert":false,"barcode":"MED-MORPHINE-SULFATE-2-MG-SIM-204051","notes":"Morphine 2mg IV prn, may repeat up to 10 mg every 4 hours as needed for post op pain","isInsulin":false,"manualCode":"8239"},{"id":"med-1784228659520-mqnzs","patientId":"jane-fowler","medType":"PRN","name":"Zofran","dose":"4mg","route":"IV","frequency":"every 4 hours","scheduledTime":"post op","indication":"prn nausea","provider":"Smith","status":"Due","initialStatus":"Due","allergyKeywords":[],"highAlert":false,"barcode":"MED-ZOFRAN-4MG-SIM-204051","notes":"","isInsulin":false,"manualCode":"1147"},{"id":"med-1784229027945-c7zui","patientId":"jane-fowler","medType":"Scheduled","name":"Lactated Ringer","dose":"125 ml/hr","route":"IV","frequency":"Continous","scheduledTime":"0800","indication":"","provider":"Smith","status":"Due","initialStatus":"Due","allergyKeywords":[],"highAlert":false,"barcode":"MED-LACTATED-RINGER-125-ML-HR-SIM-204051","notes":"","isInsulin":false,"manualCode":"9722"},{"id":"med-1784229111953-nbrzw","patientId":"patient-1784228779067-hszw6","medType":"Scheduled","name":"Lactated Ringers","dose":"125ml/h","route":"IV","frequency":"Continuous","scheduledTime":"0800","indication":"","provider":"Nelson","status":"Due","initialStatus":"Due","allergyKeywords":[],"highAlert":false,"barcode":"MED-LACTATED-RINGERS-125ML-H-201038","notes":"","isInsulin":false,"manualCode":"6451"},{"id":"med-1784229217472-1izfb","patientId":"patient-1784228779067-hszw6","medType":"Scheduled","name":"Pitocin 30 units added to 500ml Normal Saline","dose":"334 ml/hr for 30 mins then change to 95 mls per hour","route":"IV","frequency":"continuous","scheduledTime":"0800","indication":"","provider":"Nelson","status":"Due","initialStatus":"Due","allergyKeywords":[],"highAlert":false,"barcode":"MED-PITOCIN-30-UNITS-ADDED-TO-500ML-NORMAL-SALINE-334-ML-HR-FOR-30-MINS-THEN-CHANGE-TO-95-MLS-PER-HOUR-201038","notes":"Pitocin 30 units added to 500ml Normal Saline to infuse at 334 ml/hr. after delivery of placenta for for 100 mls then decrease rate to 95mls per hour until bag is complete.  May saline lock IV 3 hours after delivery if bleeding is scant.","isInsulin":false,"manualCode":"6263"},{"id":"med-1784229303003-frkz3","patientId":"patient-1784228779067-hszw6","medType":"PRN","name":"Witch hazel pads","dose":"2 pad rounds","route":"Other","frequency":"every time change a pad","scheduledTime":"as needed","indication":"applied to hemorrhoids prn","provider":"Nelson","status":"Due","initialStatus":"Due","allergyKeywords":[],"highAlert":false,"barcode":"MED-WITCH-HAZEL-PADS-2-PAD-ROUNDS-201038","notes":"","isInsulin":false,"manualCode":"5384"},{"id":"med-1784229402501-p5bap","patientId":"patient-1784228779067-hszw6","medType":"PRN","name":"Epifoam spray","dose":"2 sprays","route":"Other","frequency":"Every pad change","scheduledTime":"as needed","indication":"to perineum as needed for pain","provider":"Nelson","status":"Due","initialStatus":"Due","allergyKeywords":[],"highAlert":false,"barcode":"MED-EPIFOAM-SPRAY-2-SPRAYS-201038","notes":"","isInsulin":false,"manualCode":"3630"},{"id":"med-1784229511725-ier9a","patientId":"patient-1784228779067-hszw6","medType":"PRN","name":"Percocet","dose":"1 tab","route":"PO","frequency":"every 4 hours","scheduledTime":"prn","indication":"pain","provider":"Nelson","status":"Due","initialStatus":"Due","allergyKeywords":[],"highAlert":false,"barcode":"MED-PERCOCET-1-TAB-201038","notes":"","isInsulin":false,"manualCode":"7086"},{"id":"med-1784229566790-y6r3b","patientId":"amelia-sung","medType":"Scheduled","name":"Ibuprofen","dose":"600mg","route":"PO","frequency":"q 6 hours as needed for pain","scheduledTime":"prn","indication":"pain","provider":"Nelson","status":"Due","initialStatus":"Due","allergyKeywords":[],"highAlert":false,"barcode":"MED-IBUPROFEN-600MG-SIM-201036","notes":"","isInsulin":false,"manualCode":"7316"},{"id":"med-1784230008873-oi841","patientId":"patient-1784228856986-9te05","medType":"Scheduled","name":"NS bolus","dose":"20ml/KG  to infuse over 30 mins","route":"IV","frequency":"now","scheduledTime":"0800","indication":"","provider":"Henderson","status":"Due","initialStatus":"Due","allergyKeywords":[],"highAlert":false,"barcode":"MED-NS-BOLUS-20ML-KG-TO-INFUSE-OVER-30-MINS-20139","notes":"","isInsulin":false,"manualCode":"6430"},{"id":"med-1784230923472-7cufg","patientId":"patient-1784228908856-n5jsk","medType":"Scheduled","name":"Morphine","dose":"5mg IV","route":"IV","frequency":"every 4 hours","scheduledTime":"0800","indication":"prn pain","provider":"Henderson","status":"Due","initialStatus":"Due","allergyKeywords":[],"highAlert":false,"barcode":"MED-MORPHINE-5MG-IV-201040","notes":"","isInsulin":false,"manualCode":"5533"},{"id":"med-1784231287424-cajgk","patientId":"patient-1784231132217-vm9de","medType":"Scheduled","name":"Lisinopril","dose":"20mg","route":"PO","frequency":"DAILY","scheduledTime":"0900","indication":"","provider":"BURRIS","status":"Due","initialStatus":"Due","allergyKeywords":[],"highAlert":false,"barcode":"MED-LISINOPRIL-20MG-201041","notes":"Lisinopril 20mg Po daily, hold if BP is less than 90/60. If you have to hold the medication, notify the provider.","isInsulin":false,"manualCode":"8841"},{"id":"med-1784231342460-joo74","patientId":"patient-1784231132217-vm9de","medType":"Scheduled","name":"Warfarin","dose":"2.5 mg","route":"PO","frequency":"daily","scheduledTime":"0900","indication":"","provider":"BURRIS","status":"Due","initialStatus":"Due","allergyKeywords":[],"highAlert":false,"barcode":"MED-WARFARIN-2-5-MG-201041","notes":"","isInsulin":false,"manualCode":"5590"},{"id":"med-1784231396094-qbo8v","patientId":"patient-1784231132217-vm9de","medType":"Scheduled","name":"Metformin","dose":"1000 mg","route":"PO","frequency":"daily","scheduledTime":"0900","indication":"","provider":"BURRIS","status":"Due","initialStatus":"Due","allergyKeywords":[],"highAlert":false,"barcode":"MED-METFORMIN-1000-MG-201041","notes":"","isInsulin":false,"manualCode":"3647"},{"id":"med-1784231477665-g8imz","patientId":"patient-1784231132217-vm9de","medType":"Scheduled","name":"Metoprolol","dose":"50mg","route":"PO","frequency":"daily","scheduledTime":"0900","indication":"","provider":"BURRIS","status":"Due","initialStatus":"Due","allergyKeywords":[],"highAlert":false,"barcode":"MED-METOPROLOL-50MG-201041","notes":"Metoprolol 50mg po daily hold if BP is less than 90/60, If you have to hold the medication, notify the provider.","isInsulin":false,"manualCode":"1339"},{"id":"med-1784231513432-ev3bc","patientId":"patient-1784231132217-vm9de","medType":"Scheduled","name":"Amiodarone","dose":"200 MG","route":"PO","frequency":"dAILY","scheduledTime":"0900","indication":"","provider":"BURRIS","status":"Due","initialStatus":"Due","allergyKeywords":[],"highAlert":false,"barcode":"MED-AMIODARONE-200-MG-201041","notes":"Amiodarone 200 mg po daily","isInsulin":false,"manualCode":"4729"},{"id":"med-1784231562220-36ges","patientId":"patient-1784231132217-vm9de","medType":"Scheduled","name":"Digoxin","dose":"0.125 mg","route":"PO","frequency":"DAILY","scheduledTime":"0900","indication":"","provider":"BURRIS","status":"Due","initialStatus":"Due","allergyKeywords":[],"highAlert":false,"barcode":"MED-DIGOXIN-0-125-MG-SIM-201036","notes":"Digoxin 0.125 mg PO do not give if heart rate is less than 50","isInsulin":false,"manualCode":"9096"},{"id":"med-1784231658312-hytwb","patientId":"patient-1784231132217-vm9de","medType":"Scheduled","name":"NORMAL SALINE","dose":"25 ML/HR","route":"IV infusion","frequency":"CONTINUOUS","scheduledTime":"0900","indication":"","provider":"BURRIS","status":"Due","initialStatus":"Due","allergyKeywords":[],"highAlert":false,"barcode":"MED-NORMAL-SALINE-25-ML-HR-SIM-201036","notes":"normal saline at KVO","isInsulin":false,"manualCode":"5847"},{"id":"med-1784231885589-0kvib","patientId":"patient-1784231132217-vm9de","medType":"Scheduled","name":"REGULAR INSULIN","dose":"SEE SLIDING SCALE","route":"Subcutaneous","frequency":"AC AND HS","scheduledTime":"0800","indication":"","provider":"BURRIS","status":"Due","initialStatus":"Due","allergyKeywords":[],"highAlert":true,"barcode":"MED-REGULAR-INSULIN-SEE-SLIDING-SCALE-201041","notes":"Sliding Scale Insulin (Regular or Rapid-Acting): BG < 150 → No insulin 150–199 → 2 units SQ 200–249 → 4 units SQ 250–299 → 6 units SQ 300–349 → 8 units SQ ≥ 350 → 10 units SQ & notify provider","isInsulin":true,"glucoseSchedule":["AC Breakfast","AC Lunch","AC Dinner","HS","PRN"],"insulinScale":[{"min":0,"max":149,"dose":0,"instruction":"No insulin"},{"min":150,"max":199,"dose":2,"instruction":"Give 2 units SQ"},{"min":200,"max":249,"dose":4,"instruction":"Give 4 units SQ"},{"min":250,"max":299,"dose":6,"instruction":"Give 6 units SQ"},{"min":300,"max":349,"dose":8,"instruction":"Give 8 units SQ"},{"min":350,"max":9999,"dose":10,"instruction":"Give 10 units SQ and notify provider"}],"manualCode":"6667"},{"id":"med-1784233185643-eng9a","patientId":"patient-1784232786877-est66","medType":"Scheduled","name":"Aquamephyton  (Vitamin K)","dose":"1 mg","route":"IM","frequency":"now","scheduledTime":"1300","indication":"","provider":"Criag","status":"Due","initialStatus":"Due","allergyKeywords":[],"highAlert":false,"barcode":"MED-AQUAMEPHYTON-VITAMIN-K-1-MG-201042","notes":"","isInsulin":false,"manualCode":"8063"},{"id":"med-1784233275225-xnk81","patientId":"patient-1784232786877-est66","medType":"Scheduled","name":"Erythromycin ophthalmic ointment","dose":"0.5 ml ribbon x 1 both conjunctivae","route":"Other","frequency":"now","scheduledTime":"1300","indication":"","provider":"Craig","status":"Due","initialStatus":"Due","allergyKeywords":[],"highAlert":false,"barcode":"MED-ERYTHROMYCIN-OPHTHALMIC-OINTMENT-0-5-ML-RIBBON-X-1-BOTH-CONJUNCTIVAE-201042","notes":"Erythromycin ophthalmic ointment 0.5 ml ribbon x 1 both conjunctivae","isInsulin":false,"manualCode":"8083"},{"id":"med-1784233344406-md3c3","patientId":"patient-1784232786877-est66","medType":"Scheduled","name":"Hepatitis B vaccine","dose":"0.5 ml","route":"IM","frequency":"now","scheduledTime":"1300","indication":"","provider":"Criag","status":"Due","initialStatus":"Due","allergyKeywords":[],"highAlert":false,"barcode":"MED-HEPATITIS-B-VACCINE-0-5-ML-201042","notes":"Hepatitis B vaccine 0.5 ml IM anterior thigh x 1 if > 2000 gm with consent","isInsulin":false,"manualCode":"6679"},{"id":"med-1784233401776-1ly23","patientId":"patient-1784232786877-est66","medType":"Scheduled","name":"Glucose gel","dose":"per policy","route":"PO","frequency":"as need per policy","scheduledTime":"as need for low blood sugar","indication":"","provider":"Criag","status":"Due","initialStatus":"Due","allergyKeywords":[],"highAlert":false,"barcode":"MED-GLUCOSE-GEL-PER-POLICY-201042","notes":"See policy in patient chart","isInsulin":false,"manualCode":"4080"},{"patientId":"patient-1784228779067-hszw6","name":"Methylergonovine (Methergine)","dose":"0.2 mg","route":"IM","frequency":"Every 2–4 hours as needed","scheduledTime":"","status":"As Needed","allergyKeywords":[],"highAlert":false,"indication":"Postpartum hemorrhage / uterine atony — MD/provider order required","initialStatus":"As Needed","medType":"PRN","provider":"Nelson","notes":"Specific MD/provider order required before administration. 0.2 mg IM every 2–4 hours as needed.","isInsulin":false,"id":"med-v21-methylergonovine-methergine-1","barcode":"MED-METHYLERGONOVINE-METHERGINE-0-2-MG-201038","manualCode":"5076"},{"patientId":"patient-1784228779067-hszw6","name":"Carboprost (Hemabate)","dose":"250 mcg","route":"IM","frequency":"Every 15–90 minutes as needed","scheduledTime":"","status":"As Needed","allergyKeywords":[],"highAlert":false,"indication":"Postpartum hemorrhage / uterine atony — MD/provider order required","initialStatus":"As Needed","medType":"PRN","provider":"Nelson","notes":"Specific MD/provider order required before administration. 250 mcg IM every 15–90 minutes; maximum approximately 2 mg total.","isInsulin":false,"id":"med-v21-carboprost-hemabate-2","barcode":"MED-CARBOPROST-HEMABATE-250-MCG-201038","manualCode":"6382"},{"patientId":"patient-1784228779067-hszw6","name":"Misoprostol","dose":"600–1000 mcg","route":"Other","frequency":"As needed per protocol","scheduledTime":"","status":"As Needed","allergyKeywords":[],"highAlert":false,"indication":"Postpartum hemorrhage / uterine atony — MD/provider order required","initialStatus":"As Needed","medType":"PRN","provider":"Nelson","notes":"Specific MD/provider order required before administration. 600–1000 mcg PR / SL / PO per protocol.","isInsulin":false,"id":"med-v21-misoprostol-3","barcode":"MED-MISOPROSTOL-600-1000-MCG-201038","manualCode":"2961"},{"patientId":"patient-1784228779067-hszw6","name":"Tranexamic acid (TXA)","dose":"1 g","route":"IV","frequency":"Once when PPH diagnosed; may repeat once","scheduledTime":"","status":"As Needed","allergyKeywords":[],"highAlert":false,"indication":"Postpartum hemorrhage — MD/provider order required","initialStatus":"As Needed","medType":"PRN","provider":"Nelson","notes":"Specific MD/provider order required before administration. 1 g IV over 10 minutes once PPH is diagnosed; repeat 1 g after 30 minutes–24 hours if bleeding persists, per protocol.","isInsulin":false,"id":"med-v21-tranexamic-acid-txa-4","barcode":"MED-TRANEXAMIC-ACID-TXA-1-G-201038","manualCode":"7638"},{"patientId":"patient-1784232786877-est66","name":"Narcan (Naloxone)","dose":"0.1 mg/kg","route":"Other","frequency":"As needed","scheduledTime":"","status":"As Needed","allergyKeywords":[],"highAlert":false,"indication":"Opioid reversal","initialStatus":"As Needed","medType":"PRN","provider":"Craig","notes":"Narcan (naloxone) 0.1 mg/kg.","isInsulin":false,"id":"med-v21-narcan-naloxone-5","barcode":"MED-NARCAN-NALOXONE-0-1-MG-KG-201042","manualCode":"1572"},{"id":"required-jane-fowler-versed-midazolam","patientId":"jane-fowler","name":"Versed (Midazolam)","dose":"2 mg","route":"IV","frequency":"On call to OR","scheduledTime":"On call to OR","status":"Due","barcode":"MED-VERSED-MIDAZOLAM-2-MG-SIM-204051","allergyKeywords":[],"highAlert":true,"indication":"Preoperative sedation","initialStatus":"Due","medType":"Scheduled","provider":"Dr. Smith","notes":"Versed (Midazolam) 2 mg IV on call to OR.","isInsulin":false,"manualCode":"8086"},{"id":"required-fatima-sanogo-ibuprofen","patientId":"patient-1784228779067-hszw6","name":"Ibuprofen","dose":"800 mg","route":"PO","frequency":"Every 8 hours as needed","scheduledTime":"","status":"As Needed","barcode":"MED-IBUPROFEN-800-MG-201038","allergyKeywords":[],"highAlert":false,"indication":"Pain","initialStatus":"As Needed","medType":"PRN","provider":"Nelson","notes":"Ibuprofen 800 mg PO every 8 hours as needed for pain.","isInsulin":false,"manualCode":"8880"}];
 const REQUIRED_UPDATE_MEDICATION_IDS=["med-v21-methylergonovine-methergine-1", "med-v21-carboprost-hemabate-2", "med-v21-misoprostol-3", "med-v21-tranexamic-acid-txa-4", "med-v21-narcan-naloxone-5", "required-jane-fowler-versed-midazolam", "required-fatima-sanogo-ibuprofen"];
 
 const STORAGE_KEY="atuSimulationHospitalV10MarScan";
-const DATASET_VERSION="10.0-mar-above-scanner";
+const DATASET_VERSION="25.0-blood-scan-and-print";
 let state=loadState();
 let currentView="patients";
 let verifiedPatient=null;
 let verifiedMedication=null;
+let verifiedBloodUnit=null;
 
 state.patients.forEach(p=>{if(typeof p.active!=="boolean")p.active=true});
 state.patients.forEach(p=>{
@@ -130,6 +131,7 @@ state.medications.forEach(m=>{
    m.barcode=`MED-${slugBarcode(m.name)}-${slugBarcode(m.dose)}-${slugBarcode(p?.mrn||m.patientId)}`;
  }
 });
+ensureMedicationManualCodes();
 function enforceScenarioRequirements(){
  const sanogoId="patient-1784228779067-hszw6";
  const requiredBleedingMeds=new Set([
@@ -178,6 +180,7 @@ state.bloodUnits.forEach(b=>{
  if(!b.initialStatus)b.initialStatus=b.status||"Available";
  if(!b.barcode)b.barcode=`BLOOD-${slugBarcode(b.product)}-${slugBarcode(b.unitType)}-${slugBarcode(b.unitNumber)}`;
 });
+ensureBloodManualCodes();
 save();
 
 function loadState(){
@@ -221,7 +224,7 @@ function loadState(){
         }
       });
       saved.medications=[...medMap.values()];
-      const seededBlood=[{"id": "blood-1784233493383-qriwd", "patientId": "amelia-sung", "product": "Packed Red Blood Cells", "unitType": "O+", "unitNumber": "87594", "expiration": "2026-10-30T15:24", "status": "Available", "initialStatus": "Available", "barcode": "BLOOD-PACKED-RED-BLOOD-CELLS-O-87594", "notes": ""}, {"id": "blood-1784233588867-nchi3", "patientId": "jane-fowler", "product": "Packed Red Blood Cells", "unitType": "A+", "unitNumber": "897465", "expiration": "2026-10-30T15:26", "status": "Available", "initialStatus": "Available", "barcode": "BLOOD-PACKED-RED-BLOOD-CELLS-A-897465", "notes": ""}, {"id": "blood-1784233657815-2qys2", "patientId": "patient-1784228779067-hszw6", "product": "Packed Red Blood Cells", "unitType": "O+", "unitNumber": "8641394", "expiration": "2026-10-30T15:27", "status": "Available", "initialStatus": "Available", "barcode": "BLOOD-PACKED-RED-BLOOD-CELLS-O-8641394", "notes": ""}, {"id": "blood-fatima-sanogo-unit-2", "patientId": "patient-1784228779067-hszw6", "product": "Packed Red Blood Cells", "unitType": "O+", "unitNumber": "8641395", "expiration": "2026-10-30T15:27", "status": "Available", "initialStatus": "Available", "barcode": "BLOOD-PACKED-RED-BLOOD-CELLS-O-8641395", "notes": "Second simulation PRBC unit for Fatima Sanogo."}, {"id": "blood-1784233717284-481ss", "patientId": "patient-1784228908856-n5jsk", "product": "Packed Red Blood Cells", "unitType": "A-", "unitNumber": "7298423", "expiration": "2026-10-30T15:28", "status": "Available", "initialStatus": "Available", "barcode": "BLOOD-PACKED-RED-BLOOD-CELLS-A-7298423", "notes": ""}];
+      const seededBlood=[{"id":"blood-1784233493383-qriwd","patientId":"amelia-sung","product":"Packed Red Blood Cells","unitType":"O+","unitNumber":"87594","expiration":"2026-10-30T15:24","status":"Available","initialStatus":"Available","barcode":"BLOOD-PACKED-RED-BLOOD-CELLS-O-87594","notes":"","manualCode":"8780"}, {"id":"blood-1784233588867-nchi3","patientId":"jane-fowler","product":"Packed Red Blood Cells","unitType":"A+","unitNumber":"897465","expiration":"2026-10-30T15:26","status":"Available","initialStatus":"Available","barcode":"BLOOD-PACKED-RED-BLOOD-CELLS-A-897465","notes":"","manualCode":"6863"}, {"id":"blood-1784233657815-2qys2","patientId":"patient-1784228779067-hszw6","product":"Packed Red Blood Cells","unitType":"O+","unitNumber":"8641394","expiration":"2026-10-30T15:27","status":"Available","initialStatus":"Available","barcode":"BLOOD-PACKED-RED-BLOOD-CELLS-O-8641394","notes":"","manualCode":"7889"}, {"id":"blood-fatima-sanogo-unit-2","patientId":"patient-1784228779067-hszw6","product":"Packed Red Blood Cells","unitType":"O+","unitNumber":"8641395","expiration":"2026-10-30T15:27","status":"Available","initialStatus":"Available","barcode":"BLOOD-PACKED-RED-BLOOD-CELLS-O-8641395","notes":"Second simulation PRBC unit for Fatima Sanogo.","manualCode":"3837"}, {"id":"blood-1784233717284-481ss","patientId":"patient-1784228908856-n5jsk","product":"Packed Red Blood Cells","unitType":"A-","unitNumber":"7298423","expiration":"2026-10-30T15:28","status":"Available","initialStatus":"Available","barcode":"BLOOD-PACKED-RED-BLOOD-CELLS-A-7298423","notes":"","manualCode":"6538"}];
       const bloodMap=new Map(seededBlood.map(b=>[b.id,{...b}]));
       saved.bloodUnits.forEach(b=>bloodMap.set(b.id,{...bloodMap.get(b.id),...b}));
       saved.bloodUnits=[...bloodMap.values()];
@@ -242,7 +245,7 @@ function loadState(){
     deletedMedicationIds:[],
     deletedMedicationVersions:{},
     administrations:[],
-    bloodUnits:[{"id": "blood-1784233493383-qriwd", "patientId": "amelia-sung", "product": "Packed Red Blood Cells", "unitType": "O+", "unitNumber": "87594", "expiration": "2026-10-30T15:24", "status": "Available", "initialStatus": "Available", "barcode": "BLOOD-PACKED-RED-BLOOD-CELLS-O-87594", "notes": ""}, {"id": "blood-1784233588867-nchi3", "patientId": "jane-fowler", "product": "Packed Red Blood Cells", "unitType": "A+", "unitNumber": "897465", "expiration": "2026-10-30T15:26", "status": "Available", "initialStatus": "Available", "barcode": "BLOOD-PACKED-RED-BLOOD-CELLS-A-897465", "notes": ""}, {"id": "blood-1784233657815-2qys2", "patientId": "patient-1784228779067-hszw6", "product": "Packed Red Blood Cells", "unitType": "O+", "unitNumber": "8641394", "expiration": "2026-10-30T15:27", "status": "Available", "initialStatus": "Available", "barcode": "BLOOD-PACKED-RED-BLOOD-CELLS-O-8641394", "notes": ""}, {"id": "blood-fatima-sanogo-unit-2", "patientId": "patient-1784228779067-hszw6", "product": "Packed Red Blood Cells", "unitType": "O+", "unitNumber": "8641395", "expiration": "2026-10-30T15:27", "status": "Available", "initialStatus": "Available", "barcode": "BLOOD-PACKED-RED-BLOOD-CELLS-O-8641395", "notes": "Second simulation PRBC unit for Fatima Sanogo."}, {"id": "blood-1784233717284-481ss", "patientId": "patient-1784228908856-n5jsk", "product": "Packed Red Blood Cells", "unitType": "A-", "unitNumber": "7298423", "expiration": "2026-10-30T15:28", "status": "Available", "initialStatus": "Available", "barcode": "BLOOD-PACKED-RED-BLOOD-CELLS-A-7298423", "notes": ""}],
+    bloodUnits:[{"id":"blood-1784233493383-qriwd","patientId":"amelia-sung","product":"Packed Red Blood Cells","unitType":"O+","unitNumber":"87594","expiration":"2026-10-30T15:24","status":"Available","initialStatus":"Available","barcode":"BLOOD-PACKED-RED-BLOOD-CELLS-O-87594","notes":"","manualCode":"8780"}, {"id":"blood-1784233588867-nchi3","patientId":"jane-fowler","product":"Packed Red Blood Cells","unitType":"A+","unitNumber":"897465","expiration":"2026-10-30T15:26","status":"Available","initialStatus":"Available","barcode":"BLOOD-PACKED-RED-BLOOD-CELLS-A-897465","notes":"","manualCode":"6863"}, {"id":"blood-1784233657815-2qys2","patientId":"patient-1784228779067-hszw6","product":"Packed Red Blood Cells","unitType":"O+","unitNumber":"8641394","expiration":"2026-10-30T15:27","status":"Available","initialStatus":"Available","barcode":"BLOOD-PACKED-RED-BLOOD-CELLS-O-8641394","notes":"","manualCode":"7889"}, {"id":"blood-fatima-sanogo-unit-2","patientId":"patient-1784228779067-hszw6","product":"Packed Red Blood Cells","unitType":"O+","unitNumber":"8641395","expiration":"2026-10-30T15:27","status":"Available","initialStatus":"Available","barcode":"BLOOD-PACKED-RED-BLOOD-CELLS-O-8641395","notes":"Second simulation PRBC unit for Fatima Sanogo.","manualCode":"3837"}, {"id":"blood-1784233717284-481ss","patientId":"patient-1784228908856-n5jsk","product":"Packed Red Blood Cells","unitType":"A-","unitNumber":"7298423","expiration":"2026-10-30T15:28","status":"Available","initialStatus":"Available","barcode":"BLOOD-PACKED-RED-BLOOD-CELLS-A-7298423","notes":"","manualCode":"6538"}],
     bloodAdministrations:[],
     glucoseChecks:[],
     settings:{bridgeUrl:"",notionEnabled:false}
@@ -253,7 +256,7 @@ function loadState(){
     patients:SEED_PATIENTS,
     medications:SEED_MEDS,
     administrations:[],
-    bloodUnits:[{"id": "blood-1784233493383-qriwd", "patientId": "amelia-sung", "product": "Packed Red Blood Cells", "unitType": "O+", "unitNumber": "87594", "expiration": "2026-10-30T15:24", "status": "Available", "initialStatus": "Available", "barcode": "BLOOD-PACKED-RED-BLOOD-CELLS-O-87594", "notes": ""}, {"id": "blood-1784233588867-nchi3", "patientId": "jane-fowler", "product": "Packed Red Blood Cells", "unitType": "A+", "unitNumber": "897465", "expiration": "2026-10-30T15:26", "status": "Available", "initialStatus": "Available", "barcode": "BLOOD-PACKED-RED-BLOOD-CELLS-A-897465", "notes": ""}, {"id": "blood-1784233657815-2qys2", "patientId": "patient-1784228779067-hszw6", "product": "Packed Red Blood Cells", "unitType": "O+", "unitNumber": "8641394", "expiration": "2026-10-30T15:27", "status": "Available", "initialStatus": "Available", "barcode": "BLOOD-PACKED-RED-BLOOD-CELLS-O-8641394", "notes": ""}, {"id": "blood-fatima-sanogo-unit-2", "patientId": "patient-1784228779067-hszw6", "product": "Packed Red Blood Cells", "unitType": "O+", "unitNumber": "8641395", "expiration": "2026-10-30T15:27", "status": "Available", "initialStatus": "Available", "barcode": "BLOOD-PACKED-RED-BLOOD-CELLS-O-8641395", "notes": "Second simulation PRBC unit for Fatima Sanogo."}, {"id": "blood-1784233717284-481ss", "patientId": "patient-1784228908856-n5jsk", "product": "Packed Red Blood Cells", "unitType": "A-", "unitNumber": "7298423", "expiration": "2026-10-30T15:28", "status": "Available", "initialStatus": "Available", "barcode": "BLOOD-PACKED-RED-BLOOD-CELLS-A-7298423", "notes": ""}],
+    bloodUnits:[{"id":"blood-1784233493383-qriwd","patientId":"amelia-sung","product":"Packed Red Blood Cells","unitType":"O+","unitNumber":"87594","expiration":"2026-10-30T15:24","status":"Available","initialStatus":"Available","barcode":"BLOOD-PACKED-RED-BLOOD-CELLS-O-87594","notes":"","manualCode":"8780"}, {"id":"blood-1784233588867-nchi3","patientId":"jane-fowler","product":"Packed Red Blood Cells","unitType":"A+","unitNumber":"897465","expiration":"2026-10-30T15:26","status":"Available","initialStatus":"Available","barcode":"BLOOD-PACKED-RED-BLOOD-CELLS-A-897465","notes":"","manualCode":"6863"}, {"id":"blood-1784233657815-2qys2","patientId":"patient-1784228779067-hszw6","product":"Packed Red Blood Cells","unitType":"O+","unitNumber":"8641394","expiration":"2026-10-30T15:27","status":"Available","initialStatus":"Available","barcode":"BLOOD-PACKED-RED-BLOOD-CELLS-O-8641394","notes":"","manualCode":"7889"}, {"id":"blood-fatima-sanogo-unit-2","patientId":"patient-1784228779067-hszw6","product":"Packed Red Blood Cells","unitType":"O+","unitNumber":"8641395","expiration":"2026-10-30T15:27","status":"Available","initialStatus":"Available","barcode":"BLOOD-PACKED-RED-BLOOD-CELLS-O-8641395","notes":"Second simulation PRBC unit for Fatima Sanogo.","manualCode":"3837"}, {"id":"blood-1784233717284-481ss","patientId":"patient-1784228908856-n5jsk","product":"Packed Red Blood Cells","unitType":"A-","unitNumber":"7298423","expiration":"2026-10-30T15:28","status":"Available","initialStatus":"Available","barcode":"BLOOD-PACKED-RED-BLOOD-CELLS-A-7298423","notes":"","manualCode":"6538"}],
     bloodAdministrations:[],
     glucoseChecks:[],
     settings:{bridgeUrl:"",notionEnabled:false}
@@ -317,7 +320,7 @@ function restoreDataBackup(file){
    state.administrations ||= [];
    state.settings ||= {bridgeUrl:"",notionEnabled:false};
    save();
-   verifiedPatient=null;verifiedMedication=null;verifiedBloodPatient=null;verifiedBloodUnit=null;
+   verifiedPatient=null;verifiedMedication=null;verifiedBloodUnit=null;verifiedBloodPatient=null;verifiedBloodUnit=null;
    currentView="patients";
    alert("Backup restored successfully.");
    render();
@@ -343,6 +346,21 @@ function render(){
  if(currentView==="history")renderHistory();
  if(currentView==="settings")renderSettings();
 }
+
+function renderBloodAdministration(){
+ currentView="admin";
+ renderAdmin();
+}
+function renderBloodBuilder(){
+ document.getElementById("view").innerHTML=panel("Blood Product Builder",`
+   <div class="modeBanner">Blood products are managed in the saved simulation dataset. Use the Barcode Center to print blood labels and the Medication Administration screen for blood scanning.</div>
+   <table><thead><tr><th>Patient</th><th>Product</th><th>Type</th><th>Unit</th><th>Status</th><th>4-Digit Code</th></tr></thead>
+   <tbody>${(state.bloodUnits||[]).map(b=>{
+     const p=state.patients.find(x=>x.id===b.patientId);
+     return `<tr><td>${esc(p?.name||"")}</td><td>${esc(b.product||"")}</td><td>${esc(b.unitType||"")}</td><td>${esc(b.unitNumber||"")}</td><td>${esc(b.status||"")}</td><td><b>${esc(b.manualCode||"")}</b></td></tr>`;
+   }).join("")||'<tr><td colspan="6">No blood products entered.</td></tr>'}</tbody></table>`);
+}
+
 function renderPatientBanner(){
  const p=activePatient(),box=document.getElementById("patientBanner");
  if(!p){box.classList.add("hidden");return}
@@ -384,7 +402,7 @@ function renderActivePatients(){
    const medMap=new Map(SEED_MEDS.map(m=>[m.id,{...m}]));
    state.medications.forEach(m=>medMap.set(m.id,{...medMap.get(m.id),...m}));
    state.medications=[...medMap.values()];
-   const seededBlood=[{"id": "blood-1784233493383-qriwd", "patientId": "amelia-sung", "product": "Packed Red Blood Cells", "unitType": "O+", "unitNumber": "87594", "expiration": "2026-10-30T15:24", "status": "Available", "initialStatus": "Available", "barcode": "BLOOD-PACKED-RED-BLOOD-CELLS-O-87594", "notes": ""}, {"id": "blood-1784233588867-nchi3", "patientId": "jane-fowler", "product": "Packed Red Blood Cells", "unitType": "A+", "unitNumber": "897465", "expiration": "2026-10-30T15:26", "status": "Available", "initialStatus": "Available", "barcode": "BLOOD-PACKED-RED-BLOOD-CELLS-A-897465", "notes": ""}, {"id": "blood-1784233657815-2qys2", "patientId": "patient-1784228779067-hszw6", "product": "Packed Red Blood Cells", "unitType": "O+", "unitNumber": "8641394", "expiration": "2026-10-30T15:27", "status": "Available", "initialStatus": "Available", "barcode": "BLOOD-PACKED-RED-BLOOD-CELLS-O-8641394", "notes": ""}, {"id": "blood-fatima-sanogo-unit-2", "patientId": "patient-1784228779067-hszw6", "product": "Packed Red Blood Cells", "unitType": "O+", "unitNumber": "8641395", "expiration": "2026-10-30T15:27", "status": "Available", "initialStatus": "Available", "barcode": "BLOOD-PACKED-RED-BLOOD-CELLS-O-8641395", "notes": "Second simulation PRBC unit for Fatima Sanogo."}, {"id": "blood-1784233717284-481ss", "patientId": "patient-1784228908856-n5jsk", "product": "Packed Red Blood Cells", "unitType": "A-", "unitNumber": "7298423", "expiration": "2026-10-30T15:28", "status": "Available", "initialStatus": "Available", "barcode": "BLOOD-PACKED-RED-BLOOD-CELLS-A-7298423", "notes": ""}];
+   const seededBlood=[{"id":"blood-1784233493383-qriwd","patientId":"amelia-sung","product":"Packed Red Blood Cells","unitType":"O+","unitNumber":"87594","expiration":"2026-10-30T15:24","status":"Available","initialStatus":"Available","barcode":"BLOOD-PACKED-RED-BLOOD-CELLS-O-87594","notes":"","manualCode":"8780"}, {"id":"blood-1784233588867-nchi3","patientId":"jane-fowler","product":"Packed Red Blood Cells","unitType":"A+","unitNumber":"897465","expiration":"2026-10-30T15:26","status":"Available","initialStatus":"Available","barcode":"BLOOD-PACKED-RED-BLOOD-CELLS-A-897465","notes":"","manualCode":"6863"}, {"id":"blood-1784233657815-2qys2","patientId":"patient-1784228779067-hszw6","product":"Packed Red Blood Cells","unitType":"O+","unitNumber":"8641394","expiration":"2026-10-30T15:27","status":"Available","initialStatus":"Available","barcode":"BLOOD-PACKED-RED-BLOOD-CELLS-O-8641394","notes":"","manualCode":"7889"}, {"id":"blood-fatima-sanogo-unit-2","patientId":"patient-1784228779067-hszw6","product":"Packed Red Blood Cells","unitType":"O+","unitNumber":"8641395","expiration":"2026-10-30T15:27","status":"Available","initialStatus":"Available","barcode":"BLOOD-PACKED-RED-BLOOD-CELLS-O-8641395","notes":"Second simulation PRBC unit for Fatima Sanogo.","manualCode":"3837"}, {"id":"blood-1784233717284-481ss","patientId":"patient-1784228908856-n5jsk","product":"Packed Red Blood Cells","unitType":"A-","unitNumber":"7298423","expiration":"2026-10-30T15:28","status":"Available","initialStatus":"Available","barcode":"BLOOD-PACKED-RED-BLOOD-CELLS-A-7298423","notes":"","manualCode":"6538"}];
    const bloodMap=new Map(seededBlood.map(b=>[b.id,{...b}]));
    state.bloodUnits.forEach(b=>bloodMap.set(b.id,{...bloodMap.get(b.id),...b}));
    state.bloodUnits=[...bloodMap.values()];
@@ -496,6 +514,61 @@ let selectedMedicationPatientId=null;
 function uid(prefix){
  return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2,7)}`;
 }
+
+
+function ensureBloodManualCodes(){
+ state.bloodUnits ||= [];
+ const used=new Set();
+ state.bloodUnits.forEach(b=>{
+   const c=String(b.manualCode||"").trim();
+   if(/^\d{4}$/.test(c) && !used.has(c)){
+     b.manualCode=c;
+     used.add(c);
+   }else{
+     b.manualCode="";
+   }
+ });
+ state.bloodUnits.forEach(b=>{
+   if(b.manualCode)return;
+   const key=`${b.id||""}|${b.patientId||""}|${b.unitNumber||""}`;
+   let raw=0;
+   for(let i=0;i<key.length;i++)raw=((raw*33)+key.charCodeAt(i))>>>0;
+   let n=1000+(raw%9000);
+   while(used.has(String(n))){
+     n++;
+     if(n>9999)n=1000;
+   }
+   b.manualCode=String(n);
+   used.add(b.manualCode);
+ });
+}
+
+function ensureMedicationManualCodes(){
+ const used=new Set();
+ state.medications.forEach(m=>{
+   const c=String(m.manualCode||"").trim();
+   if(/^\d{4}$/.test(c) && !used.has(c)){
+     m.manualCode=c;
+     used.add(c);
+   }else{
+     m.manualCode="";
+   }
+ });
+ state.medications.forEach(m=>{
+   if(m.manualCode)return;
+   const key=`${m.id||""}|${m.patientId||""}|${m.name||""}`;
+   let raw=0;
+   for(let i=0;i<key.length;i++)raw=((raw*31)+key.charCodeAt(i))>>>0;
+   let n=1000+(raw%9000);
+   while(used.has(String(n))){
+     n++;
+     if(n>9999)n=1000;
+   }
+   m.manualCode=String(n);
+   used.add(m.manualCode);
+ });
+}
+
 function slugBarcode(value){
  return String(value||"ITEM").toUpperCase().trim().replace(/[^A-Z0-9]+/g,"-").replace(/^-+|-+$/g,"");
 }
@@ -762,6 +835,7 @@ function saveMedicationFromBuilder(){
  const record={patientId,medType,name,dose,route,frequency,scheduledTime,indication,provider,status,initialStatus:status,allergyKeywords,highAlert,barcode,notes};
  if(editingMedicationId)Object.assign(state.medications.find(x=>x.id===editingMedicationId),record);
  else state.medications.push({id:uid("med"),...record});
+ ensureMedicationManualCodes();
  save();selectedMedicationPatientId=null;editingMedicationId=null;renderMedicationBuilder();
 }
 function duplicateMedication(id){
@@ -868,6 +942,33 @@ function renderAdmin(){
    </table>
  `):panel("Patient Medication Administration Record (MAR)",'<div class="placeholder">Scan or select a patient to view the complete MAR.</div>')}
 
+ ${panel("Blood Administration Scanning",`
+   <div class="modeBanner" style="margin-bottom:8px">Verify the patient wristband first. Then scan the blood unit or enter the 4-digit blood code printed under its barcode.</div>
+   <div class="scanGrid">
+    <div>
+      <h3 style="margin:0 0 6px;color:var(--green2)">1. Patient Verification</h3>
+      <div class="note">${p?`Current patient: <b>${esc(p.name)}</b> — MRN ${esc(p.mrn)}`:"Scan the patient wristband in Medication Scanning below first."}</div>
+    </div>
+    <div class="scanArrow">→</div>
+    <div>
+      <h3 style="margin:0 0 6px;color:var(--green2)">2. Scan Blood Unit</h3>
+      <input id="bloodScanUnderMar" placeholder="Scan blood unit barcode..." autocomplete="off" ${p?'':'disabled'}>
+      <div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--line)">
+        <div class="note"><b>Scanner not reading?</b> Enter the 4-digit blood code.</div>
+        <div style="display:grid;grid-template-columns:1fr auto;gap:6px;align-items:end">
+          <input id="manualBloodCodeUnderMar" inputmode="numeric" maxlength="4" placeholder="4-digit code" autocomplete="off" ${p?'':'disabled'}>
+          <button id="manualBloodVerifyBtnUnderMar" class="secondary" ${p?'':'disabled'}>Verify Blood</button>
+        </div>
+      </div>
+      <div id="bloodFeedbackUnderMar" class="feedback hidden"></div>
+    </div>
+    <div class="verifyBox">
+      <b>Blood Verification Status</b>
+      <div id="bloodVerificationStatusUnderMar" class="note" style="margin-top:8px">${p?"Ready to scan assigned blood unit.":"Verify patient first."}</div>
+    </div>
+   </div>
+ `)}
+
  ${panel("Medication Scanning",`
    <div class="scanGrid">
     <div>
@@ -881,6 +982,13 @@ function renderAdmin(){
       <h3 style="margin:0 0 6px;color:var(--green2)">2. Scan Medication Barcode</h3>
       <div class="note">Scan the medication barcode to verify it against this patient's MAR.</div>
       <input id="medScan" placeholder="Scan medication barcode..." autocomplete="off" ${p?'':'disabled'}>
+      <div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--line)">
+        <div class="note"><b>Scanner not reading?</b> Enter the 4-digit medication code printed under the barcode.</div>
+        <div style="display:grid;grid-template-columns:1fr auto;gap:6px;align-items:end">
+          <input id="manualMedCode" inputmode="numeric" maxlength="4" placeholder="4-digit code" autocomplete="off" ${p?'':'disabled'}>
+          <button id="manualMedVerifyBtn" class="secondary" ${p?'':'disabled'}>Verify Code</button>
+        </div>
+      </div>
       <div id="medFeedback" class="feedback hidden"></div>
     </div>
     <div class="verifyBox">
@@ -896,21 +1004,31 @@ function renderAdmin(){
 
  const ps=document.getElementById("patientScan");
  const ms=document.getElementById("medScan");
+ const manualInput=document.getElementById("manualMedCode");
+ const manualBtn=document.getElementById("manualMedVerifyBtn");
+ const bloodScanUnderMar=document.getElementById("bloodScanUnderMar");
+ const manualBloodUnderMar=document.getElementById("manualBloodCodeUnderMar");
+ const manualBloodBtnUnderMar=document.getElementById("manualBloodVerifyBtnUnderMar");
  ps.onkeydown=e=>{if(e.key==="Enter"){verifyPatient(ps.value.trim());ps.value=""}};
- ms.onkeydown=e=>{if(e.key==="Enter"){verifyMedication(ms.value.trim());ms.value=""}};
+ ms.onkeydown=e=>{if(e.key==="Enter"){verifyMedication(ms.value.trim(),"barcode");ms.value=""}};
+ if(manualInput)manualInput.onkeydown=e=>{if(e.key==="Enter"){verifyMedication(manualInput.value.trim(),"manual");manualInput.value=""}};
+ if(manualBtn)manualBtn.onclick=()=>{verifyMedication(manualInput.value.trim(),"manual");manualInput.value=""};
+ if(bloodScanUnderMar)bloodScanUnderMar.onkeydown=e=>{if(e.key==="Enter"){verifyBloodUnderMar(bloodScanUnderMar.value.trim(),"barcode");bloodScanUnderMar.value=""}};
+ if(manualBloodUnderMar)manualBloodUnderMar.onkeydown=e=>{if(e.key==="Enter"){verifyBloodUnderMar(manualBloodUnderMar.value.trim(),"manual");manualBloodUnderMar.value=""}};
+ if(manualBloodBtnUnderMar)manualBloodBtnUnderMar.onclick=()=>{verifyBloodUnderMar(manualBloodUnderMar.value.trim(),"manual");manualBloodUnderMar.value=""};
  setTimeout(()=>{if(!p)ps.focus();else ms.focus()},50);
 }
 function verifyPatient(code){
  const p=state.patients.find(p=>(p.barcode===code||p.mrn===code)&&p.active!==false);
  if(!p){
-   verifiedPatient=null;verifiedMedication=null;
+   verifiedPatient=null;verifiedMedication=null;verifiedBloodUnit=null;
    const fb=document.getElementById("patientFeedback");
    if(fb){fb.className="feedback bad";fb.textContent="PATIENT MISMATCH: Wristband was not recognized."}
    const status=document.getElementById("verificationStatus");
    if(status)status.textContent="Patient verification failed.";
    return;
  }
- verifiedPatient=p.id;verifiedMedication=null;
+ verifiedPatient=p.id;verifiedMedication=null;verifiedBloodUnit=null;
  renderPatientBanner();
  renderAdmin();
  const fb=document.getElementById("patientFeedback");
@@ -920,15 +1038,59 @@ function verifyPatient(code){
  setTimeout(()=>document.getElementById("medScan")?.focus(),50);
 }
 
-function verifyMedication(code){
+
+function verifyBloodUnderMar(code,method="barcode"){
+ const p=activePatient();
+ const fb=document.getElementById("bloodFeedbackUnderMar");
+ const status=document.getElementById("bloodVerificationStatusUnderMar");
+ if(!p){
+   if(fb){fb.className="feedback bad";fb.textContent="VERIFY PATIENT FIRST: Scan the patient wristband before scanning blood."}
+   return;
+ }
+ const normalized=String(code||"").trim();
+ const manual=normalized.replace(/\D/g,"").slice(0,4);
+ const unit=(state.bloodUnits||[]).find(b=>b.barcode===normalized || b.manualCode===normalized || (method==="manual" && b.manualCode===manual));
+ if(!unit){
+   verifiedBloodUnit=null;
+   if(fb){fb.className="feedback bad";fb.textContent=method==="manual" ? "BLOOD CODE NOT FOUND: Check the 4-digit number printed under the blood barcode." : "BLOOD UNIT NOT FOUND: Stop and verify the blood label."}
+   if(status)status.textContent="Blood verification failed.";
+   return;
+ }
+ if(unit.patientId!==p.id){
+   const assigned=state.patients.find(x=>x.id===unit.patientId);
+   verifiedBloodUnit=null;
+   if(fb){fb.className="feedback bad";fb.textContent=`WRONG PATIENT: This blood unit is assigned to ${assigned?.name||"another patient"}. STOP.`}
+   if(status)status.textContent="Blood-to-patient mismatch.";
+   return;
+ }
+ if(unit.status==="Transfused" || unit.status==="Completed"){
+   verifiedBloodUnit=null;
+   if(fb){fb.className="feedback bad";fb.textContent="THIS BLOOD UNIT HAS ALREADY BEEN COMPLETED. Verify the unit before proceeding."}
+   return;
+ }
+ verifiedBloodUnit=unit.id;
+ const unitType=unit.unitType||unit.bloodType||"";
+ const patientType=p.bloodType||"";
+ if(patientType && unitType && patientType!==unitType){
+   if(fb){fb.className="feedback warn";fb.textContent=`Blood unit matched to patient, but verify compatibility: patient ${patientType}; unit ${unitType}.`}
+ }else if(fb){
+   fb.className="feedback ok";
+   fb.textContent=`Blood verified${method==="manual"?" by manual code":""}: ${unit.product} ${unitType}, Unit ${unit.unitNumber}.`;
+ }
+ if(status)status.innerHTML=`<b style="color:var(--ok)">Verified:</b> ${esc(unit.product)} ${esc(unitType)} • Unit ${esc(unit.unitNumber)} • Code ${esc(unit.manualCode||"")}`;
+}
+
+function verifyMedication(code,method="barcode"){
  const p=activePatient();
  const fb=document.getElementById("medFeedback");
  const status=document.getElementById("verificationStatus");
  if(!p)return;
- const med=state.medications.find(m=>m.barcode===code);
+ const normalized=String(code||"").trim();
+ const manual=normalized.replace(/\D/g,"").slice(0,4);
+ const med=state.medications.find(m=>m.barcode===normalized || m.manualCode===normalized || (method==="manual" && m.manualCode===manual));
  if(!med){
    verifiedMedication=null;
-   if(fb){fb.className="feedback bad";fb.textContent="MEDICATION NOT FOUND: Stop and verify the medication label."}
+   if(fb){fb.className="feedback bad";fb.textContent=method==="manual" ? "CODE NOT FOUND: Check the 4-digit number printed under the medication barcode." : "MEDICATION NOT FOUND: Stop and verify the medication label."}
    if(status)status.textContent="Medication verification failed.";
    return;
  }
@@ -939,8 +1101,8 @@ function verifyMedication(code){
    return;
  }
  verifiedMedication=med.id;
- if(fb){fb.className="feedback ok";fb.textContent=`Medication verified: ${med.name} ${med.dose} ${med.route}.`}
- if(status)status.innerHTML=`<b style="color:var(--ok)">Verified:</b> ${esc(med.name)} ${esc(med.dose)} ${esc(med.route)}`;
+ if(fb){fb.className="feedback ok";fb.textContent=`Medication verified${method==="manual"?" by manual code":""}: ${med.name} ${med.dose} ${med.route}.`}
+ if(status)status.innerHTML=`<b style="color:var(--ok)">Verified${method==="manual"?" by manual override":""}:</b> ${esc(med.name)} ${esc(med.dose)} ${esc(med.route)}`;
  document.getElementById("verificationArea").innerHTML=verificationHtml(p,med);
  bindVerification();
 }
@@ -1076,12 +1238,12 @@ function barcodeDataUri(code,height=48,narrow=1.3,wide=3.4){
 function printBarcode(title,code,details=""){
  printLabelSheet({title,code,details,labelType:"patient",size:"standard",copies:1});
 }
-function printLabelSheet({title,code,details="",labelType="medication",size="small",copies=1}){
+function printLabelSheet({title,code,details="",labelType="medication",size="small",copies=1,manualCode=""}){
  const presets={
-  tiny:{widthIn:1.5,heightIn:0.75,barcodeHeight:24,titleSize:8,detailSize:7,narrow:0.82,wide:2.05},
-  small:{widthIn:2.0,heightIn:1.0,barcodeHeight:30,titleSize:9,detailSize:7,narrow:0.95,wide:2.35},
-  medium:{widthIn:2.625,heightIn:1.0,barcodeHeight:34,titleSize:10,detailSize:8,narrow:1.05,wide:2.6},
-  standard:{widthIn:3.5,heightIn:1.25,barcodeHeight:42,titleSize:12,detailSize:9,narrow:1.2,wide:3}
+  tiny:{widthIn:1.5,heightIn:0.75,barcodeHeight:15,titleSize:8,detailSize:7,narrow:0.66,wide:1.55},
+  small:{widthIn:2.0,heightIn:1.0,barcodeHeight:17,titleSize:9,detailSize:7,narrow:0.72,wide:1.70},
+  medium:{widthIn:2.625,heightIn:1.0,barcodeHeight:19,titleSize:10,detailSize:8,narrow:0.78,wide:1.85},
+  standard:{widthIn:3.5,heightIn:1.25,barcodeHeight:22,titleSize:12,detailSize:9,narrow:0.86,wide:2.0}
  };
  const p=presets[size]||presets.small;
  const image=barcodeDataUri(code,p.barcodeHeight,p.narrow,p.wide);
@@ -1091,6 +1253,7 @@ function printLabelSheet({title,code,details="",labelType="medication",size="sma
     <div class="title">${esc(title)}</div>
     <div class="details">${esc(details)}</div>
     <img src="${image}" alt="Barcode ${esc(code)}">
+    ${manualCode?`<div class="manualCode">Code: ${esc(manualCode)}</div>`:""}
   </div>`).join("");
  const w=window.open("","_blank","width=900,height=700");
  if(!w){alert("Allow pop-ups to print barcode labels.");return}
@@ -1101,7 +1264,7 @@ function printLabelSheet({title,code,details="",labelType="medication",size="sma
  .label{width:${p.widthIn}in;height:${p.heightIn}in;border:1px dashed #999;padding:0.05in;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;page-break-inside:avoid}
  .title{font-weight:700;font-size:${p.titleSize}px;line-height:1.05;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:100%}
  .details{font-size:${p.detailSize}px;line-height:1.05;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:100%;margin:1px 0}
- img{max-width:98%;max-height:60%;object-fit:contain}
+ img{max-width:82%;max-height:40%;object-fit:contain}\n .manualCode{font-size:9px;font-weight:800;letter-spacing:1.5px;margin-top:2px}
  </style></head><body><div class="sheet">${labelHtml}</div><script>window.onload=()=>window.print()<\/script></body></html>`);
  w.document.close();
 }
@@ -1111,16 +1274,31 @@ function printPatientBarcodeSheet(patientId){
  const p=state.patients.find(x=>x.id===patientId);
  if(!p)return;
  const meds=state.medications.filter(m=>m.patientId===patientId && m.status!=="Discontinued");
+ const bloodUnits=(state.bloodUnits||[]).filter(b=>b.patientId===patientId);
  const patientBarcode=barcodeDataUri(p.barcode,38,1.05,2.55);
 
  const medLabels=meds.map(m=>{
-   const img=barcodeDataUri(m.barcode,24,0.72,1.8);
+   const img=barcodeDataUri(m.manualCode,15,0.58,1.30);
    return `<div class="medLabel">
      <div class="medName">${esc(m.name)}</div>
      <div class="medDose">${esc(m.dose)} • ${esc(m.route)}</div>
      <div class="medDetails">${esc(m.medType==="PRN"?"As Needed":m.scheduledTime||m.frequency||"")}</div>
      <div class="scanZone">
-       <img src="${img}" alt="Barcode ${esc(m.barcode)}">
+       <img src="${img}" alt="Medication scan code ${esc(m.manualCode)}">
+       <div class="manualCode">Code: ${esc(m.manualCode||"")}</div>
+     </div>
+   </div>`;
+ }).join("");
+
+ const bloodLabels=bloodUnits.map(b=>{
+   const img=barcodeDataUri(b.manualCode,15,0.58,1.30);
+   return `<div class="medLabel">
+     <div class="medName">${esc(b.product||"Blood Product")}</div>
+     <div class="medDose">${esc(b.unitType||b.bloodType||"")} • Unit ${esc(b.unitNumber||"")}</div>
+     <div class="medDetails">Status: ${esc(b.status||"Available")}</div>
+     <div class="scanZone">
+       <img src="${img}" alt="Blood scan code ${esc(b.manualCode)}">
+       <div class="manualCode">Blood Code: ${esc(b.manualCode||"")}</div>
      </div>
    </div>`;
  }).join("");
@@ -1139,7 +1317,7 @@ function printPatientBarcodeSheet(patientId){
  .section{font-size:13px;font-weight:800;margin:6px 0 4px}
  .medGrid{display:grid;grid-template-columns:repeat(2,1fr);column-gap:0.32in;row-gap:0.24in}
  .medLabel{
-   min-height:1.28in;
+   min-height:1.02in;
    border:1px dashed #888;
    padding:0.09in 0.12in 0.11in;
    text-align:center;
@@ -1156,15 +1334,17 @@ function printPatientBarcodeSheet(patientId){
  .medDetails{font-size:7.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:100%;margin-bottom:5px}
  .scanZone{
    width:100%;
-   min-height:0.66in;
-   padding:0.08in 0.18in;
+   min-height:0.42in;
+   padding:0.03in 0.24in 0.02in;
    margin-top:auto;
    display:flex;
+   flex-direction:column;
    justify-content:center;
    align-items:center;
    background:#fff;
  }
- .medLabel img{max-width:2.75in;max-height:0.58in;object-fit:contain;display:block;margin:auto}
+ .medLabel img{max-width:1.45in;max-height:0.24in;object-fit:contain;display:block;margin:auto}
+ .manualCode{font-size:9px;font-weight:800;letter-spacing:1.5px;margin-top:2px}
  .footer{font-size:8px;margin-top:6px;text-align:center}
  </style></head><body>
  <div class="header">
@@ -1181,6 +1361,8 @@ function printPatientBarcodeSheet(patientId){
  <div class="section">Medication Barcodes — ${meds.length} active medication order(s)</div>
  <div style="font-size:8px;margin-bottom:6px">Each barcode has a separate scan zone. Aim the scanner only at the barcode inside the box you want to scan.</div>
  <div class="medGrid">${medLabels||'<div>No active medications.</div>'}</div>
+ <div class="section" style="margin-top:10px">Blood Product Barcodes — ${bloodUnits.length} unit(s)</div>
+ <div class="medGrid">${bloodLabels||'<div>No blood products assigned.</div>'}</div>
  <div class="footer">ATU Simulation Hospital • Simulation use only</div>
  <script>window.onload=()=>window.print()<\/script>
  </body></html>`);
@@ -1189,14 +1371,14 @@ function printPatientBarcodeSheet(patientId){
 
 function renderBarcodes(){
  document.getElementById("view").innerHTML=panel("Barcode Center",`
- <div class="modeBanner">Barcodes are generated automatically for every patient and medication. You can print an entire patient's barcode sheet — patient wristband plus all medication barcodes — on one page.</div>
+ <div class="modeBanner">Barcodes are generated automatically for every patient and medication. You can print an entire patient's barcode sheet — patient wristband plus all medication and blood-product barcodes — on one page.</div>
  <div class="barcodeCard">
    <b>Print One Patient's Complete Barcode Sheet</b>
-   <p>Select a patient to print the patient barcode and every active medication barcode together.</p>
+   <p>Select a patient to print the patient barcode, every active medication barcode, and all assigned blood-product barcodes together.</p>
    <div class="labelControls">
      <label>Patient<select id="barcodeSheetPatient">${patientOptions(state.patients[0]?.id||"")}</select></label>
      <div></div>
-     <div style="align-self:end"><button id="printPatientSheetBtn" class="primary">Print Patient + All Medication Barcodes</button></div>
+     <div style="align-self:end"><button id="printPatientSheetBtn" class="primary">Print Patient + Medication + Blood Barcodes</button></div>
    </div>
  </div>
  <h3>Patient Wristbands</h3>
@@ -1230,7 +1412,7 @@ function renderBarcodes(){
       <label>Copies<input class="medLabelCopies" data-id="${esc(m.id)}" type="number" min="1" max="100" value="6"></label>
       <div style="align-self:end"><button class="primary printMedicationLabel" data-id="${esc(m.id)}">Print Medication Labels</button></div>
     </div>
-    <div class="compactNote">Barcode: ${esc(m.barcode)}</div>
+    <div class="compactNote"><b>Scan / Manual Code: ${esc(m.manualCode||"")}</b><br><span style="font-size:10px">Internal barcode ID: ${esc(m.barcode)}</span></div>
    </div>`;
  }).join("")||"<p>No medications entered.</p>"}
  <h3>Blood Product Labels</h3>
@@ -1248,7 +1430,7 @@ function renderBarcodes(){
       <label>Copies<input class="bloodLabelCopies" data-id="${esc(b.id)}" type="number" min="1" max="50" value="2"></label>
       <div style="align-self:end"><button class="primary printBloodLabel" data-id="${esc(b.id)}">Print Blood Labels</button></div>
     </div>
-    <div class="compactNote">Barcode: ${esc(b.barcode)}</div>
+    <div class="compactNote"><b>Scan / Manual Code: ${esc(b.manualCode||"")}</b><br><span style="font-size:10px">Internal barcode ID: ${esc(b.barcode)}</span></div>
    </div>`;
  }).join("")||"<p>No blood products entered.</p>"}
 `);
@@ -1273,7 +1455,8 @@ function renderBarcodes(){
    const copies=document.querySelector(`.medLabelCopies[data-id="${b.dataset.id}"]`).value;
    printLabelSheet({
      title:`${m.name} ${m.dose}`,
-     code:m.barcode,
+     code:m.manualCode,
+     manualCode:m.manualCode,
      details:`${m.route} | ${m.frequency} | ${p?.name||""}`,
      labelType:"medication",size,copies
    });
@@ -1285,7 +1468,8 @@ function renderBarcodes(){
    const copies=document.querySelector(`.bloodLabelCopies[data-id="${btn.dataset.id}"]`).value;
    printLabelSheet({
      title:`${b.product} ${b.unitType}`,
-     code:b.barcode,
+     code:b.manualCode,
+     manualCode:b.manualCode,
      details:`Unit ${b.unitNumber} | ${p?.name||""} | Exp ${b.expiration||""}`,
      labelType:"blood",size,copies
    });
@@ -1322,7 +1506,7 @@ function renderSettings(){
    if(!confirm("Reset every patient simulation while keeping all patients and medication orders?"))return;
    state.medications.forEach(m=>resetMedicationToStart(m));
    state.administrations=[];state.bloodUnits.forEach(b=>b.status=b.initialStatus||"Available");state.bloodAdministrations=[];state.glucoseChecks=[];
-   verifiedPatient=null;verifiedMedication=null;save();alert("All simulations reset.");renderSettings();
+   verifiedPatient=null;verifiedMedication=null;verifiedBloodUnit=null;save();alert("All simulations reset.");renderSettings();
  };
  document.getElementById("resetDemo").onclick=()=>{if(confirm("DELETE all local patients, medications, and administration records? This cannot be undone.")){localStorage.removeItem(STORAGE_KEY);location.reload()}};
 }
@@ -1345,10 +1529,14 @@ document.addEventListener("keydown",(e)=>{
    if(!code)return;
    if(currentView==="admin"){
      if(!verifiedPatient)verifyPatient(code);
-     else verifyMedication(code);
+     else{
+       const bloodMatch=(state.bloodUnits||[]).some(b=>b.barcode===code||b.manualCode===code);
+       if(bloodMatch)verifyBloodUnderMar(code,"barcode");
+       else verifyMedication(code,"barcode");
+     }
    }else if(currentView==="blood"){
-     if(!verifiedBloodPatient)verifyBloodPatient(code);
-     else verifyBloodUnitScan(code);
+     currentView="admin";
+     renderAdmin();
    }
    return;
  }
@@ -1391,7 +1579,9 @@ function repairDataset(){
 
  state.patients.forEach(p=>{if(typeof p.active!=="boolean")p.active=true;if(!p.barcode)p.barcode=`PT-${slugBarcode(p.mrn||p.name)}`});
  state.medications.forEach(m=>{if(!m.initialStatus)m.initialStatus=m.status||"Due";if(!m.barcode){const p=state.patients.find(x=>x.id===m.patientId);m.barcode=`MED-${slugBarcode(m.name)}-${slugBarcode(m.dose)}-${slugBarcode(p?.mrn||m.patientId)}`}});
+ ensureMedicationManualCodes();
  state.bloodUnits ||= [];
+ ensureBloodManualCodes();
  state.glucoseChecks ||= [];
  save();
 }
