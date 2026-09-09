@@ -58,6 +58,13 @@ table{width:100%;border-collapse:collapse}th,td{border:1px solid #c4cdd2;padding
 .notificationCount{display:inline-flex;min-width:19px;height:19px;padding:0 5px;border-radius:10px;background:#c72c43;color:white;align-items:center;justify-content:center;font-size:10px;font-weight:bold;margin-left:4px}
 .pendingBadge{background:#fff7d6;color:#6e5411;border:1px solid #d6bc67;padding:3px 7px;border-radius:10px;font-size:10px;font-weight:800}
 .releasedBadge{background:#eaf7ef;color:#176f49;border:1px solid #9bc7aa;padding:3px 7px;border-radius:10px;font-size:10px;font-weight:800}
+.notionRecord{border:1px solid var(--line);border-left:5px solid var(--blue);border-radius:4px;margin:8px 0;background:#fff}
+.notionRecord>summary{cursor:pointer;padding:10px 12px;font-weight:800;background:#f3f7f9}
+.notionRecordBody{padding:12px;line-height:1.45;overflow:auto}
+.notionRecordBody h3,.notionRecordBody h4{color:var(--green);margin:12px 0 6px}
+.notionRecordBody table{margin:8px 0;min-width:520px}
+.notionRecordBody td{white-space:pre-wrap}
+.sourceBadge{display:inline-block;margin-left:6px;padding:2px 7px;border-radius:10px;background:#e8eef1;color:#315d7b;font-size:10px;font-weight:800}
 
 
 .labGroup{border:1px solid var(--line);border-radius:5px;margin-bottom:12px;overflow:hidden;background:#fff}
@@ -92,11 +99,12 @@ table{width:100%;border-collapse:collapse}th,td{border:1px solid #c4cdd2;padding
  <button data-view="assessments">Assessments</button>
  <button data-view="flowsheets">Flowsheets / Vitals</button>
  <button data-view="io">Intake & Output</button>
- <button data-view="notes">Nursing Notes / SBAR</button>
+ <button data-view="notes">Nursing Notes</button>
  <div class="group">Clinical Record</div>
  <button data-view="orders">Orders</button>
  <button data-view="labs">Labs / Diagnostics</button>
  <button data-view="mar">MAR</button>
+ <button data-view="imported">Imported Chart Record</button>
  <button data-view="history">Chart History</button>
  <button data-view="inbox">Messages / Alerts</button>
  <div class="group">Faculty</div>
@@ -108,9 +116,11 @@ table{width:100%;border-collapse:collapse}th,td{border:1px solid #c4cdd2;padding
  <section id="view"></section>
 </main>
 </div>
+<script src="notion-data.js"></script>
 <script>
 const DATA_VERSION="6.0-postpartum-pph";
 const STORAGE_KEY="atuSimulationHospitalEHRv1";
+const NOTION_RECORDS=window.NOTION_CHARTS||[];
 const SEED_PATIENTS=[{"id":"amelia-sung","name":"Amelia Sung","mrn":"SIM-201036","dob":"12/08/XXXX","room":"201","provider":"Dr. Darnell","allergies":["Shellfish","Penicillin"],"weightKg":69,"bloodType":"O+","codeStatus":"Full Code","age":"36","sex":"Female","ethnicity":"Filipino","primaryDiagnosis":"Induction of labor at 39 weeks due to gestational diabetes","gestationalAge":"39 weeks","gravida":"2","para":"1","fetus":"Male","gbs":"Positive","feedingPlan":"Breastfeeding","painPlan":"None","deliveryPreferences":"Delayed cord clamping and skin-to-skin after delivery","pphRisk":"Low","tdap":"Given at 28 weeks","gestationalDiabetes":"Diet controlled"},{"id":"jane-fowler","name":"Jane Fowler","mrn":"SIM-204051","dob":"01/28/XXXX","room":"204","provider":"Dr. Smith","allergies":["NKDA"],"weightKg":60,"bloodType":"A+","codeStatus":"Full Code","age":"79","sex":"Female","primaryDiagnosis":"Ovarian cancer \u2014 postoperative total abdominal hysterectomy with bilateral salpingo-oophorectomy","surgery":"Total abdominal hysterectomy with bilateral salpingo-oophorectomy and surgical staging","scenario":"Postoperative opioid intoxication / respiratory depression"},{"id":"fatima-sanogo","name":"Fatima Sanogo","mrn":"201038","dob":"07/08/XX","room":"211E","provider":"Nelson","allergies":["NKDA"],"weightKg":71,"bloodType":"","codeStatus":"Full Code"},{"id":"molly-thomas","name":"Molly Thomas","mrn":"20139","dob":"07/05/XX","room":"211C","provider":"Henderson","allergies":["NKDA"],"weightKg":7,"bloodType":"","codeStatus":"Full Code"},{"id":"stephanie-smith","name":"Stephanie Smith","mrn":"201040","dob":"07/14/XXXX","room":"211E","provider":"Henderson","allergies":["NKDA"],"weightKg":53.5,"bloodType":"","codeStatus":"Full Code"},{"id":"charles-jones","name":"Charles Jones","mrn":"201041","dob":"04/20/XX","room":"211A","provider":"Burris","allergies":["NKDA"],"weightKg":82,"bloodType":"","codeStatus":"Full Code"},{"id":"baby-boy-sung","name":"BABY BOY SUNG","mrn":"201042","dob":"TODAY","room":"211E","provider":"Craig","allergies":["NKDA"],"weightKg":4.37,"bloodType":"","codeStatus":"Full Code"}];
 SEED_PATIENTS.push(
  {id:"vincent-brody",name:"Vincent Brody",mrn:"SIM-L3-001",dob:"06/28/XXXX",room:"Level 3",unit:"Medical Surgical and ICU",provider:"Simulation Faculty",allergies:["Not listed"],weightKg:"",bloodType:"",codeStatus:"Full Code"},
@@ -121,6 +131,18 @@ SEED_PATIENTS.push(
  {id:"david-carter",name:"David Carter",mrn:"12855",dob:"12/03/XXXX",room:"Psychiatric Unit",unit:"Psychiatric Unit",provider:"Simulation Faculty",allergies:["NKDA"],weightKg:91,heightCm:155,bloodType:"",codeStatus:"Full Code",age:"28",sex:"Male",primaryDiagnosis:"Schizophrenia",scenario:"Brought in by police after a violent outburst; active hallucinations and delusions."}
 );
 const PATIENT_LEVELS={"charles-jones":1,"amelia-sung":2,"jane-fowler":2,"fatima-sanogo":2,"molly-thomas":2,"stephanie-smith":2,"baby-boy-sung":2,"vincent-brody":3,"ruth-livingston":3,"carl-shapiro":3,"karl-sharp":3,"vernon-watkins":3,"david-carter":3};
+const NOTION_PATIENT_OVERRIDES={
+ "charles-jones":{age:"68",primaryDiagnosis:"Congestive Heart Failure",weightKg:82,allergies:["NKDA"]},
+ "fatima-sanogo":{age:"23",primaryDiagnosis:"Vaginal Delivery",weightKg:70,bloodType:"O+",allergies:["NKDA"],gravida:"1",para:"1",fetus:"Female"},
+ "molly-thomas":{age:"7 months",sex:"Female",primaryDiagnosis:"Upper Airway Obstruction",weightKg:7,allergies:["NKDA"]},
+ "stephanie-smith":{age:"16",sex:"Female",primaryDiagnosis:"Sickle Cell Crisis",weightKg:53.5,allergies:["NKDA"]},
+ "baby-boy-sung":{age:"Newborn",sex:"Male",primaryDiagnosis:"Newborn after vaginal delivery with shoulder dystocia",gestationalAge:"39.1 weeks",weightKg:4.37,allergies:["NKA"]},
+ "vincent-brody":{age:"67",primaryDiagnosis:"Chronic Obstructive Pulmonary Disease",allergies:["None"],codeStatus:"Full Code"},
+ "ruth-livingston":{age:"80",primaryDiagnosis:"Post-op open reduction internal fixation of right hip",allergies:["None"],codeStatus:"Full Code"},
+ "carl-shapiro":{age:"54",primaryDiagnosis:"NSTEMI",allergies:["NKDA"],codeStatus:"Full Code"},
+ "karl-sharp":{age:"64",primaryDiagnosis:"NSTEMI",allergies:["NKDA"],codeStatus:"DNR"},
+ "vernon-watkins":{age:"69",primaryDiagnosis:"Bowel perforation",allergies:["Penicillin (hives)"],codeStatus:"Full Code"}
+};
 
 
 const SEED_AMELIA_ORDERS=[
@@ -256,6 +278,46 @@ function uid(prefix){return `${prefix}-${Date.now()}-${Math.random().toString(36
 function nowLocal(){const d=new Date(),off=d.getTimezoneOffset();return new Date(d.getTime()-off*60000).toISOString().slice(0,16)}
 function esc(v){return String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
 function panel(title,body){return `<section class="panel"><h2>${title}</h2><div class="body">${body}</div></section>`}
+function renderNotionDoc(value){
+ let h=esc(value||"");
+ h=h.replace(/&lt;(?:columns?|callout)(?:[\s\S]*?)&gt;/gi,"").replace(/&lt;\/(?:columns?|callout)&gt;/gi,"");
+ h=h.replace(/&lt;colgroup&gt;[\s\S]*?&lt;\/colgroup&gt;/gi,"");
+ h=h.replace(/&lt;table[\s\S]*?&gt;/gi,'<div style="overflow:auto"><table>').replace(/&lt;\/table&gt;/gi,"</table></div>");
+ h=h.replace(/&lt;tr[\s\S]*?&gt;/gi,"<tr>").replace(/&lt;\/tr&gt;/gi,"</tr>").replace(/&lt;td[\s\S]*?&gt;/gi,"<td>").replace(/&lt;\/td&gt;/gi,"</td>");
+ h=h.replace(/&lt;details&gt;/gi,"<details>").replace(/&lt;\/details&gt;/gi,"</details>").replace(/&lt;summary&gt;/gi,"<summary>").replace(/&lt;\/summary&gt;/gi,"</summary>");
+ h=h.replace(/&lt;[\s\S]*?&gt;/g,"");
+ h=h.replace(/(^|\n)###\s+([^\n]+)/g,"$1<h4>$2</h4>").replace(/(^|\n)##\s+([^\n]+)/g,"$1<h3>$2</h3>");
+ h=h.replace(/\*\*([^*]+)\*\*/g,"<b>$1</b>").replace(/(^|\n)- \[x\]\s*/gi,"$1☑ ").replace(/(^|\n)- \[ \]\s*/g,"$1☐ ");
+ return h.replace(/\n/g,"<br>");
+}
+function notionRecordReleased(record){
+ if(record.status==="released")return true;
+ return (state.releaseQueue||[]).some(x=>x.notionRecordId===record.id&&x.status==="released");
+}
+function notionRecords(patientId,categories){
+ const wanted=Array.isArray(categories)?categories:[categories];
+ return NOTION_RECORDS.filter(r=>r.patientId===patientId&&wanted.includes(r.category)&&notionRecordReleased(r));
+}
+function notionRecordCards(records){
+ return records.map((r,i)=>`<details class="notionRecord" ${r.category==="summary"||i===0?"open":""}><summary>${esc(r.title)}<span class="sourceBadge">NOTION</span></summary><div class="notionRecordBody">${renderNotionDoc(r.content)}</div></details>`).join("");
+}
+function importedPanel(categories,title="Imported from Notion"){
+ if(!activePatient())return "";
+ const records=notionRecords(activePatientId,categories);
+ return records.length?panel(title,`<div class="note">Source chart content imported from the connected ATU Simulation Notion workspace.</div>${notionRecordCards(records)}`):"";
+}
+function appendImportedForView(view){
+ const map={summary:["summary","notes"],prenatal:["prenatal"],labor:["labor"],surgery:["surgery"],assessments:["assessments"],flowsheets:["flowsheets"],io:["io"],orders:["orders"],labs:["labs"],mar:["mar"]};
+ if(!map[view]||!activePatient())return;
+ document.getElementById("view").insertAdjacentHTML("beforeend",importedPanel(map[view],view==="summary"?"Patient Overview & Provider Documentation":"Imported Source Record"));
+}
+function seedNotionPending(){
+ state.releaseQueue ||= [];
+ for(const r of NOTION_RECORDS.filter(x=>x.status==="pending")){
+  if(state.releaseQueue.some(x=>x.notionRecordId===r.id))continue;
+  state.releaseQueue.push({id:`pending-${r.id}`,kind:"result",patientId:r.patientId,title:r.title,content:r.content,status:"pending",createdAt:"Imported from Notion",releasedAt:"",resultType:"Diagnostic",flag:"Abnormal",notionRecordId:r.id});
+ }
+}
 function loadState(){
  try{
    const s=JSON.parse(localStorage.getItem(STORAGE_KEY)||"null");
@@ -275,8 +337,10 @@ function loadState(){
  };
 }
 let state=loadState(),currentView="patients",activePatientId=null,patientLevelTab=1;
+for(const p of state.patients)if(NOTION_PATIENT_OVERRIDES[p.id])Object.assign(p,NOTION_PATIENT_OVERRIDES[p.id]);
 ensureSeededAmelia();
 ensureSeededJane();
+seedNotionPending();
 save();
 
 
@@ -439,13 +503,13 @@ function releaseItem(id){
  if(!item||item.status==="released")return;
  item.status="released";item.releasedAt=nowLocal();
 
- if(item.kind==="order"){
+ if(!item.notionRecordId&&item.kind==="order"){
    state.orders.push({
     id:uid("order"),patientId:item.patientId,time:item.releasedAt,
     provider:item.provider||activePatient()?.provider||"Provider",
     type:item.orderType||"Other",text:item.content,status:"Active",enteredBy:"Faculty Release"
    });
- }else if(item.kind==="result"){
+ }else if(!item.notionRecordId&&item.kind==="result"){
    if(Array.isArray(item.labRows)&&item.labRows.length){
     for(const row of item.labRows){
      if(!String(row.value||"").trim())continue;
@@ -461,11 +525,11 @@ function releaseItem(id){
     const f=(state.diagnosticFiles||[]).find(x=>x.id===fileId);
     if(f){f.status="released";f.releasedAt=item.releasedAt;}
    }
- }else if(item.kind==="message"){
+ }else if(!item.notionRecordId&&item.kind==="message"){
    state.messages ||= [];
    state.messages.push({
     id:uid("msg"),patientId:item.patientId,at:item.releasedAt,
-    from:"Faculty",to:"Student",subject:item.title,message:item.content,read:false
+    from:"Faculty",to:"Student",subject:item.title,message:item.content,read:false,releaseItemId:item.id
    });
  }
  createNotificationForRelease(item);
@@ -504,7 +568,12 @@ function showNextNotification(){
   </div>`;
  document.body.appendChild(overlay);
  overlay.querySelector("#ackLivePopup").onclick=()=>{
-   n.read=true;save();overlay.remove();updateNotificationCount();
+   n.read=true;
+   if(n.type==="message"){
+    const message=(state.messages||[]).find(m=>m.releaseItemId===n.releaseItemId)||(state.messages||[]).find(m=>m.patientId===n.patientId&&(m.message===n.body||m.subject===n.body));
+    if(message)message.read=true;
+   }
+   save();overlay.remove();updateNotificationCount();
    setTimeout(showNextNotification,120);
  };
 }
@@ -570,10 +639,12 @@ function render(){
  if(currentView==="orders")renderOrders();
  if(currentView==="labs")renderLabs();
  if(currentView==="mar")renderMAR();
+ if(currentView==="imported")renderImportedChart();
  if(currentView==="history")renderHistory();
  if(currentView==="inbox")renderInbox();
  if(currentView==="faculty")renderFaculty();
  if(currentView==="debrief")renderDebrief();
+ appendImportedForView(currentView);
  applyMode();
 }
 function requirePatient(){
@@ -833,15 +904,12 @@ function renderIO(){
 }
 function renderNotes(){
  if(!requirePatient())return;const rows=patientRows(state.notes).slice().reverse();
- document.getElementById("view").innerHTML=panel("Nursing Note / SBAR",`
+ document.getElementById("view").innerHTML=panel("Nursing Note",`
  <div class="grid"><label>Date/Time<input id="nTime" type="datetime-local" value="${nowLocal()}"></label><label>Student<input id="nStudent"></label>
- <label>Note Type<select id="nType"><option>Nursing Note</option><option>SBAR</option><option>Provider Notification</option><option>Transfer Note</option><option>Discharge Teaching</option></select></label>
- <label>Provider Notified<input id="nProvider" placeholder="Name / time / response"></label>
- <label class="wide">Situation / Narrative<textarea id="nSituation"></textarea></label><label class="wide">Background<textarea id="nBackground"></textarea></label>
- <label class="wide">Assessment<textarea id="nAssessment"></textarea></label><label class="wide">Recommendation / Response<textarea id="nRecommendation"></textarea></label></div>
+ <label class="wide">Narrative<textarea id="nNarrative" placeholder="Enter the complete nursing narrative note."></textarea></label></div>
  <div class="actions" style="margin-top:10px"><button id="saveNote" class="primary">Sign Note</button></div>`)+
- panel("Signed Notes",`${rows.map(r=>`<div class="patientCard" style="margin-bottom:8px"><b>${esc(r.type)}</b> • ${esc(r.time)} • ${esc(r.student)}<br><span class="note">${esc(r.situation)} ${r.assessment?`<br><b>Assessment:</b> ${esc(r.assessment)}`:""} ${r.recommendation?`<br><b>Recommendation:</b> ${esc(r.recommendation)}`:""}</span></div>`).join("")||'<div class="note">No signed notes.</div>'}`);
- saveNote.onclick=()=>{const r={id:uid("note"),patientId:activePatientId,time:nTime.value,student:nStudent.value.trim(),type:nType.value,provider:nProvider.value.trim(),situation:nSituation.value.trim(),background:nBackground.value.trim(),assessment:nAssessment.value.trim(),recommendation:nRecommendation.value.trim()};if(!r.student||!r.situation){alert("Student and narrative/situation are required.");return}state.notes.push(r);audit("Nursing note signed",activePatientId,`${r.type} by ${r.student}`);renderNotes()};
+ panel("Signed Notes",`${rows.map(r=>{const narrative=r.narrative||[r.situation,r.background,r.assessment,r.recommendation].filter(Boolean).join(" ");return `<div class="patientCard" style="margin-bottom:8px"><b>${esc(r.type||"Nursing Note")}</b> • ${esc(r.time)} • ${esc(r.student)}<br><span class="note">${esc(narrative)}</span></div>`}).join("")||'<div class="note">No signed notes.</div>'}`);
+ saveNote.onclick=()=>{const r={id:uid("note"),patientId:activePatientId,time:nTime.value,student:nStudent.value.trim(),type:"Nursing Note",narrative:nNarrative.value.trim()};if(!r.student||!r.narrative){alert("Student and narrative are required.");return}state.notes.push(r);audit("Nursing note signed",activePatientId,`Nursing Note by ${r.student}`);renderNotes()};
 }
 function renderPostpartum(){
  if(!requirePatient())return;
@@ -968,14 +1036,31 @@ function renderMAR(){
  <table style="margin-top:8px"><thead><tr><th>Order Time</th><th>Medication Order</th><th>Provider</th><th>Status</th></tr></thead><tbody>${orders.map(o=>`<tr><td>${esc(o.time)}</td><td>${esc(o.text)}</td><td>${esc(o.provider)}</td><td>${esc(o.status)}</td></tr>`).join("")||'<tr><td colspan="4">No medication orders entered in this EHR yet.</td></tr>'}</tbody></table>`);
 }
 
+function renderImportedChart(){
+ if(!requirePatient())return;
+ const records=NOTION_RECORDS.filter(r=>r.patientId===activePatientId&&notionRecordReleased(r));
+ const order=["summary","notes","prenatal","labor","surgery","orders","labs","mar","flowsheets","io","assessments"];
+ const labels={summary:"Patient Overview",notes:"Provider Documentation",prenatal:"Prenatal / Consents",labor:"Labor, Delivery & Newborn",surgery:"Surgical / Post-Op",orders:"Provider Orders",labs:"Labs / Diagnostics",mar:"Medication Administration Record",flowsheets:"Vitals",io:"Intake & Output",assessments:"Assessments"};
+ document.getElementById("view").innerHTML=panel("Imported Chart Record",`<div class="note">This record contains released source information from Notion. Nursing-note pages were excluded so previous student charting is not carried into this simulation.</div>`)+order.map(category=>{
+  const rows=records.filter(r=>r.category===category);
+  return rows.length?panel(labels[category],notionRecordCards(rows)):"";
+ }).join("");
+}
+
 function renderInbox(){
  if(!requirePatient())return;
  const p=activePatient();
  const msgs=(state.messages||[]).filter(m=>m.patientId===p.id).slice().reverse();
  const notifs=(state.notifications||[]).filter(n=>n.patientId===p.id).slice().reverse();
+ if(!isFaculty()){
+  let changed=false;
+  for(const m of msgs)if(!m.read){m.read=true;changed=true}
+  for(const n of notifs)if(n.type==="message"&&!n.read){n.read=true;changed=true}
+  if(changed){save();updateNotificationCount()}
+ }
  document.getElementById("view").innerHTML=
  panel("Faculty Messages",`
-  ${msgs.map(m=>`<div class="studentMessage"><b>${esc(m.subject||"Faculty Message")}</b><br><span class="note">${esc(m.at)} • ${esc(m.from)}</span><div style="margin-top:5px">${esc(m.message)}</div></div>`).join("")||'<div class="note">No faculty messages for this patient.</div>'}`)+
+  ${msgs.map(m=>`<div class="studentMessage"><b>${esc(m.subject||"Faculty Message")}</b><br><span class="note">${esc(m.at)} • ${esc(m.from)} • ${m.read?"Read":"Unread"}</span><div style="margin-top:5px">${esc(m.message)}</div></div>`).join("")||'<div class="note">No faculty messages for this patient.</div>'}`)+
  panel("Released Alerts",`
  <table><thead><tr><th>Time</th><th>Type</th><th>Alert</th><th>Status</th></tr></thead><tbody>
  ${notifs.map(n=>`<tr><td>${esc(n.createdAt)}</td><td>${esc(n.type)}</td><td><b>${esc(n.title)}</b><br>${esc(n.body)}</td><td>${n.read?'<span class="releasedBadge">Acknowledged</span>':'<span class="pendingBadge">New</span>'}</td></tr>`).join("")||'<tr><td colspan="4">No released alerts.</td></tr>'}
@@ -988,16 +1073,17 @@ function renderHistory(){
 }
 function renderFaculty(){
  if(!isFaculty()){currentView="patients";render();return}
- const p=activePatient()||state.patients[0];
- const selectedId=p?.id||"";
- const pending=(state.releaseQueue||[]).filter(x=>x.status==="pending").slice().reverse();
- const released=(state.releaseQueue||[]).filter(x=>x.status==="released").slice().reverse().slice(0,20);
+ const p=activePatient();
+ if(!p){requirePatient();return}
+ const selectedId=p.id;
+ const pending=(state.releaseQueue||[]).filter(x=>x.patientId===selectedId&&x.status==="pending").slice().reverse();
+ const released=(state.releaseQueue||[]).filter(x=>x.patientId===selectedId&&x.status==="released").slice().reverse().slice(0,20);
 
  document.getElementById("view").innerHTML=
- `<div class="livebar"><span class="liveDot"></span><b>Faculty Live Control</b><span class="note" style="color:#dbe9e3">Keep this tab open while students work in Student Mode.</span></div>`+
+ `<div class="livebar"><span class="liveDot"></span><b>Faculty Live Control — ${esc(p.name)}</b><span class="note" style="color:#dbe9e3">All controls below apply only to this open chart.</span></div>`+
  panel("Create Pending Item",`
   <div class="grid3">
-   <label>Patient<select id="livePatient">${state.patients.map(x=>`<option value="${esc(x.id)}" ${x.id===selectedId?"selected":""}>${esc(x.name)}</option>`).join("")}</select></label>
+   <div class="kpi"><span class="note">Patient</span><br><b>${esc(p.name)}</b><br><span class="note">MRN ${esc(p.mrn)}</span></div>
    <label>Item Type<select id="liveKind"><option value="order">New Provider Order</option><option value="result">New Lab / Diagnostic Result</option><option value="message">Message to Student</option></select></label>
    <label>Title<input id="liveTitle" placeholder="e.g., Stat CBC / Chest X-ray / Provider Message"></label>
    <label id="liveOrderTypeWrap">Order Category<select id="liveOrderType"><option>Medication</option><option>IV / Fluids</option><option>Lab</option><option>Imaging</option><option>Nursing</option><option>Diet</option><option>Activity</option><option>Consult</option><option>Other</option></select></label>
@@ -1011,7 +1097,7 @@ function renderFaculty(){
   </div>`)+
  panel("Common Laboratory Panel",`
  <div class="grid3">
-  <label>Patient<select id="commonLabPatient">${state.patients.map(x=>`<option value="${esc(x.id)}" ${x.id===selectedId?"selected":""}>${esc(x.name)}</option>`).join("")}</select></label>
+  <div class="kpi"><span class="note">Patient</span><br><b>${esc(p.name)}</b></div>
   <label>Panel<select id="commonLabPanel">${Object.keys(COMMON_LABS).map(x=>`<option>${esc(x)}</option>`).join("")}</select></label>
   <label>Collection Date/Time<input id="commonLabTime" type="datetime-local" value="${nowLocal()}"></label>
  </div>
@@ -1020,7 +1106,7 @@ function renderFaculty(){
  `)+
  panel("Diagnostic Image / Report Upload",`
   <div class="grid">
-   <label>Patient<select id="diagPatient">${state.patients.map(x=>`<option value="${esc(x.id)}" ${x.id===selectedId?"selected":""}>${esc(x.name)}</option>`).join("")}</select></label>
+   <div class="kpi"><span class="note">Patient</span><br><b>${esc(p.name)}</b></div>
    <label>Diagnostic Title<input id="diagTitle" placeholder="Chest X-ray 2 views / Clavicle X-ray / CT Abdomen"></label>
    <label class="wide">Upload PDF, JPG/JPEG, or PNG<input id="diagFileInput" type="file" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png"></label>
    <label class="wide">Impression / Result<textarea id="diagImpression" placeholder="Enter radiology impression or diagnostic result"></textarea></label>
@@ -1036,7 +1122,7 @@ function renderFaculty(){
         <div><span class="pendingBadge">PENDING</span> <b>${esc(item.title)}</b><br><span class="note">${esc(pt?.name||"")} • ${esc(item.kind)} • created ${esc(item.createdAt)}</span></div>
         <button class="primary releaseNow" data-id="${esc(item.id)}">Release Now</button>
        </div>
-       <div style="margin-top:7px">${esc(item.content)}</div>
+       <div style="margin-top:7px">${item.notionRecordId?`<details><summary>Review pending Notion record</summary><div class="notionRecordBody">${renderNotionDoc(item.content)}</div></details>`:esc(item.content)}</div>
        ${(item.fileIds||[]).map(fid=>{const f=(state.diagnosticFiles||[]).find(x=>x.id===fid);return f?`<div class="note" style="margin-top:5px">Attachment: ${esc(f.fileName)}</div>`:""}).join("")}
      </div>`;
    }).join("")||'<div class="note">Nothing pending. Create an order, result, or message above.</div>'}`)+
@@ -1049,9 +1135,9 @@ function renderFaculty(){
  panel("Simulation Controls",`
  <div class="grid">
   <label>Faculty PIN<input id="pinSetting" value="${esc(state.settings.facultyPin||"2026")}"></label>
-  <label>Selected Patient<select id="facultyPatient">${state.patients.map(x=>`<option value="${esc(x.id)}" ${x.id===selectedId?"selected":""}>${esc(x.name)}</option>`).join("")}</select></label>
+  <div class="kpi"><span class="note">Current Patient</span><br><b>${esc(p.name)}</b></div>
  </div>
- <div class="actions" style="margin-top:10px"><button id="savePin" class="secondary">Save PIN</button><button id="resetPatient" class="danger">Reset Selected Patient Simulation</button><button id="downloadBackup" class="secondary">Download EHR Backup</button></div>`);
+ <div class="actions" style="margin-top:10px"><button id="savePin" class="secondary">Save PIN</button><button id="resetPatient" class="danger">Reset Current Patient Simulation</button><button id="downloadBackup" class="secondary">Download EHR Backup</button></div>`);
 
  const kind=document.getElementById("liveKind");
  const updateKindFields=()=>{
@@ -1068,7 +1154,7 @@ function renderFaculty(){
  };
  commonPanel.onchange=drawCommonLab;drawCommonLab();
  saveCommonLabsPending.onclick=()=>{
-  const patientId=commonLabPatient.value,panelName=commonPanel.value;
+  const patientId=selectedId,panelName=commonPanel.value;
   const values=[...document.querySelectorAll(".commonLabValue")];
   const rows=values.map(inp=>{
    const test=inp.dataset.test;
@@ -1081,7 +1167,7 @@ function renderFaculty(){
   renderFaculty();
  };
  saveDiagPending.onclick=async()=>{
-  const patientId=diagPatient.value,title=diagTitle.value.trim(),impression=diagImpression.value.trim(),file=diagFileInput.files?.[0];
+  const patientId=selectedId,title=diagTitle.value.trim(),impression=diagImpression.value.trim(),file=diagFileInput.files?.[0];
   if(!title){alert("Enter a diagnostic title.");return}
   if(!file){alert("Choose a PDF, JPG/JPEG, or PNG file.");return}
   const allowed=["application/pdf","image/jpeg","image/png"];
@@ -1096,7 +1182,7 @@ function renderFaculty(){
  };
 
  savePendingItem.onclick=()=>{
-   const patientId=livePatient.value,k=liveKind.value,title=liveTitle.value.trim(),content=liveContent.value.trim();
+   const patientId=selectedId,k=liveKind.value,title=liveTitle.value.trim(),content=liveContent.value.trim();
    if(!title||!content){alert("Enter a title and content.");return}
    queueRelease(k,patientId,title,content,{
      provider:liveProvider.value.trim(),
@@ -1106,7 +1192,7 @@ function renderFaculty(){
    renderFaculty();
  };
  sendImmediateMessage.onclick=()=>{
-   const patientId=livePatient.value;
+   const patientId=selectedId;
    const title=liveTitle.value.trim()||"Faculty Message";
    const content=liveContent.value.trim();
    if(!content){alert("Enter a message.");return}
@@ -1117,7 +1203,7 @@ function renderFaculty(){
 
  savePin.onclick=()=>{state.settings.facultyPin=pinSetting.value.trim()||"2026";liveSave("settings_changed");alert("Faculty PIN saved.")};
  resetPatient.onclick=()=>{
-  const id=facultyPatient.value;
+  const id=selectedId;
   if(!confirm("Reset student charting for this patient and return the scenario to its starting state?"))return;
   for(const k of ["orders","assessments","vitals","io","notes","labs","mar","laborProgress","postpartumRecovery","pphPads","pphMedications","bloodAdministration"])if(state[k])state[k]=state[k].filter(x=>x.patientId!==id);
   state.surgicalChecklist=(state.surgicalChecklist||[]).filter(x=>x.patientId!==id);
