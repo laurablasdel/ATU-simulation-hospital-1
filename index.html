@@ -37,6 +37,7 @@ table{width:100%;border-collapse:collapse}th,td{border:1px solid #c4cdd2;padding
 .patientCards{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
 .patientCard{border:1px solid var(--line);background:#fff;padding:10px;border-radius:5px}.patientCard h3{margin:0 0 5px;color:var(--green)}
 .kpi{border:1px solid var(--line);padding:10px;border-radius:4px;background:#fafcfd}.kpi b{font-size:20px}
+.qblTotal{background:#fff7d6;border:2px solid var(--gold);padding:12px;border-radius:5px;font-size:16px}.qblTotal b{font-size:24px;color:var(--red)}
 .hiddenByMode{display:none!important}
 @media(max-width:1050px){.patientCards{grid-template-columns:repeat(2,1fr)}.meta{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:760px){.layout{display:block}aside{position:static;height:auto}.grid,.grid3,.grid4,.patientCards,.meta{grid-template-columns:1fr}}
@@ -73,7 +74,7 @@ table{width:100%;border-collapse:collapse}th,td{border:1px solid #c4cdd2;padding
 </head>
 <body>
 <header>
- <div><h1>ATU Simulation Hospital EHR</h1><small>Student Charting • Assessments • Orders • Flowsheets • Notes</small></div>
+ <div><h1>ATU Simulation Hospital EHR</h1><small>Student Charting • Assessments • Postpartum Recovery • Orders • Flowsheets • Notes</small></div>
  <div class="actions"><span class="badge" id="saveBadge">Local Simulation Record</span><span class="badge notificationBell">Alerts <span id="notificationCount" class="notificationCount" style="display:none">0</span></span>
 <span class="badge" id="modeBadge">Faculty Mode</span><button id="toggleMode" class="secondary">Student Mode</button></div>
 </header>
@@ -84,13 +85,13 @@ table{width:100%;border-collapse:collapse}th,td{border:1px solid #c4cdd2;padding
  <button data-view="summary">Patient Summary</button>
  <button data-view="prenatal">Prenatal / OB Record</button>
  <button data-view="labor">Labor & Delivery</button>
+ <button data-view="postpartum">Postpartum Recovery / PPH</button>
  <button data-view="surgery">Surgical / Post-Op</button>
  <div class="group">Charting</div>
  <button data-view="assessments">Assessments</button>
  <button data-view="flowsheets">Flowsheets / Vitals</button>
  <button data-view="io">Intake & Output</button>
  <button data-view="notes">Nursing Notes / SBAR</button>
- <button data-view="careplan">Care Plan</button>
  <div class="group">Clinical Record</div>
  <button data-view="orders">Orders</button>
  <button data-view="labs">Labs / Diagnostics</button>
@@ -107,7 +108,7 @@ table{width:100%;border-collapse:collapse}th,td{border:1px solid #c4cdd2;padding
 </main>
 </div>
 <script>
-const DATA_VERSION="5.0-diagnostic-files-common-labs";
+const DATA_VERSION="6.0-postpartum-pph";
 const STORAGE_KEY="atuSimulationHospitalEHRv1";
 const SEED_PATIENTS=[{"id":"amelia-sung","name":"Amelia Sung","mrn":"SIM-201036","dob":"12/08/XXXX","room":"201","provider":"Dr. Darnell","allergies":["Shellfish","Penicillin"],"weightKg":69,"bloodType":"O+","codeStatus":"Full Code","age":"36","sex":"Female","ethnicity":"Filipino","primaryDiagnosis":"Induction of labor at 39 weeks due to gestational diabetes","gestationalAge":"39 weeks","gravida":"2","para":"1","fetus":"Male","gbs":"Positive","feedingPlan":"Breastfeeding","painPlan":"None","deliveryPreferences":"Delayed cord clamping and skin-to-skin after delivery","pphRisk":"Low","tdap":"Given at 28 weeks","gestationalDiabetes":"Diet controlled"},{"id":"jane-fowler","name":"Jane Fowler","mrn":"SIM-204051","dob":"01/28/XXXX","room":"204","provider":"Dr. Smith","allergies":["NKDA"],"weightKg":60,"bloodType":"A+","codeStatus":"Full Code","age":"79","sex":"Female","primaryDiagnosis":"Ovarian cancer \u2014 postoperative total abdominal hysterectomy with bilateral salpingo-oophorectomy","surgery":"Total abdominal hysterectomy with bilateral salpingo-oophorectomy and surgical staging","scenario":"Postoperative opioid intoxication / respiratory depression"},{"id":"fatima-sanogo","name":"Fatima Sanogo","mrn":"201038","dob":"07/08/XX","room":"211E","provider":"Nelson","allergies":["NKDA"],"weightKg":71,"bloodType":"","codeStatus":"Full Code"},{"id":"molly-thomas","name":"Molly Thomas","mrn":"20139","dob":"07/05/XX","room":"211C","provider":"Henderson","allergies":["NKDA"],"weightKg":7,"bloodType":"","codeStatus":"Full Code"},{"id":"stephanie-smith","name":"Stephanie Smith","mrn":"201040","dob":"07/14/XXXX","room":"211E","provider":"Henderson","allergies":["NKDA"],"weightKg":53.5,"bloodType":"","codeStatus":"Full Code"},{"id":"charles-jones","name":"Charles Jones","mrn":"201041","dob":"04/20/XX","room":"211A","provider":"Burris","allergies":["NKDA"],"weightKg":82,"bloodType":"","codeStatus":"Full Code"},{"id":"baby-boy-sung","name":"BABY BOY SUNG","mrn":"201042","dob":"TODAY","room":"211E","provider":"Craig","allergies":["NKDA"],"weightKg":4.37,"bloodType":"","codeStatus":"Full Code"}];
 
@@ -250,14 +251,14 @@ function loadState(){
    const s=JSON.parse(localStorage.getItem(STORAGE_KEY)||"null");
    if(s){
      s.patients ||= SEED_PATIENTS.map(x=>({...x}));
-     s.orders ||= [];s.assessments ||= [];s.vitals ||= [];s.io ||= [];s.notes ||= [];s.carePlans ||= [];s.labs ||= [];s.mar ||= [];s.audit ||= [];s.laborProgress ||= [];s.surgicalChecklist ||= [];s.surgicalAssessments ||= [];s.scenarioStage ||= {};
+     s.orders ||= [];s.assessments ||= [];s.vitals ||= [];s.io ||= [];s.notes ||= [];s.labs ||= [];s.mar ||= [];s.audit ||= [];s.laborProgress ||= [];s.postpartumRecovery ||= [];s.pphPads ||= [];s.pphMedications ||= [];s.bloodAdministration ||= [];s.surgicalChecklist ||= [];s.surgicalAssessments ||= [];s.scenarioStage ||= {};
      s.settings ||= {mode:"faculty",facultyPin:"2026"};s.releaseQueue ||= [];s.messages ||= [];s.notifications ||= [];s.diagnosticFiles ||= [];s.labPanels ||= [];
      return s;
    }
  }catch(e){}
  return {
    version:DATA_VERSION,patients:SEED_PATIENTS.map(x=>({...x})),
-   orders:[],assessments:[],vitals:[],io:[],notes:[],carePlans:[],labs:[],mar:[],audit:[],laborProgress:[],surgicalChecklist:[],surgicalAssessments:[],scenarioStage:{},
+   orders:[],assessments:[],vitals:[],io:[],notes:[],labs:[],mar:[],audit:[],laborProgress:[],postpartumRecovery:[],pphPads:[],pphMedications:[],bloodAdministration:[],surgicalChecklist:[],surgicalAssessments:[],scenarioStage:{},
    settings:{mode:"faculty",facultyPin:"2026"},releaseQueue:[],messages:[],notifications:[],diagnosticFiles:[],labPanels:[]
  };
 }
@@ -289,6 +290,10 @@ function reloadSharedState(){
      state.diagnosticFiles ||= [];
      state.labPanels ||= [];
      state.scenarioStage ||= {};
+     state.postpartumRecovery ||= [];
+     state.pphPads ||= [];
+     state.pphMedications ||= [];
+     state.bloodAdministration ||= [];
      state.surgicalChecklist ||= [];
      state.surgicalAssessments ||= [];
    }
@@ -544,12 +549,12 @@ function render(){
  if(currentView==="summary")renderSummary();
  if(currentView==="prenatal")renderPrenatal();
  if(currentView==="labor")renderLabor();
+ if(currentView==="postpartum")renderPostpartum();
  if(currentView==="surgery")renderSurgery();
  if(currentView==="assessments")renderAssessments();
  if(currentView==="flowsheets")renderFlowsheets();
  if(currentView==="io")renderIO();
  if(currentView==="notes")renderNotes();
- if(currentView==="careplan")renderCarePlan();
  if(currentView==="orders")renderOrders();
  if(currentView==="labs")renderLabs();
  if(currentView==="mar")renderMAR();
@@ -817,14 +822,86 @@ function renderNotes(){
  panel("Signed Notes",`${rows.map(r=>`<div class="patientCard" style="margin-bottom:8px"><b>${esc(r.type)}</b> • ${esc(r.time)} • ${esc(r.student)}<br><span class="note">${esc(r.situation)} ${r.assessment?`<br><b>Assessment:</b> ${esc(r.assessment)}`:""} ${r.recommendation?`<br><b>Recommendation:</b> ${esc(r.recommendation)}`:""}</span></div>`).join("")||'<div class="note">No signed notes.</div>'}`);
  saveNote.onclick=()=>{const r={id:uid("note"),patientId:activePatientId,time:nTime.value,student:nStudent.value.trim(),type:nType.value,provider:nProvider.value.trim(),situation:nSituation.value.trim(),background:nBackground.value.trim(),assessment:nAssessment.value.trim(),recommendation:nRecommendation.value.trim()};if(!r.student||!r.situation){alert("Student and narrative/situation are required.");return}state.notes.push(r);audit("Nursing note signed",activePatientId,`${r.type} by ${r.student}`);renderNotes()};
 }
-function renderCarePlan(){
- if(!requirePatient())return;const rows=patientRows(state.carePlans);
- document.getElementById("view").innerHTML=panel("Nursing Care Plan",`
- <div class="grid"><label>Nursing Problem / Diagnosis<input id="cpProblem"></label><label>Priority<select id="cpPriority"><option>High</option><option>Medium</option><option>Low</option></select></label>
- <label class="wide">Goal / Expected Outcome<textarea id="cpGoal"></textarea></label><label class="wide">Interventions<textarea id="cpInterventions"></textarea></label>
- <label class="wide">Evaluation<textarea id="cpEvaluation"></textarea></label></div><div class="actions" style="margin-top:10px"><button id="saveCP" class="primary">Add Care Plan Item</button></div>`)+
- panel("Care Plan Items",`${rows.map(r=>`<div class="patientCard" style="margin-bottom:8px"><b>${esc(r.problem)}</b> <span class="status">${esc(r.priority)}</span><br><b>Goal:</b> ${esc(r.goal)}<br><b>Interventions:</b> ${esc(r.interventions)}<br><b>Evaluation:</b> ${esc(r.evaluation||"Not yet evaluated")}</div>`).join("")||'<div class="note">No care plan items.</div>'}`);
- saveCP.onclick=()=>{const r={id:uid("cp"),patientId:activePatientId,problem:cpProblem.value.trim(),priority:cpPriority.value,goal:cpGoal.value.trim(),interventions:cpInterventions.value.trim(),evaluation:cpEvaluation.value.trim()};if(!r.problem||!r.goal){alert("Problem and goal are required.");return}state.carePlans.push(r);audit("Care plan updated",activePatientId,r.problem);renderCarePlan()};
+function renderPostpartum(){
+ if(!requirePatient())return;
+ const p=activePatient();
+ if(p.id!=="fatima-sanogo"){
+  document.getElementById("view").innerHTML=panel("Postpartum Recovery / PPH",`<div class="warn">This postpartum recovery record is assigned to Fatima Sanogo. Open Fatima Sanogo's chart to document recovery and postpartum hemorrhage care.</div>`);
+  return;
+ }
+ const recovery=patientRows(state.postpartumRecovery).slice().reverse();
+ const pads=patientRows(state.pphPads).slice().reverse();
+ const meds=patientRows(state.pphMedications).slice().reverse();
+ const blood=patientRows(state.bloodAdministration).slice().reverse();
+ const totalQbl=pads.reduce((sum,r)=>sum+(Number(r.bloodLoss)||0),0);
+ document.getElementById("view").innerHTML=
+ panel("Postpartum Recovery Record — Fatima Sanogo",`
+  <div class="grid4">
+   <label>Date/Time<input id="ppTime" type="datetime-local" value="${nowLocal()}"></label><label>Student / Initials<input id="ppStudent"></label>
+   <label>BP<input id="ppBP" placeholder="120/80"></label><label>Pulse<input id="ppPulse"></label>
+   <label>Respirations<input id="ppResp"></label><label>Temperature °F<input id="ppTemp"></label>
+   <label>SpO₂ %<input id="ppSpo2"></label><label>Pain (0–10)<input id="ppPain"></label>
+   <label>Fundus Level<input id="ppFundusLevel" placeholder="U/U, U-1, U+1"></label>
+   <label>Fundus Position<select id="ppFundusPosition"><option>Midline</option><option>Deviated right</option><option>Deviated left</option></select></label>
+   <label>Fundus Tone<select id="ppFundusTone"><option>Firm</option><option>Boggy</option></select></label>
+   <label>Lochia Amount<select id="ppLochia"><option>Scant</option><option>Light</option><option>Moderate</option><option>Heavy</option></select></label>
+   <label>Lochia Color<select id="ppLochiaColor"><option>Rubra</option><option>Serosa</option><option>Alba</option></select></label>
+   <label>Clots<select id="ppClots"><option>None</option><option>Small</option><option>Moderate</option><option>Large</option></select></label>
+   <label>Bladder / Voiding<select id="ppBladder"><option>Non-distended / voiding</option><option>Distended</option><option>Unable to void</option><option>Foley catheter</option></select></label>
+   <label>Perineum / Repair<input id="ppPerineum" placeholder="Intact, swelling, hematoma, repair"></label>
+   <label>IV / Fluids<input id="ppIV" placeholder="Site, fluid, rate"></label><label>Breastfeeding / Bonding<input id="ppBonding" placeholder="Skin-to-skin, latch, feeding"></label>
+   <label class="wide">Interventions / Response<textarea id="ppNotes"></textarea></label>
+  </div><div class="actions" style="margin-top:10px"><button id="savePostpartum" class="primary">Save Recovery Entry</button></div>`)+
+ panel("Postpartum Recovery History",`<table><thead><tr><th>Time</th><th>Student</th><th>Vitals</th><th>Fundus</th><th>Lochia / Clots</th><th>Bladder / Perineum</th><th>Interventions / Response</th></tr></thead><tbody>${recovery.map(r=>`<tr><td>${esc(r.time)}</td><td>${esc(r.student)}</td><td>BP ${esc(r.bp)}<br>P ${esc(r.pulse)} • R ${esc(r.resp)}<br>T ${esc(r.temp)} • SpO₂ ${esc(r.spo2)}<br>Pain ${esc(r.pain)}</td><td>${esc(r.fundusLevel)} • ${esc(r.fundusPosition)} • ${esc(r.fundusTone)}</td><td>${esc(r.lochia)} ${esc(r.lochiaColor)}<br>Clots: ${esc(r.clots)}</td><td>${esc(r.bladder)}<br>${esc(r.perineum)}</td><td>${esc(r.notes)}</td></tr>`).join("")||'<tr><td colspan="7">No postpartum recovery entries charted.</td></tr>'}</tbody></table>`)+
+ panel("Postpartum Hemorrhage — Quantified Blood Loss",`
+  <div class="qblTotal">Running Quantified Blood Loss: <b>${totalQbl} mL</b></div>
+  <div class="note" style="margin:8px 0">Blood loss is calculated as wet pad weight minus dry pad weight. One gram of weight equals approximately one milliliter of blood loss.</div>
+  <div class="grid4">
+   <label>Date/Time<input id="qblTime" type="datetime-local" value="${nowLocal()}"></label><label>Student / Initials<input id="qblStudent"></label>
+   <label>Item / Pad Type<input id="qblItem" placeholder="Peripad, underpad, linen"></label><label>Number of Items<input id="qblCount" type="number" min="1" value="1"></label>
+   <label>Dry Weight (g)<input id="qblDry" type="number" min="0" step="0.1"></label><label>Wet Weight (g)<input id="qblWet" type="number" min="0" step="0.1"></label>
+   <div class="kpi"><span class="note">Calculated Blood Loss</span><br><b id="qblCalculated">0 mL</b></div>
+   <label>Notes<input id="qblNotes" placeholder="Clots, saturation, source"></label>
+  </div><div class="actions" style="margin-top:10px"><button id="saveQBL" class="primary">Add Blood-Loss Entry</button></div>`)+
+ panel("QBL History",`<table><thead><tr><th>Time</th><th>Item</th><th>Count</th><th>Dry Weight</th><th>Wet Weight</th><th>Blood Loss</th><th>Student</th><th>Notes</th></tr></thead><tbody>${pads.map(r=>`<tr><td>${esc(r.time)}</td><td>${esc(r.item)}</td><td>${esc(r.count)}</td><td>${esc(r.dryWeight)} g</td><td>${esc(r.wetWeight)} g</td><td><b>${esc(r.bloodLoss)} mL</b></td><td>${esc(r.student)}</td><td>${esc(r.notes)}</td></tr>`).join("")||'<tr><td colspan="8">No quantified blood-loss entries charted.</td></tr>'}</tbody></table>`)+
+ panel("PPH Medication Administration",`
+  <div class="grid4">
+   <label>Administration Time<input id="pphMedTime" type="datetime-local" value="${nowLocal()}"></label><label>Student / Initials<input id="pphMedStudent"></label>
+   <label>Medication<input id="pphMedName" placeholder="Oxytocin, TXA, methylergonovine"></label><label>Dose<input id="pphMedDose"></label>
+   <label>Route<select id="pphMedRoute"><option>IV</option><option>IV infusion</option><option>IM</option><option>PO</option><option>PR</option><option>Other</option></select></label>
+   <label>Indication / Response<input id="pphMedResponse" placeholder="Reason given and patient response"></label>
+  </div><div class="actions" style="margin-top:10px"><button id="savePphMed" class="primary">Record Medication</button></div>
+  <table style="margin-top:10px"><thead><tr><th>Administration Time</th><th>Medication</th><th>Dose / Route</th><th>Response</th><th>Student</th></tr></thead><tbody>${meds.map(r=>`<tr><td>${esc(r.time)}</td><td>${esc(r.medication)}</td><td>${esc(r.dose)} • ${esc(r.route)}</td><td>${esc(r.response)}</td><td>${esc(r.student)}</td></tr>`).join("")||'<tr><td colspan="5">No PPH medications documented.</td></tr>'}</tbody></table>`)+
+ panel("Blood-Product Administration",`
+  <div class="grid4">
+   <label>Blood Product<select id="bloodProduct"><option>Packed red blood cells (PRBCs)</option><option>Fresh frozen plasma (FFP)</option><option>Platelets</option><option>Cryoprecipitate</option><option>Whole blood</option><option>Other</option></select></label>
+   <label>Unit Number<input id="bloodUnit"></label><label>Volume (mL)<input id="bloodVolume" type="number" min="0"></label>
+   <label>Start Time<input id="bloodStart" type="datetime-local" value="${nowLocal()}"></label><label>Completion Time<input id="bloodEnd" type="datetime-local"></label>
+   <label>Student / Initials<input id="bloodStudent"></label><label>Verified By<input id="bloodVerified"></label>
+   <label>Reaction / Patient Response<input id="bloodResponse" placeholder="None, symptoms, interventions"></label>
+  </div><div class="actions" style="margin-top:10px"><button id="saveBlood" class="primary">Record Blood Administration</button></div>
+  <table style="margin-top:10px"><thead><tr><th>Product</th><th>Unit</th><th>Volume</th><th>Start</th><th>Completed</th><th>Verified By</th><th>Response</th><th>Student</th></tr></thead><tbody>${blood.map(r=>`<tr><td>${esc(r.product)}</td><td>${esc(r.unit)}</td><td>${esc(r.volume)} mL</td><td>${esc(r.startTime)}</td><td>${esc(r.endTime)}</td><td>${esc(r.verifiedBy)}</td><td>${esc(r.response)}</td><td>${esc(r.student)}</td></tr>`).join("")||'<tr><td colspan="8">No blood products documented.</td></tr>'}</tbody></table>`);
+
+ const byId=id=>document.getElementById(id);
+ byId("savePostpartum").onclick=()=>{
+  const r={id:uid("postpartum"),patientId:activePatientId,time:byId("ppTime").value,student:byId("ppStudent").value.trim(),bp:byId("ppBP").value.trim(),pulse:byId("ppPulse").value.trim(),resp:byId("ppResp").value.trim(),temp:byId("ppTemp").value.trim(),spo2:byId("ppSpo2").value.trim(),pain:byId("ppPain").value.trim(),fundusLevel:byId("ppFundusLevel").value.trim(),fundusPosition:byId("ppFundusPosition").value,fundusTone:byId("ppFundusTone").value,lochia:byId("ppLochia").value,lochiaColor:byId("ppLochiaColor").value,clots:byId("ppClots").value,bladder:byId("ppBladder").value,perineum:byId("ppPerineum").value.trim(),iv:byId("ppIV").value.trim(),bonding:byId("ppBonding").value.trim(),notes:byId("ppNotes").value.trim()};
+  if(!r.student){alert("Enter student name or initials.");return}state.postpartumRecovery.push(r);audit("Postpartum recovery charted",activePatientId,`Recovery assessment by ${r.student}`);renderPostpartum();
+ };
+ const updateQbl=()=>{const dry=Number(byId("qblDry").value)||0,wet=Number(byId("qblWet").value)||0;byId("qblCalculated").textContent=`${Math.max(0,Math.round((wet-dry)*10)/10)} mL`};
+ byId("qblDry").oninput=updateQbl;byId("qblWet").oninput=updateQbl;
+ byId("saveQBL").onclick=()=>{
+ const dry=Number(byId("qblDry").value),wet=Number(byId("qblWet").value),loss=Math.round((wet-dry)*10)/10;
+  const r={id:uid("qbl"),patientId:activePatientId,time:byId("qblTime").value,student:byId("qblStudent").value.trim(),item:byId("qblItem").value.trim(),count:byId("qblCount").value,dryWeight:dry,wetWeight:wet,bloodLoss:loss,notes:byId("qblNotes").value.trim()};
+  if(!r.student||!r.item){alert("Enter the student and item/pad type.");return}if(byId("qblDry").value===""||byId("qblWet").value===""||!Number.isFinite(dry)||!Number.isFinite(wet)||wet<dry){alert("Enter valid weights. Wet weight must be equal to or greater than dry weight.");return}state.pphPads.push(r);audit("Quantified blood loss charted",activePatientId,`${r.item}: ${loss} mL; running total ${totalQbl+loss} mL`);renderPostpartum();
+ };
+ byId("savePphMed").onclick=()=>{
+  const r={id:uid("pphmed"),patientId:activePatientId,time:byId("pphMedTime").value,student:byId("pphMedStudent").value.trim(),medication:byId("pphMedName").value.trim(),dose:byId("pphMedDose").value.trim(),route:byId("pphMedRoute").value,response:byId("pphMedResponse").value.trim()};
+  if(!r.student||!r.medication||!r.time){alert("Enter the student, medication, and administration time.");return}state.pphMedications.push(r);audit("PPH medication administered",activePatientId,`${r.medication} at ${r.time}`);renderPostpartum();
+ };
+ byId("saveBlood").onclick=()=>{
+  const r={id:uid("blood"),patientId:activePatientId,product:byId("bloodProduct").value,unit:byId("bloodUnit").value.trim(),volume:byId("bloodVolume").value,startTime:byId("bloodStart").value,endTime:byId("bloodEnd").value,student:byId("bloodStudent").value.trim(),verifiedBy:byId("bloodVerified").value.trim(),response:byId("bloodResponse").value.trim()};
+  if(!r.student||!r.startTime){alert("Enter the student and blood-product start time.");return}state.bloodAdministration.push(r);audit("Blood product administration",activePatientId,`${r.product} started ${r.startTime}`);renderPostpartum();
+ };
 }
 function renderOrders(){
  if(!requirePatient())return;const rows=patientRows(state.orders).slice().reverse();
@@ -1021,7 +1098,7 @@ function renderFaculty(){
  resetPatient.onclick=()=>{
   const id=facultyPatient.value;
   if(!confirm("Reset student charting for this patient and return the scenario to its starting state?"))return;
-  for(const k of ["orders","assessments","vitals","io","notes","carePlans","labs","mar","laborProgress"])if(state[k])state[k]=state[k].filter(x=>x.patientId!==id);
+  for(const k of ["orders","assessments","vitals","io","notes","labs","mar","laborProgress","postpartumRecovery","pphPads","pphMedications","bloodAdministration"])if(state[k])state[k]=state[k].filter(x=>x.patientId!==id);
   state.surgicalChecklist=(state.surgicalChecklist||[]).filter(x=>x.patientId!==id);
   state.surgicalAssessments=(state.surgicalAssessments||[]).filter(x=>x.patientId!==id);
   state.releaseQueue=(state.releaseQueue||[]).filter(x=>x.patientId!==id);
