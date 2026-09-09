@@ -75,25 +75,39 @@ table{width:100%;border-collapse:collapse;font-size:13px}th,td{border:1px solid 
 .marRowDisc{opacity:.65}
 @media(max-width:820px){.layout{display:block}.patientMeta,.grid3{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:560px){.grid,.grid3,.checks,.patientMeta{grid-template-columns:1fr}}
+
+.modePill{padding:5px 9px;border-radius:12px;font-size:11px;font-weight:800;background:#ffffff22;color:#fff;border:1px solid #ffffff55}
+.workflowBox{border:2px solid var(--green2);background:#f7fbf9;padding:12px;border-radius:5px;margin-top:10px}
+.workflowBox h3{margin:0 0 8px;color:var(--green)}
+.statusChip{display:inline-block;padding:3px 7px;border-radius:10px;font-size:11px;font-weight:800;background:#e6ecef}
+.prnReassess{background:#fff7d6;border:1px solid #d6bc67;padding:8px;border-radius:4px;margin-top:6px}
+.facultyOnly.hiddenByMode{display:none!important}
+
 </style>
 </head>
 <body>
 <header>
  <div><h1>ATU Simulation Hospital</h1><small>Medication Administration • MAR • Barcode Verification</small></div>
- <div style="display:flex;gap:8px;align-items:center"><span class="badge" id="saveStatusBadge">Checking storage…</span><span class="badge" id="connectionBadge">Local Demonstration Mode</span></div>
+ <div style="display:flex;gap:8px;align-items:center">
+<span class="badge" id="saveStatusBadge">Checking storage…</span>
+<span class="badge" id="connectionBadge">Local Demonstration Mode</span>
+<span class="modePill" id="userModeBadge">Faculty Mode</span>
+<button id="toggleUserModeBtn" class="secondary" style="padding:5px 8px">Student Mode</button>
+</div>
 </header>
 <div class="layout">
 <aside>
  <button data-view="patients" class="active">Active Patients</button>
- <button data-view="builder">Faculty Builder</button>
+ <button data-view="builder" class="facultyOnly">Faculty Builder</button>
  <button data-view="admin">Medication Administration</button>
  <button data-view="mar">Patient MAR</button>
  <button data-view="glucose">Blood Glucose & Insulin</button>
  <button data-view="blood">Blood Administration</button>
- <button data-view="bloodBuilder">Blood Product Builder</button>
- <button data-view="barcodes">Barcode Center</button>
+ <button data-view="bloodBuilder" class="facultyOnly">Blood Product Builder</button>
+ <button data-view="barcodes" class="facultyOnly">Barcode Center</button>
  <button data-view="history">Administration History</button>
- <button data-view="settings">Notion Connection</button>
+ <button data-view="debrief">Simulation Summary</button>
+ <button data-view="settings" class="facultyOnly">Settings</button>
 </aside>
 <main>
  <div id="startupStatus" class="modeBanner">Loading patient and MAR data…</div>
@@ -102,12 +116,12 @@ table{width:100%;border-collapse:collapse;font-size:13px}th,td{border:1px solid 
 </main>
 </div>
 <script>
-const SEED_PATIENTS=[{"id": "amelia-sung", "name": "Amelia Sung", "mrn": "SIM-201036", "dob": "12/08/XXXX", "room": "201", "provider": "Dr. Darnell", "allergies": ["penicillin", "shellfish"], "weightKg": 82, "barcode": "PT-SIM-201036", "active": true, "bloodType": "O+", "codeStatus": "Full Code"}, {"id": "jane-fowler", "name": "Jane Fowler", "mrn": "SIM-204051", "dob": "01/28/XXXX", "room": "204", "provider": "Dr. Smith", "allergies": ["nkda"], "weightKg": 60, "barcode": "PT-SIM-204051", "active": true, "bloodType": "A+", "codeStatus": "Full Code"}, {"id": "patient-1784228779067-hszw6", "name": "Fatima Sanogo", "mrn": "201038", "dob": "07/08/xx", "room": "211E", "provider": "Nelson", "weightKg": 71, "allergies": ["nkda"], "barcode": "PT-201038", "active": true, "bloodType": "", "codeStatus": "Full Code"}, {"id": "patient-1784228856986-9te05", "name": "Molly Thomas", "mrn": "20139", "dob": "07/05/xx", "room": "211C", "provider": "Henderson", "weightKg": 7, "allergies": ["nkda"], "barcode": "PT-20139", "active": true, "bloodType": "", "codeStatus": "Full Code"}, {"id": "patient-1784228908856-n5jsk", "name": "Stephanie Smith", "mrn": "201040", "dob": "07/14/xxxx", "room": "211E", "provider": "Henderson", "weightKg": 53.5, "allergies": ["nkda"], "barcode": "PT-201040", "active": true, "bloodType": "", "codeStatus": "Full Code"}, {"id": "patient-1784231132217-vm9de", "name": "Charles Jones", "mrn": "201041", "dob": "04/20/xx", "room": "211A", "provider": "Burris", "weightKg": 82, "allergies": ["nkda"], "barcode": "PT-201041", "active": true, "bloodType": "", "codeStatus": "Full Code"}, {"id": "patient-1784232786877-est66", "name": "BABY BOY  SUNG", "mrn": "201042", "dob": "TODAY", "room": "211E", "provider": "Craig", "weightKg": 4.37, "allergies": ["nkda"], "barcode": "PT-201042", "active": true, "bloodType": "", "codeStatus": "Full Code"}];
+const SEED_PATIENTS=[{"id":"amelia-sung","name":"Amelia Sung","mrn":"SIM-201036","dob":"12/08/XXXX","room":"201","provider":"Dr. Darnell","allergies":["penicillin","shellfish"],"weightKg":82,"barcode":"PT-SIM-201036","active":true,"bloodType":"O+","codeStatus":"Full Code","manualCode":"7991"},{"id":"jane-fowler","name":"Jane Fowler","mrn":"SIM-204051","dob":"01/28/XXXX","room":"204","provider":"Dr. Smith","allergies":["nkda"],"weightKg":60,"barcode":"PT-SIM-204051","active":true,"bloodType":"A+","codeStatus":"Full Code","manualCode":"7083"},{"id":"patient-1784228779067-hszw6","name":"Fatima Sanogo","mrn":"201038","dob":"07/08/xx","room":"211E","provider":"Nelson","weightKg":71,"allergies":["nkda"],"barcode":"PT-201038","active":true,"bloodType":"","codeStatus":"Full Code","manualCode":"7270"},{"id":"patient-1784228856986-9te05","name":"Molly Thomas","mrn":"20139","dob":"07/05/xx","room":"211C","provider":"Henderson","weightKg":7,"allergies":["nkda"],"barcode":"PT-20139","active":true,"bloodType":"","codeStatus":"Full Code","manualCode":"1291"},{"id":"patient-1784228908856-n5jsk","name":"Stephanie Smith","mrn":"201040","dob":"07/14/xxxx","room":"211E","provider":"Henderson","weightKg":53.5,"allergies":["nkda"],"barcode":"PT-201040","active":true,"bloodType":"","codeStatus":"Full Code","manualCode":"8581"},{"id":"patient-1784231132217-vm9de","name":"Charles Jones","mrn":"201041","dob":"04/20/xx","room":"211A","provider":"Burris","weightKg":82,"allergies":["nkda"],"barcode":"PT-201041","active":true,"bloodType":"","codeStatus":"Full Code","manualCode":"1205"},{"id":"patient-1784232786877-est66","name":"BABY BOY  SUNG","mrn":"201042","dob":"TODAY","room":"211E","provider":"Craig","weightKg":4.37,"allergies":["nkda"],"barcode":"PT-201042","active":true,"bloodType":"","codeStatus":"Full Code","manualCode":"6082"}];
 const SEED_MEDS=[{"id":"cefazolin-2g","patientId":"jane-fowler","name":"Ancef (Cefazolin)","dose":"2 g","route":"IVPB","frequency":"On call to OR","scheduledTime":"On call to OR","status":"Due","barcode":"MED-CEFAZOLIN-2G","allergyKeywords":["cefazolin","cephalosporin","penicillin"],"highAlert":false,"indication":"Surgical prophylaxis","initialStatus":"Due","medType":"Scheduled","provider":"Smith","notes":"Ancef (Cefazolin) 2 grams IV on call to OR (at 1 hour rate)","isInsulin":false,"manualCode":"8896"},{"id":"metoclopramide-10","patientId":"jane-fowler","name":"Reglan (Metoclopramide)","dose":"10 mg","route":"IV","frequency":"On call to OR","scheduledTime":"On call to OR","status":"Due","barcode":"MED-METOCLOPRAMIDE-10MG","allergyKeywords":["metoclopramide"],"highAlert":false,"indication":"Preoperative nausea prevention","initialStatus":"Due","medType":"Scheduled","provider":"Smith","notes":"Reglan (Metoclopramide) 10mg IV","isInsulin":false,"manualCode":"8604"},{"id":"oxytocin","patientId":"amelia-sung","name":"Oxytocin","dose":"Per protocol","route":"IV infusion","frequency":"Continuous","scheduledTime":"Active labor","status":"Due","barcode":"MED-OXYTOCIN-INFUSION","allergyKeywords":["oxytocin"],"highAlert":true,"indication":"Labor augmentation","initialStatus":"Due","medType":"Scheduled","provider":"","notes":"","isInsulin":false,"manualCode":"8372"},{"id":"ampicillin","patientId":"amelia-sung","name":"Ampicillin","dose":"2 g","route":"IVPB","frequency":"Every 4 hours","scheduledTime":"0800","status":"Due","barcode":"MED-AMPICILLIN-2G","allergyKeywords":["ampicillin","penicillin"],"highAlert":false,"indication":"GBS prophylaxis","initialStatus":"Due","medType":"Scheduled","provider":"","notes":"","isInsulin":false,"manualCode":"5023"},{"id":"med-1784226784431-mnlv2","patientId":"amelia-sung","medType":"Scheduled","name":"Morphine Sulfate","dose":"2 mg","route":"IV","frequency":"Q 2 hours","scheduledTime":"prn","indication":"Pain","provider":"Darnell","status":"Due","initialStatus":"Due","allergyKeywords":[],"highAlert":false,"barcode":"MED-MORPHINE-SULFATE-2-MG-SIM-201036","notes":"","isInsulin":false,"manualCode":"6433"},{"id":"med-1784226890085-0tkri","patientId":"amelia-sung","medType":"Scheduled","name":"Lidocaine 1%","dose":"per MD","route":"Subcutaneous","frequency":"as needed","scheduledTime":"at delivery","indication":"","provider":"Darnell","status":"Due","initialStatus":"Due","allergyKeywords":[],"highAlert":false,"barcode":"MED-LIDOCAINE-1-PER-MD-SIM-201036","notes":"Lidocaine 1% available at delivery for pain in perineum","isInsulin":false,"manualCode":"6453"},{"id":"med-1784227218757-opurb","patientId":"amelia-sung","medType":"Scheduled","name":"Versed (Midazolam)","dose":"1 mg","route":"IV","frequency":"now","scheduledTime":"0800","indication":"","provider":"Smith","status":"Due","initialStatus":"Due","allergyKeywords":[],"highAlert":false,"barcode":"MED-VERSED-MIDAZOLAM-1-MG-SIM-201036","notes":"Versed (Midazolam) 1mg IV on call to OR","isInsulin":false,"manualCode":"6796"},{"id":"med-1784228600541-qt0fp","patientId":"jane-fowler","medType":"PRN","name":"Morphine Sulfate","dose":"2 mg","route":"IV","frequency":"every 4 hours","scheduledTime":"Post op","indication":"for post of pain","provider":"Smith","status":"Due","initialStatus":"Due","allergyKeywords":[],"highAlert":false,"barcode":"MED-MORPHINE-SULFATE-2-MG-SIM-204051","notes":"Morphine 2mg IV prn, may repeat up to 10 mg every 4 hours as needed for post op pain","isInsulin":false,"manualCode":"8239"},{"id":"med-1784228659520-mqnzs","patientId":"jane-fowler","medType":"PRN","name":"Zofran","dose":"4mg","route":"IV","frequency":"every 4 hours","scheduledTime":"post op","indication":"prn nausea","provider":"Smith","status":"Due","initialStatus":"Due","allergyKeywords":[],"highAlert":false,"barcode":"MED-ZOFRAN-4MG-SIM-204051","notes":"","isInsulin":false,"manualCode":"1147"},{"id":"med-1784229027945-c7zui","patientId":"jane-fowler","medType":"Scheduled","name":"Lactated Ringer","dose":"125 ml/hr","route":"IV","frequency":"Continous","scheduledTime":"0800","indication":"","provider":"Smith","status":"Due","initialStatus":"Due","allergyKeywords":[],"highAlert":false,"barcode":"MED-LACTATED-RINGER-125-ML-HR-SIM-204051","notes":"","isInsulin":false,"manualCode":"9722"},{"id":"med-1784229111953-nbrzw","patientId":"patient-1784228779067-hszw6","medType":"Scheduled","name":"Lactated Ringers","dose":"125ml/h","route":"IV","frequency":"Continuous","scheduledTime":"0800","indication":"","provider":"Nelson","status":"Due","initialStatus":"Due","allergyKeywords":[],"highAlert":false,"barcode":"MED-LACTATED-RINGERS-125ML-H-201038","notes":"","isInsulin":false,"manualCode":"6451"},{"id":"med-1784229217472-1izfb","patientId":"patient-1784228779067-hszw6","medType":"Scheduled","name":"Pitocin 30 units added to 500ml Normal Saline","dose":"334 ml/hr for 30 mins then change to 95 mls per hour","route":"IV","frequency":"continuous","scheduledTime":"0800","indication":"","provider":"Nelson","status":"Due","initialStatus":"Due","allergyKeywords":[],"highAlert":false,"barcode":"MED-PITOCIN-30-UNITS-ADDED-TO-500ML-NORMAL-SALINE-334-ML-HR-FOR-30-MINS-THEN-CHANGE-TO-95-MLS-PER-HOUR-201038","notes":"Pitocin 30 units added to 500ml Normal Saline to infuse at 334 ml/hr. after delivery of placenta for for 100 mls then decrease rate to 95mls per hour until bag is complete.  May saline lock IV 3 hours after delivery if bleeding is scant.","isInsulin":false,"manualCode":"6263"},{"id":"med-1784229303003-frkz3","patientId":"patient-1784228779067-hszw6","medType":"PRN","name":"Witch hazel pads","dose":"2 pad rounds","route":"Other","frequency":"every time change a pad","scheduledTime":"as needed","indication":"applied to hemorrhoids prn","provider":"Nelson","status":"Due","initialStatus":"Due","allergyKeywords":[],"highAlert":false,"barcode":"MED-WITCH-HAZEL-PADS-2-PAD-ROUNDS-201038","notes":"","isInsulin":false,"manualCode":"5384"},{"id":"med-1784229402501-p5bap","patientId":"patient-1784228779067-hszw6","medType":"PRN","name":"Epifoam spray","dose":"2 sprays","route":"Other","frequency":"Every pad change","scheduledTime":"as needed","indication":"to perineum as needed for pain","provider":"Nelson","status":"Due","initialStatus":"Due","allergyKeywords":[],"highAlert":false,"barcode":"MED-EPIFOAM-SPRAY-2-SPRAYS-201038","notes":"","isInsulin":false,"manualCode":"3630"},{"id":"med-1784229511725-ier9a","patientId":"patient-1784228779067-hszw6","medType":"PRN","name":"Percocet","dose":"1 tab","route":"PO","frequency":"every 4 hours","scheduledTime":"prn","indication":"pain","provider":"Nelson","status":"Due","initialStatus":"Due","allergyKeywords":[],"highAlert":false,"barcode":"MED-PERCOCET-1-TAB-201038","notes":"","isInsulin":false,"manualCode":"7086"},{"id":"med-1784229566790-y6r3b","patientId":"amelia-sung","medType":"Scheduled","name":"Ibuprofen","dose":"600mg","route":"PO","frequency":"q 6 hours as needed for pain","scheduledTime":"prn","indication":"pain","provider":"Nelson","status":"Due","initialStatus":"Due","allergyKeywords":[],"highAlert":false,"barcode":"MED-IBUPROFEN-600MG-SIM-201036","notes":"","isInsulin":false,"manualCode":"7316"},{"id":"med-1784230008873-oi841","patientId":"patient-1784228856986-9te05","medType":"Scheduled","name":"NS bolus","dose":"20ml/KG  to infuse over 30 mins","route":"IV","frequency":"now","scheduledTime":"0800","indication":"","provider":"Henderson","status":"Due","initialStatus":"Due","allergyKeywords":[],"highAlert":false,"barcode":"MED-NS-BOLUS-20ML-KG-TO-INFUSE-OVER-30-MINS-20139","notes":"","isInsulin":false,"manualCode":"6430"},{"id":"med-1784230923472-7cufg","patientId":"patient-1784228908856-n5jsk","medType":"Scheduled","name":"Morphine","dose":"5mg IV","route":"IV","frequency":"every 4 hours","scheduledTime":"0800","indication":"prn pain","provider":"Henderson","status":"Due","initialStatus":"Due","allergyKeywords":[],"highAlert":false,"barcode":"MED-MORPHINE-5MG-IV-201040","notes":"","isInsulin":false,"manualCode":"5533"},{"id":"med-1784231287424-cajgk","patientId":"patient-1784231132217-vm9de","medType":"Scheduled","name":"Lisinopril","dose":"20mg","route":"PO","frequency":"DAILY","scheduledTime":"0900","indication":"","provider":"BURRIS","status":"Due","initialStatus":"Due","allergyKeywords":[],"highAlert":false,"barcode":"MED-LISINOPRIL-20MG-201041","notes":"Lisinopril 20mg Po daily, hold if BP is less than 90/60. If you have to hold the medication, notify the provider.","isInsulin":false,"manualCode":"8841"},{"id":"med-1784231342460-joo74","patientId":"patient-1784231132217-vm9de","medType":"Scheduled","name":"Warfarin","dose":"2.5 mg","route":"PO","frequency":"daily","scheduledTime":"0900","indication":"","provider":"BURRIS","status":"Due","initialStatus":"Due","allergyKeywords":[],"highAlert":false,"barcode":"MED-WARFARIN-2-5-MG-201041","notes":"","isInsulin":false,"manualCode":"5590"},{"id":"med-1784231396094-qbo8v","patientId":"patient-1784231132217-vm9de","medType":"Scheduled","name":"Metformin","dose":"1000 mg","route":"PO","frequency":"daily","scheduledTime":"0900","indication":"","provider":"BURRIS","status":"Due","initialStatus":"Due","allergyKeywords":[],"highAlert":false,"barcode":"MED-METFORMIN-1000-MG-201041","notes":"","isInsulin":false,"manualCode":"3647"},{"id":"med-1784231477665-g8imz","patientId":"patient-1784231132217-vm9de","medType":"Scheduled","name":"Metoprolol","dose":"50mg","route":"PO","frequency":"daily","scheduledTime":"0900","indication":"","provider":"BURRIS","status":"Due","initialStatus":"Due","allergyKeywords":[],"highAlert":false,"barcode":"MED-METOPROLOL-50MG-201041","notes":"Metoprolol 50mg po daily hold if BP is less than 90/60, If you have to hold the medication, notify the provider.","isInsulin":false,"manualCode":"1339"},{"id":"med-1784231513432-ev3bc","patientId":"patient-1784231132217-vm9de","medType":"Scheduled","name":"Amiodarone","dose":"200 MG","route":"PO","frequency":"dAILY","scheduledTime":"0900","indication":"","provider":"BURRIS","status":"Due","initialStatus":"Due","allergyKeywords":[],"highAlert":false,"barcode":"MED-AMIODARONE-200-MG-201041","notes":"Amiodarone 200 mg po daily","isInsulin":false,"manualCode":"4729"},{"id":"med-1784231562220-36ges","patientId":"patient-1784231132217-vm9de","medType":"Scheduled","name":"Digoxin","dose":"0.125 mg","route":"PO","frequency":"DAILY","scheduledTime":"0900","indication":"","provider":"BURRIS","status":"Due","initialStatus":"Due","allergyKeywords":[],"highAlert":false,"barcode":"MED-DIGOXIN-0-125-MG-SIM-201036","notes":"Digoxin 0.125 mg PO do not give if heart rate is less than 50","isInsulin":false,"manualCode":"9096"},{"id":"med-1784231658312-hytwb","patientId":"patient-1784231132217-vm9de","medType":"Scheduled","name":"NORMAL SALINE","dose":"25 ML/HR","route":"IV infusion","frequency":"CONTINUOUS","scheduledTime":"0900","indication":"","provider":"BURRIS","status":"Due","initialStatus":"Due","allergyKeywords":[],"highAlert":false,"barcode":"MED-NORMAL-SALINE-25-ML-HR-SIM-201036","notes":"normal saline at KVO","isInsulin":false,"manualCode":"5847"},{"id":"med-1784231885589-0kvib","patientId":"patient-1784231132217-vm9de","medType":"Scheduled","name":"REGULAR INSULIN","dose":"SEE SLIDING SCALE","route":"Subcutaneous","frequency":"AC AND HS","scheduledTime":"0800","indication":"","provider":"BURRIS","status":"Due","initialStatus":"Due","allergyKeywords":[],"highAlert":true,"barcode":"MED-REGULAR-INSULIN-SEE-SLIDING-SCALE-201041","notes":"Sliding Scale Insulin (Regular or Rapid-Acting): BG < 150 → No insulin 150–199 → 2 units SQ 200–249 → 4 units SQ 250–299 → 6 units SQ 300–349 → 8 units SQ ≥ 350 → 10 units SQ & notify provider","isInsulin":true,"glucoseSchedule":["AC Breakfast","AC Lunch","AC Dinner","HS","PRN"],"insulinScale":[{"min":0,"max":149,"dose":0,"instruction":"No insulin"},{"min":150,"max":199,"dose":2,"instruction":"Give 2 units SQ"},{"min":200,"max":249,"dose":4,"instruction":"Give 4 units SQ"},{"min":250,"max":299,"dose":6,"instruction":"Give 6 units SQ"},{"min":300,"max":349,"dose":8,"instruction":"Give 8 units SQ"},{"min":350,"max":9999,"dose":10,"instruction":"Give 10 units SQ and notify provider"}],"manualCode":"6667"},{"id":"med-1784233185643-eng9a","patientId":"patient-1784232786877-est66","medType":"Scheduled","name":"Aquamephyton  (Vitamin K)","dose":"1 mg","route":"IM","frequency":"now","scheduledTime":"1300","indication":"","provider":"Criag","status":"Due","initialStatus":"Due","allergyKeywords":[],"highAlert":false,"barcode":"MED-AQUAMEPHYTON-VITAMIN-K-1-MG-201042","notes":"","isInsulin":false,"manualCode":"8063"},{"id":"med-1784233275225-xnk81","patientId":"patient-1784232786877-est66","medType":"Scheduled","name":"Erythromycin ophthalmic ointment","dose":"0.5 ml ribbon x 1 both conjunctivae","route":"Other","frequency":"now","scheduledTime":"1300","indication":"","provider":"Craig","status":"Due","initialStatus":"Due","allergyKeywords":[],"highAlert":false,"barcode":"MED-ERYTHROMYCIN-OPHTHALMIC-OINTMENT-0-5-ML-RIBBON-X-1-BOTH-CONJUNCTIVAE-201042","notes":"Erythromycin ophthalmic ointment 0.5 ml ribbon x 1 both conjunctivae","isInsulin":false,"manualCode":"8083"},{"id":"med-1784233344406-md3c3","patientId":"patient-1784232786877-est66","medType":"Scheduled","name":"Hepatitis B vaccine","dose":"0.5 ml","route":"IM","frequency":"now","scheduledTime":"1300","indication":"","provider":"Criag","status":"Due","initialStatus":"Due","allergyKeywords":[],"highAlert":false,"barcode":"MED-HEPATITIS-B-VACCINE-0-5-ML-201042","notes":"Hepatitis B vaccine 0.5 ml IM anterior thigh x 1 if > 2000 gm with consent","isInsulin":false,"manualCode":"6679"},{"id":"med-1784233401776-1ly23","patientId":"patient-1784232786877-est66","medType":"Scheduled","name":"Glucose gel","dose":"per policy","route":"PO","frequency":"as need per policy","scheduledTime":"as need for low blood sugar","indication":"","provider":"Criag","status":"Due","initialStatus":"Due","allergyKeywords":[],"highAlert":false,"barcode":"MED-GLUCOSE-GEL-PER-POLICY-201042","notes":"See policy in patient chart","isInsulin":false,"manualCode":"4080"},{"patientId":"patient-1784228779067-hszw6","name":"Methylergonovine (Methergine)","dose":"0.2 mg","route":"IM","frequency":"Every 2–4 hours as needed","scheduledTime":"","status":"As Needed","allergyKeywords":[],"highAlert":false,"indication":"Postpartum hemorrhage / uterine atony — MD/provider order required","initialStatus":"As Needed","medType":"PRN","provider":"Nelson","notes":"Specific MD/provider order required before administration. 0.2 mg IM every 2–4 hours as needed.","isInsulin":false,"id":"med-v21-methylergonovine-methergine-1","barcode":"MED-METHYLERGONOVINE-METHERGINE-0-2-MG-201038","manualCode":"5076"},{"patientId":"patient-1784228779067-hszw6","name":"Carboprost (Hemabate)","dose":"250 mcg","route":"IM","frequency":"Every 15–90 minutes as needed","scheduledTime":"","status":"As Needed","allergyKeywords":[],"highAlert":false,"indication":"Postpartum hemorrhage / uterine atony — MD/provider order required","initialStatus":"As Needed","medType":"PRN","provider":"Nelson","notes":"Specific MD/provider order required before administration. 250 mcg IM every 15–90 minutes; maximum approximately 2 mg total.","isInsulin":false,"id":"med-v21-carboprost-hemabate-2","barcode":"MED-CARBOPROST-HEMABATE-250-MCG-201038","manualCode":"6382"},{"patientId":"patient-1784228779067-hszw6","name":"Misoprostol","dose":"600–1000 mcg","route":"Other","frequency":"As needed per protocol","scheduledTime":"","status":"As Needed","allergyKeywords":[],"highAlert":false,"indication":"Postpartum hemorrhage / uterine atony — MD/provider order required","initialStatus":"As Needed","medType":"PRN","provider":"Nelson","notes":"Specific MD/provider order required before administration. 600–1000 mcg PR / SL / PO per protocol.","isInsulin":false,"id":"med-v21-misoprostol-3","barcode":"MED-MISOPROSTOL-600-1000-MCG-201038","manualCode":"2961"},{"patientId":"patient-1784228779067-hszw6","name":"Tranexamic acid (TXA)","dose":"1 g","route":"IV","frequency":"Once when PPH diagnosed; may repeat once","scheduledTime":"","status":"As Needed","allergyKeywords":[],"highAlert":false,"indication":"Postpartum hemorrhage — MD/provider order required","initialStatus":"As Needed","medType":"PRN","provider":"Nelson","notes":"Specific MD/provider order required before administration. 1 g IV over 10 minutes once PPH is diagnosed; repeat 1 g after 30 minutes–24 hours if bleeding persists, per protocol.","isInsulin":false,"id":"med-v21-tranexamic-acid-txa-4","barcode":"MED-TRANEXAMIC-ACID-TXA-1-G-201038","manualCode":"7638"},{"patientId":"patient-1784232786877-est66","name":"Narcan (Naloxone)","dose":"0.1 mg/kg","route":"Other","frequency":"As needed","scheduledTime":"","status":"As Needed","allergyKeywords":[],"highAlert":false,"indication":"Opioid reversal","initialStatus":"As Needed","medType":"PRN","provider":"Craig","notes":"Narcan (naloxone) 0.1 mg/kg.","isInsulin":false,"id":"med-v21-narcan-naloxone-5","barcode":"MED-NARCAN-NALOXONE-0-1-MG-KG-201042","manualCode":"1572"},{"id":"required-jane-fowler-versed-midazolam","patientId":"jane-fowler","name":"Versed (Midazolam)","dose":"2 mg","route":"IV","frequency":"On call to OR","scheduledTime":"On call to OR","status":"Due","barcode":"MED-VERSED-MIDAZOLAM-2-MG-SIM-204051","allergyKeywords":[],"highAlert":true,"indication":"Preoperative sedation","initialStatus":"Due","medType":"Scheduled","provider":"Dr. Smith","notes":"Versed (Midazolam) 2 mg IV on call to OR.","isInsulin":false,"manualCode":"8086"},{"id":"required-fatima-sanogo-ibuprofen","patientId":"patient-1784228779067-hszw6","name":"Ibuprofen","dose":"800 mg","route":"PO","frequency":"Every 8 hours as needed","scheduledTime":"","status":"As Needed","barcode":"MED-IBUPROFEN-800-MG-201038","allergyKeywords":[],"highAlert":false,"indication":"Pain","initialStatus":"As Needed","medType":"PRN","provider":"Nelson","notes":"Ibuprofen 800 mg PO every 8 hours as needed for pain.","isInsulin":false,"manualCode":"8880"}];
 const REQUIRED_UPDATE_MEDICATION_IDS=["med-v21-methylergonovine-methergine-1", "med-v21-carboprost-hemabate-2", "med-v21-misoprostol-3", "med-v21-tranexamic-acid-txa-4", "med-v21-narcan-naloxone-5", "required-jane-fowler-versed-midazolam", "required-fatima-sanogo-ibuprofen"];
 
 const STORAGE_KEY="atuSimulationHospitalV10MarScan";
-const DATASET_VERSION="25.0-blood-scan-and-print";
+const DATASET_VERSION="27.0-complete-simulation-workflow";
 let state=loadState();
 let currentView="patients";
 let verifiedPatient=null;
@@ -115,6 +129,7 @@ let verifiedMedication=null;
 let verifiedBloodUnit=null;
 
 state.patients.forEach(p=>{if(typeof p.active!=="boolean")p.active=true});
+    ensurePatientManualCodes();
 state.patients.forEach(p=>{
  if(!p.barcode)p.barcode=`PT-${slugBarcode(p.mrn||p.name)}`;
 });
@@ -378,13 +393,13 @@ function renderActivePatients(){
  document.getElementById("view").innerHTML=
  panel("Active Patients",`
  <div class="actions" style="margin-bottom:10px">
-  <button id="addPatientShortcut" class="primary">Add New Patient</button>
-  <button id="reloadFullDatasetBtn" class="secondary">Reload Full Patient & MAR Dataset</button>
-  <button id="repairDataBtn" class="secondary">Repair Saved Data</button>
-  <button id="backupDataBtn" class="secondary">Download Data Backup</button>
-  <button id="restoreDataBtn" class="secondary">Restore Data Backup</button>
+  <button id="addPatientShortcut" class="facultyOnly primary">Add New Patient</button>
+  <button id="reloadFullDatasetBtn" class="facultyOnly secondary">Reload Full Patient & MAR Dataset</button>
+  <button id="repairDataBtn" class="facultyOnly secondary">Repair Saved Data</button>
+  <button id="backupDataBtn" class="facultyOnly secondary">Download Data Backup</button>
+  <button id="restoreDataBtn" class="facultyOnly secondary">Restore Data Backup</button>
   <input id="restoreDataFile" type="file" accept=".json,application/json" class="hidden">
-  <button id="resetAllActiveBtn" class="secondary">Reset All Active Simulations</button>
+  <button id="resetAllActiveBtn" class="facultyOnly secondary">Reset All Active Simulations</button>
  </div>
  <div class="patientCards">
  ${active.map(patientCardHtml).join("")||'<div class="safety">No active patients. Add a patient in Faculty Builder.</div>'}
@@ -515,6 +530,25 @@ function uid(prefix){
  return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2,7)}`;
 }
 
+
+
+function ensurePatientManualCodes(){
+ const used=new Set();
+ state.patients.forEach(p=>{
+   const c=String(p.manualCode||"").trim();
+   if(/^\d{4}$/.test(c) && !used.has(c)){p.manualCode=c;used.add(c)}
+   else p.manualCode="";
+ });
+ state.patients.forEach(p=>{
+   if(p.manualCode)return;
+   const key=`${p.id||""}|${p.mrn||""}|${p.name||""}`;
+   let raw=0;
+   for(let i=0;i<key.length;i++)raw=((raw*37)+key.charCodeAt(i))>>>0;
+   let n=1000+(raw%9000);
+   while(used.has(String(n))){n++;if(n>9999)n=1000}
+   p.manualCode=String(n);used.add(p.manualCode);
+ });
+}
 
 function ensureBloodManualCodes(){
  state.bloodUnits ||= [];
@@ -975,6 +1009,13 @@ function renderAdmin(){
       <h3 style="margin:0 0 6px;color:var(--green2)">1. Scan Patient Wristband</h3>
       <div class="note">Scan the patient's wristband to begin medication administration.</div>
       <input id="patientScan" placeholder="Scan patient wristband..." autocomplete="off">
+      <div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--line)">
+        <div class="note"><b>Wristband not scanning?</b> Enter the patient's 4-digit ID code printed under the patient barcode.</div>
+        <div style="display:grid;grid-template-columns:1fr auto;gap:6px;align-items:end">
+          <input id="manualPatientCode" inputmode="numeric" maxlength="4" placeholder="4-digit patient code" autocomplete="off">
+          <button id="manualPatientVerifyBtn" class="secondary">Verify Patient</button>
+        </div>
+      </div>
       <div id="patientFeedback" class="feedback hidden"></div>
     </div>
     <div class="scanArrow">→</div>
@@ -1003,13 +1044,17 @@ function renderAdmin(){
  <div id="verificationArea"></div>`;
 
  const ps=document.getElementById("patientScan");
+ const manualPatientInput=document.getElementById("manualPatientCode");
+ const manualPatientBtn=document.getElementById("manualPatientVerifyBtn");
  const ms=document.getElementById("medScan");
  const manualInput=document.getElementById("manualMedCode");
  const manualBtn=document.getElementById("manualMedVerifyBtn");
  const bloodScanUnderMar=document.getElementById("bloodScanUnderMar");
  const manualBloodUnderMar=document.getElementById("manualBloodCodeUnderMar");
  const manualBloodBtnUnderMar=document.getElementById("manualBloodVerifyBtnUnderMar");
- ps.onkeydown=e=>{if(e.key==="Enter"){verifyPatient(ps.value.trim());ps.value=""}};
+ ps.onkeydown=e=>{if(e.key==="Enter"){verifyPatient(ps.value.trim(),"barcode");ps.value=""}};
+ if(manualPatientInput)manualPatientInput.onkeydown=e=>{if(e.key==="Enter"){verifyPatient(manualPatientInput.value.trim(),"manual");manualPatientInput.value=""}};
+ if(manualPatientBtn)manualPatientBtn.onclick=()=>{verifyPatient(manualPatientInput.value.trim(),"manual");manualPatientInput.value=""};
  ms.onkeydown=e=>{if(e.key==="Enter"){verifyMedication(ms.value.trim(),"barcode");ms.value=""}};
  if(manualInput)manualInput.onkeydown=e=>{if(e.key==="Enter"){verifyMedication(manualInput.value.trim(),"manual");manualInput.value=""}};
  if(manualBtn)manualBtn.onclick=()=>{verifyMedication(manualInput.value.trim(),"manual");manualInput.value=""};
@@ -1018,8 +1063,10 @@ function renderAdmin(){
  if(manualBloodBtnUnderMar)manualBloodBtnUnderMar.onclick=()=>{verifyBloodUnderMar(manualBloodUnderMar.value.trim(),"manual");manualBloodUnderMar.value=""};
  setTimeout(()=>{if(!p)ps.focus();else ms.focus()},50);
 }
-function verifyPatient(code){
- const p=state.patients.find(p=>(p.barcode===code||p.mrn===code)&&p.active!==false);
+function verifyPatient(code,method="barcode"){
+ const normalized=String(code||"").trim();
+ const manual=normalized.replace(/\D/g,"").slice(0,4);
+ const p=state.patients.find(p=>(p.barcode===normalized||p.mrn===normalized||p.manualCode===normalized||(method==="manual"&&p.manualCode===manual))&&p.active!==false);
  if(!p){
    verifiedPatient=null;verifiedMedication=null;verifiedBloodUnit=null;
    const fb=document.getElementById("patientFeedback");
@@ -1032,7 +1079,7 @@ function verifyPatient(code){
  renderPatientBanner();
  renderAdmin();
  const fb=document.getElementById("patientFeedback");
- if(fb){fb.className="feedback ok";fb.textContent=`Patient verified: ${p.name}, MRN ${p.mrn}.`}
+ if(fb){fb.className="feedback ok";fb.textContent=`Patient verified${method==="manual"?" by manual ID code":""}: ${p.name}, MRN ${p.mrn}.`}
  const status=document.getElementById("verificationStatus");
  if(status)status.textContent=`Patient verified: ${p.name}. Scan medication next.`;
  setTimeout(()=>document.getElementById("medScan")?.focus(),50);
@@ -1356,6 +1403,7 @@ function printPatientBarcodeSheet(patientId){
    <div class="patientCode">
      <div style="font-size:9px;font-weight:700">PATIENT WRISTBAND BARCODE</div>
      <img src="${patientBarcode}">
+     <div style="font-size:11px;font-weight:800;letter-spacing:1.5px;margin-top:2px">Patient ID Code: ${esc(p.manualCode||"")}</div>
    </div>
  </div>
  <div class="section">Medication Barcodes — ${meds.length} active medication order(s)</div>
@@ -1384,7 +1432,7 @@ function renderBarcodes(){
  <h3>Patient Wristbands</h3>
  ${state.patients.map(p=>`<div class="barcodeCard">
    <b>${esc(p.name)}</b>
-   <p>${esc(p.mrn)} • DOB ${esc(p.dob)} • Room ${esc(p.room)} • Provider ${esc(p.provider)}</p>
+   <p>${esc(p.mrn)} • DOB ${esc(p.dob)} • Room ${esc(p.room)} • Provider ${esc(p.provider)}<br><b>Patient ID Code: ${esc(p.manualCode||"")}</b></p>
    <div class="labelControls">
     <label>Label Size<select class="patientLabelSize" data-id="${esc(p.id)}">
       <option value="standard">Wristband / Standard</option>
@@ -1444,6 +1492,7 @@ function renderBarcodes(){
    printLabelSheet({
      title:p.name,
      code:p.barcode,
+     manualCode:p.manualCode,
      details:`MRN ${p.mrn} | DOB ${p.dob} | Room ${p.room} | ${p.provider}`,
      labelType:"patient",size,copies
    });
@@ -1484,7 +1533,7 @@ function renderSettings(){
  <div class="modeBanner">Do not place a Notion secret token in this webpage. The app sends documentation to a secure bridge URL that stores the token on the server.</div>
  <div class="grid">
  <label>Notion Bridge URL<input id="bridgeUrl" value="${esc(state.settings.bridgeUrl)}" placeholder="https://your-worker.workers.dev"></label>
- <label>Connection Mode<select id="notionEnabled"><option value="false">Local demonstration mode</option><option value="true">Send administrations to Notion</option></select></label>
+ <label>Connection Mode<select id="notionEnabled"><option value="false">Local demonstration mode</option><option value="true">Send administrations to Notion</option></select></label><label>Faculty PIN<input id="facultyPinSetting" maxlength="8" value="${esc(state.settings.facultyPin||"2026")}"></label>
  </div>
  <div class="actions" style="margin-top:10px">
  <button id="saveSettings" class="primary">Save Connection Settings</button>
@@ -1498,14 +1547,14 @@ function renderSettings(){
  Data is saved only in this browser and website address. Always open the same GitHub Pages URL in the same browser. Do not use private/incognito mode. Download a backup after building or changing a patient MAR.</div>
  <p class="note">The Faculty Builder saves patients and medication orders in this browser. The included notion-worker.js is a starter secure bridge for completed administrations. Add your Notion token and Medication Administration database ID as protected environment variables on the hosting service.</p>`);
  document.getElementById("notionEnabled").value=String(state.settings.notionEnabled);
- document.getElementById("saveSettings").onclick=()=>{state.settings.bridgeUrl=document.getElementById("bridgeUrl").value.trim();state.settings.notionEnabled=document.getElementById("notionEnabled").value==="true";save();updateConnectionBadge();alert("Connection settings saved.")};
+ document.getElementById("saveSettings").onclick=()=>{state.settings.bridgeUrl=document.getElementById("bridgeUrl").value.trim();state.settings.notionEnabled=document.getElementById("notionEnabled").value==="true";state.settings.facultyPin=document.getElementById("facultyPinSetting").value.trim()||"2026";save();updateConnectionBadge();alert("Settings saved.")};
  document.getElementById("settingsBackupBtn").onclick=downloadDataBackup;
  document.getElementById("settingsRestoreBtn").onclick=()=>document.getElementById("settingsRestoreFile").click();
  document.getElementById("settingsRestoreFile").onchange=e=>{if(e.target.files?.[0])restoreDataBackup(e.target.files[0])};
  document.getElementById("resetAllSimulationsSettings").onclick=()=>{
    if(!confirm("Reset every patient simulation while keeping all patients and medication orders?"))return;
    state.medications.forEach(m=>resetMedicationToStart(m));
-   state.administrations=[];state.bloodUnits.forEach(b=>b.status=b.initialStatus||"Available");state.bloodAdministrations=[];state.glucoseChecks=[];
+   state.administrations=[];state.bloodUnits.forEach(b=>b.status=b.initialStatus||"Available");state.bloodAdministrations=[];state.glucoseChecks=[];state.prnReassessments=[];state.auditLog=[];
    verifiedPatient=null;verifiedMedication=null;verifiedBloodUnit=null;save();alert("All simulations reset.");renderSettings();
  };
  document.getElementById("resetDemo").onclick=()=>{if(confirm("DELETE all local patients, medications, and administration records? This cannot be undone.")){localStorage.removeItem(STORAGE_KEY);location.reload()}};
@@ -1548,6 +1597,380 @@ document.addEventListener("keydown",(e)=>{
 });
 
 
+
+// ===== v27 COMPLETE SIMULATION WORKFLOW =====
+state.auditLog ||= [];
+state.prnReassessments ||= [];
+state.bloodAdministrations ||= [];
+state.settings ||= {bridgeUrl:"",notionEnabled:false};
+state.settings.userMode ||= "faculty";
+state.settings.facultyPin ||= "2026";
+
+function v27Audit(type,patientId,details="",method=""){
+ state.auditLog ||= [];
+ const p=state.patients.find(x=>x.id===patientId);
+ state.auditLog.push({
+  id:`audit-${Date.now()}-${Math.random().toString(36).slice(2,7)}`,
+  at:nowLocal(), patientId:patientId||"", patientName:p?.name||"",
+  type,details,method
+ });
+ if(state.auditLog.length>1500)state.auditLog=state.auditLog.slice(-1500);
+}
+
+function v27Faculty(){return (state.settings?.userMode||"faculty")==="faculty"}
+function v27ApplyMode(){
+ const faculty=v27Faculty();
+ document.querySelectorAll(".facultyOnly").forEach(x=>x.classList.toggle("hiddenByMode",!faculty));
+ const badge=document.getElementById("userModeBadge");
+ const btn=document.getElementById("toggleUserModeBtn");
+ if(badge)badge.textContent=faculty?"Faculty Mode":"Student Mode";
+ if(btn)btn.textContent=faculty?"Student Mode":"Faculty Mode";
+}
+function v27ToggleMode(){
+ if(v27Faculty()){
+   state.settings.userMode="student";save();v27ApplyMode();render();return;
+ }
+ const pin=prompt("Enter faculty PIN:");
+ if(pin===null)return;
+ if(pin!==String(state.settings.facultyPin||"2026")){alert("Incorrect faculty PIN.");return}
+ state.settings.userMode="faculty";save();v27ApplyMode();render();
+}
+
+function v27LatestGlucose(patientId){
+ const rows=(state.glucoseChecks||[]).filter(g=>g.patientId===patientId).slice()
+   .sort((a,b)=>String(a.checkedAt||a.dateTime||a.time||"").localeCompare(String(b.checkedAt||b.dateTime||b.time||"")));
+ return rows.length?rows[rows.length-1]:null;
+}
+function v27GlucoseValue(g){
+ if(!g)return null;
+ for(const k of ["value","glucose","result","bg"]){
+   const n=Number(g[k]); if(Number.isFinite(n))return n;
+ }
+ return null;
+}
+function v27InsulinDose(bg){
+ if(bg==null)return null;
+ if(bg<150)return 0;if(bg<200)return 2;if(bg<250)return 4;if(bg<300)return 6;if(bg<350)return 8;return 10;
+}
+function v27HighAlert(m){return !!m.highAlert||/insulin|heparin|oxytocin|magnesium/i.test(m.name||"")}
+
+function render(){
+ document.querySelectorAll("aside button").forEach(b=>b.classList.toggle("active",b.dataset.view===currentView));
+ renderPatientBanner();
+ if(currentView==="patients")renderActivePatients();
+ if(currentView==="builder")renderBuilder();
+ if(currentView==="admin")renderAdmin();
+ if(currentView==="mar")renderMar();
+ if(currentView==="glucose")renderGlucoseModule();
+ if(currentView==="blood")renderAdmin();
+ if(currentView==="bloodBuilder")renderBloodBuilder();
+ if(currentView==="barcodes")renderBarcodes();
+ if(currentView==="history")renderHistory();
+ if(currentView==="debrief")renderDebrief();
+ if(currentView==="settings")renderSettings();
+ v27ApplyMode();
+}
+
+function verifyPatient(code,method="barcode"){
+ const normalized=String(code||"").trim();
+ const manual=normalized.replace(/\D/g,"").slice(0,4);
+ const p=state.patients.find(p=>(p.barcode===normalized||p.mrn===normalized||p.manualCode===normalized||(method==="manual"&&p.manualCode===manual))&&p.active!==false);
+ const fb=document.getElementById("patientFeedback");
+ const status=document.getElementById("verificationStatus");
+ if(!p){
+   verifiedPatient=null;verifiedMedication=null;verifiedBloodUnit=null;
+   if(fb){fb.className="feedback bad";fb.textContent="PATIENT MISMATCH: Wristband or 4-digit patient code was not recognized."}
+   if(status)status.textContent="Patient verification failed.";
+   v27Audit("Patient verification failed","",`Unrecognized ${method} value`,method);save();return;
+ }
+ verifiedPatient=p.id;verifiedMedication=null;verifiedBloodUnit=null;
+ v27Audit("Patient verified",p.id,method==="manual"?"4-digit patient ID code used":"Wristband barcode scanned",method);
+ if(method==="manual")v27Audit("Manual override used",p.id,"Patient verified with 4-digit ID code",method);
+ save();renderPatientBanner();renderAdmin();
+ const f=document.getElementById("patientFeedback");
+ if(f){f.className="feedback ok";f.textContent=`Patient verified${method==="manual"?" by manual ID code":""}: ${p.name}, MRN ${p.mrn}.`}
+ const s=document.getElementById("verificationStatus");
+ if(s)s.textContent=`Patient verified: ${p.name}. Scan medication next.`;
+}
+
+function v27MedStatus(m,pid){
+ const last=(state.administrations||[]).filter(a=>a.patientId===pid&&a.medicationId===m.id).slice(-1)[0];
+ if(m.status==="Discontinued")return "Discontinued";
+ if(m.status==="Held")return "Held";
+ if((m.medType||"Scheduled")==="PRN")return "As Needed";
+ if(m.status==="Infusing")return "Infusing";
+ if(last)return "Given";
+ return m.status==="Due"?"Due":(m.status||"Due");
+}
+
+function renderAdmin(){
+ const p=activePatient();
+ const meds=p?patientMeds(p.id):[];
+ const rows=meds.map(m=>{
+   const hist=(state.administrations||[]).filter(a=>a.patientId===p.id&&a.medicationId===m.id);
+   const given=hist.length?hist.map(a=>`${esc(a.administeredAt)} — ${esc(a.dose||m.dose)}`).join("<br>"):"Not given";
+   return `<tr><td><b>${esc(m.name)}</b><br><small>${esc(m.indication||m.notes||"")}</small></td>
+   <td>${esc(m.dose)}</td><td>${esc(m.route)}</td><td>${esc(m.frequency||"—")}</td>
+   <td>${esc(m.scheduledTime||((m.medType||"")==="PRN"?"As Needed":"—"))}</td>
+   <td><span class="statusChip">${esc(v27MedStatus(m,p.id))}</span></td><td>${given}</td></tr>`;
+ }).join("");
+
+ const prnDue=p?(state.prnReassessments||[]).filter(r=>r.patientId===p.id&&!r.completed):[];
+
+ document.getElementById("view").innerHTML=`
+ <div class="modeBanner">Review the MAR, verify the patient, then scan the medication or blood product. Scanning verifies the match; administration is documented in a separate final step.</div>
+ ${p?panel("Patient Medication Administration Record (MAR)",`
+ <table><thead><tr><th>Medication</th><th>Dose</th><th>Route</th><th>Frequency</th><th>Due / Scheduled</th><th>Status</th><th>Administration History</th></tr></thead>
+ <tbody>${rows||'<tr><td colspan="7">No medications ordered.</td></tr>'}</tbody></table>`):
+ panel("Patient Medication Administration Record (MAR)",'<div class="placeholder">Scan the patient wristband or enter the 4-digit patient code.</div>')}
+
+ ${panel("Blood Administration Scanning",`
+  <div class="scanGrid">
+   <div><h3>1. Patient</h3><div class="note">${p?`Verified patient: <b>${esc(p.name)}</b>`:"Verify patient below first."}</div></div>
+   <div class="scanArrow">→</div>
+   <div><h3>2. Blood Unit</h3>
+    <input id="bloodScanUnderMar" placeholder="Scan blood unit barcode..." autocomplete="off" ${p?'':'disabled'}>
+    <div class="note" style="margin-top:6px"><b>Scanner not reading?</b> Enter the 4-digit blood code.</div>
+    <div style="display:grid;grid-template-columns:1fr auto;gap:6px"><input id="manualBloodCodeUnderMar" inputmode="numeric" maxlength="4" placeholder="4-digit code" ${p?'':'disabled'}><button id="manualBloodVerifyBtnUnderMar" class="secondary" ${p?'':'disabled'}>Verify Blood</button></div>
+    <div id="bloodFeedbackUnderMar" class="feedback hidden"></div>
+   </div>
+   <div class="verifyBox"><b>Blood Verification Status</b><div id="bloodVerificationStatusUnderMar" class="note" style="margin-top:8px">${p?"Ready to scan blood.":"Verify patient first."}</div></div>
+  </div>`)}
+
+ ${panel("Medication Scanning",`
+  <div class="scanGrid">
+   <div><h3>1. Scan Patient Wristband</h3>
+    <input id="patientScan" placeholder="Scan patient wristband..." autocomplete="off">
+    <div class="note" style="margin-top:6px"><b>Wristband not scanning?</b> Enter the 4-digit patient ID code.</div>
+    <div style="display:grid;grid-template-columns:1fr auto;gap:6px"><input id="manualPatientCode" inputmode="numeric" maxlength="4" placeholder="4-digit patient code"><button id="manualPatientVerifyBtn" class="secondary">Verify Patient</button></div>
+    <div id="patientFeedback" class="feedback hidden"></div>
+   </div>
+   <div class="scanArrow">→</div>
+   <div><h3>2. Scan Medication Barcode</h3>
+    <input id="medScan" placeholder="Scan medication barcode..." autocomplete="off" ${p?'':'disabled'}>
+    <div class="note" style="margin-top:6px"><b>Scanner not reading?</b> Enter the 4-digit medication code.</div>
+    <div style="display:grid;grid-template-columns:1fr auto;gap:6px"><input id="manualMedCode" inputmode="numeric" maxlength="4" placeholder="4-digit code" ${p?'':'disabled'}><button id="manualMedVerifyBtn" class="secondary" ${p?'':'disabled'}>Verify Code</button></div>
+    <div id="medFeedback" class="feedback hidden"></div>
+   </div>
+   <div class="verifyBox"><b>Verification Status</b><div id="verificationStatus" class="note" style="margin-top:8px">${p?'Patient selected. Scan medication to verify.':'Verify patient first.'}</div></div>
+  </div>`)}
+
+ ${p?panel("PRN Reassessments",`
+   ${prnDue.map(r=>`<div class="prnReassess"><b>${esc(r.medication)}</b> — Given ${esc(r.administeredAt)} • <b>Reassessment due ${esc(r.reassessmentDue)}</b>
+   <div class="grid" style="margin-top:6px"><label>Reassessment Findings<input class="prnResult" data-id="${esc(r.id)}" placeholder="Pain score, response, symptoms..."></label>
+   <div style="align-self:end"><button class="secondary completePrnReassess" data-id="${esc(r.id)}">Complete Reassessment</button></div></div></div>`).join("")||'<div class="note">No PRN reassessments currently due.</div>'}
+ `):""}
+
+ <div id="verificationArea"></div>`;
+
+ const ps=document.getElementById("patientScan");
+ const pc=document.getElementById("manualPatientCode");
+ const pb=document.getElementById("manualPatientVerifyBtn");
+ const ms=document.getElementById("medScan");
+ const mc=document.getElementById("manualMedCode");
+ const mb=document.getElementById("manualMedVerifyBtn");
+ const bs=document.getElementById("bloodScanUnderMar");
+ const bc=document.getElementById("manualBloodCodeUnderMar");
+ const bb=document.getElementById("manualBloodVerifyBtnUnderMar");
+
+ ps.onkeydown=e=>{if(e.key==="Enter"){verifyPatient(ps.value.trim(),"barcode");ps.value=""}};
+ pc.onkeydown=e=>{if(e.key==="Enter"){verifyPatient(pc.value.trim(),"manual");pc.value=""}};
+ pb.onclick=()=>{verifyPatient(pc.value.trim(),"manual");pc.value=""};
+ ms.onkeydown=e=>{if(e.key==="Enter"){verifyMedication(ms.value.trim(),"barcode");ms.value=""}};
+ mb.onclick=()=>{verifyMedication(mc.value.trim(),"manual");mc.value=""};
+ mc.onkeydown=e=>{if(e.key==="Enter"){verifyMedication(mc.value.trim(),"manual");mc.value=""}};
+ if(bs)bs.onkeydown=e=>{if(e.key==="Enter"){verifyBloodUnderMar(bs.value.trim(),"barcode");bs.value=""}};
+ if(bb)bb.onclick=()=>{verifyBloodUnderMar(bc.value.trim(),"manual");bc.value=""};
+ if(bc)bc.onkeydown=e=>{if(e.key==="Enter"){verifyBloodUnderMar(bc.value.trim(),"manual");bc.value=""}};
+
+ document.querySelectorAll(".completePrnReassess").forEach(btn=>btn.onclick=()=>{
+   const r=state.prnReassessments.find(x=>x.id===btn.dataset.id);
+   const val=document.querySelector(`.prnResult[data-id="${btn.dataset.id}"]`)?.value.trim()||"";
+   if(!val){alert("Enter reassessment findings.");return}
+   r.completed=true;r.completedAt=nowLocal();r.result=val;
+   v27Audit("PRN reassessment completed",r.patientId,`${r.medication}: ${val}`);save();renderAdmin();
+ });
+}
+
+function verifyMedication(code,method="barcode"){
+ const p=activePatient(),fb=document.getElementById("medFeedback"),status=document.getElementById("verificationStatus");
+ if(!p){if(fb){fb.className="feedback bad";fb.textContent="VERIFY PATIENT FIRST."}return}
+ const normalized=String(code||"").trim(),manual=normalized.replace(/\D/g,"").slice(0,4);
+ const med=state.medications.find(m=>m.barcode===normalized||m.manualCode===normalized||(method==="manual"&&m.manualCode===manual));
+ if(!med){if(fb){fb.className="feedback bad";fb.textContent=method==="manual"?"CODE NOT FOUND.":"MEDICATION NOT FOUND."}v27Audit("Medication verification failed",p.id,`Unrecognized ${method} value`,method);save();return}
+ if(med.patientId!==p.id){
+   const assigned=state.patients.find(x=>x.id===med.patientId);
+   if(fb){fb.className="feedback bad";fb.textContent=`WRONG PATIENT: ${med.name} is ordered for ${assigned?.name||"another patient"}. STOP.`}
+   v27Audit("Medication mismatch",p.id,`${med.name} belongs to ${assigned?.name||"another patient"}`,method);save();return;
+ }
+ verifiedMedication=med.id;
+ v27Audit("Medication verified",p.id,`${med.name} ${med.dose} ${med.route}`,method);
+ if(method==="manual")v27Audit("Manual override used",p.id,`Medication ${med.name} verified with 4-digit code`,method);
+ save();
+ if(fb){fb.className="feedback ok";fb.textContent=`Medication verified${method==="manual"?" by manual code":""}: ${med.name} ${med.dose} ${med.route}.`}
+ if(status)status.innerHTML='<b style="color:var(--ok)">Patient ✓ &nbsp; Medication ✓</b> — Review the final administration step.';
+ v27RenderMedFinal(med);
+}
+
+function v27RenderMedFinal(med){
+ const p=activePatient(),area=document.getElementById("verificationArea");if(!p||!area)return;
+ const allergies=(p.allergies||[]).filter(a=>String(a).toLowerCase()!=="nkda");
+ const conflict=allergies.some(a=>[med.name,...(med.allergyKeywords||[])].join(" ").toLowerCase().includes(String(a).toLowerCase()));
+ const high=v27HighAlert(med),prn=(med.medType||"Scheduled")==="PRN",insulin=/insulin/i.test(med.name||"")||med.isInsulin;
+ const gl=v27LatestGlucose(p.id),bg=v27GlucoseValue(gl),suggested=insulin?v27InsulinDose(bg):null;
+ area.innerHTML=panel("Final Medication Administration",`<div class="workflowBox">
+ <h3>${esc(med.name)} ${esc(med.dose)}</h3>
+ <div class="grid3"><div><b>Patient</b><br>${esc(p.name)}</div><div><b>Route</b><br>${esc(med.route)}</div><div><b>Frequency</b><br>${esc(med.frequency||"—")}</div></div>
+ ${conflict?`<div class="safety" style="margin-top:8px"><b>ALLERGY WARNING:</b> ${esc(allergies.join(", "))}. Provider/faculty authorization acknowledgment required.</div>`:""}
+ ${high?'<div class="safety" style="margin-top:8px"><b>HIGH-ALERT:</b> Independent second verification required.</div>':""}
+ ${insulin?`<div class="modeBanner" style="margin-top:8px"><b>Latest glucose:</b> ${bg==null?"No glucose documented":esc(bg)+" mg/dL"}${bg!=null?` • Simulation Regular Insulin scale: <b>${suggested} units</b>${bg>=350?" • Notify provider":""}`:""}</div>`:""}
+ <div class="grid" style="margin-top:10px">
+  <label>Student Name / Initials<input id="finalStudent"></label>
+  <label>Administration Time<input id="finalAdminTime" type="datetime-local" value="${nowLocal()}"></label>
+  <label>Actual Dose<input id="finalDose" value="${esc(med.dose)}"></label>
+  <label>Site / Location<input id="finalSite" placeholder="Injection site / IV site"></label>
+  ${prn?`<label class="wide">PRN Reason / Current Assessment<input id="finalPrnReason" placeholder="${esc(med.indication||"Reason for PRN medication")}"></label>`:""}
+  ${high?'<label>Second Verifier<input id="finalVerifier" placeholder="Name / initials"></label><label>Verifier Code / Initials<input id="finalVerifierCode"></label>':""}
+  ${conflict?'<label class="wide"><input id="finalAllergyOverride" type="checkbox" style="width:auto"> Provider/faculty authorization acknowledged</label>':""}
+  <label class="wide">Notes<textarea id="finalNotes"></textarea></label>
+ </div>
+ <div class="actions" style="margin-top:10px"><button id="finalAdministerBtn" class="primary">Administer Medication</button><button id="finalCancelBtn" class="secondary">Cancel</button></div>
+ </div>`);
+ document.getElementById("finalCancelBtn").onclick=()=>{verifiedMedication=null;area.innerHTML=""};
+ document.getElementById("finalAdministerBtn").onclick=()=>v27FinalizeMed(med.id,{conflict,high,prn,insulin,bg,suggested});
+}
+
+function v27FinalizeMed(medId,flags){
+ const p=activePatient(),med=state.medications.find(x=>x.id===medId);if(!p||!med)return;
+ const student=document.getElementById("finalStudent").value.trim(),dose=document.getElementById("finalDose").value.trim();
+ const time=document.getElementById("finalAdminTime").value||nowLocal(),site=document.getElementById("finalSite").value.trim(),notes=document.getElementById("finalNotes").value.trim();
+ const reason=document.getElementById("finalPrnReason")?.value.trim()||"",ver=document.getElementById("finalVerifier")?.value.trim()||"",verCode=document.getElementById("finalVerifierCode")?.value.trim()||"";
+ const allergyOk=document.getElementById("finalAllergyOverride")?.checked||false;
+ const missing=[];if(!student)missing.push("student");if(!dose)missing.push("actual dose");if(flags.prn&&!reason)missing.push("PRN reason");if(flags.high&&(!ver||!verCode))missing.push("second verifier");if(flags.conflict&&!allergyOk)missing.push("allergy authorization");
+ if(missing.length){alert("Complete: "+missing.join(", ")+".");return}
+ state.administrations.push({id:`admin-${Date.now()}`,patientId:p.id,patientName:p.name,medicationId:med.id,medication:med.name,dose,route:med.route,administeredAt:time,student,site,notes,prnReason:reason,secondVerifier:ver,secondVerifierCode:verCode,allergyOverride:allergyOk});
+ if(flags.prn){
+   med.status="As Needed";
+   const d=new Date(new Date(time).getTime()+60*60000),local=new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,16);
+   state.prnReassessments.push({id:`prn-${Date.now()}`,patientId:p.id,medicationId:med.id,medication:med.name,administeredAt:time,reassessmentDue:local,completed:false,result:""});
+ }else if(/continuous/i.test(med.frequency||"")||/infusion/i.test(med.route||""))med.status="Infusing";
+ else med.status="Given";
+ v27Audit("Medication administered",p.id,`${med.name} ${dose} ${med.route} by ${student}`);
+ if(flags.high)v27Audit("High-alert double check",p.id,`${med.name} verified by ${ver}`);
+ if(flags.conflict)v27Audit("Allergy override acknowledged",p.id,`${med.name} authorized to proceed`);
+ if(flags.prn)v27Audit("PRN reassessment scheduled",p.id,`${med.name} reassessment due ${state.prnReassessments.slice(-1)[0].reassessmentDue}`);
+ if(flags.insulin)v27Audit("Insulin administration",p.id,`${dose}; latest glucose ${flags.bg==null?"not documented":flags.bg+" mg/dL"}; simulation suggestion ${flags.suggested==null?"n/a":flags.suggested+" units"}`);
+ save();verifiedMedication=null;renderAdmin();
+}
+
+function verifyBloodUnderMar(code,method="barcode"){
+ const p=activePatient(),fb=document.getElementById("bloodFeedbackUnderMar"),status=document.getElementById("bloodVerificationStatusUnderMar");
+ if(!p){if(fb){fb.className="feedback bad";fb.textContent="VERIFY PATIENT FIRST."}return}
+ const normalized=String(code||"").trim(),manual=normalized.replace(/\D/g,"").slice(0,4);
+ const u=(state.bloodUnits||[]).find(b=>b.barcode===normalized||b.manualCode===normalized||(method==="manual"&&b.manualCode===manual));
+ if(!u){if(fb){fb.className="feedback bad";fb.textContent=method==="manual"?"BLOOD CODE NOT FOUND.":"BLOOD UNIT NOT FOUND."}v27Audit("Blood verification failed",p.id,`Unrecognized ${method} value`,method);save();return}
+ if(u.patientId!==p.id){
+   const assigned=state.patients.find(x=>x.id===u.patientId);if(fb){fb.className="feedback bad";fb.textContent=`WRONG PATIENT: Unit ${u.unitNumber} is assigned to ${assigned?.name||"another patient"}. STOP.`}
+   v27Audit("Blood mismatch",p.id,`Unit ${u.unitNumber} assigned to ${assigned?.name||"another patient"}`,method);save();return;
+ }
+ verifiedBloodUnit=u.id;v27Audit("Blood unit verified",p.id,`${u.product} ${u.unitType} Unit ${u.unitNumber}`,method);
+ if(method==="manual")v27Audit("Manual override used",p.id,`Blood unit ${u.unitNumber} verified with 4-digit code`,method);save();
+ if(fb){fb.className="feedback ok";fb.textContent=`Blood verified${method==="manual"?" by manual code":""}: ${u.product} ${u.unitType}, Unit ${u.unitNumber}.`}
+ if(status)status.innerHTML='<b style="color:var(--ok)">Patient ✓ &nbsp; Blood Unit ✓</b>';
+ v27RenderBlood(u);
+}
+
+function v27BloodRecord(unitId){
+ state.bloodAdministrations||=[];
+ let r=state.bloodAdministrations.filter(x=>x.bloodUnitId===unitId&&!["Completed","Stopped for Reaction"].includes(x.status)).slice(-1)[0];
+ if(!r){const p=activePatient(),u=state.bloodUnits.find(x=>x.id===unitId);r={id:`bloodadmin-${Date.now()}`,patientId:p.id,patientName:p.name,bloodUnitId:unitId,unitNumber:u.unitNumber,product:u.product,status:"Prepared"};state.bloodAdministrations.push(r)}
+ return r;
+}
+function v27Vitals(prefix){return {temp:document.getElementById(prefix+"Temp")?.value.trim()||"",hr:document.getElementById(prefix+"Hr")?.value.trim()||"",bp:document.getElementById(prefix+"Bp")?.value.trim()||"",rr:document.getElementById(prefix+"Rr")?.value.trim()||"",spo2:document.getElementById(prefix+"Spo2")?.value.trim()||""}}
+
+function v27RenderBlood(u){
+ const p=activePatient(),area=document.getElementById("verificationArea");if(!p||!area)return;
+ const r=(state.bloodAdministrations||[]).filter(x=>x.bloodUnitId===u.id).slice(-1)[0];
+ area.innerHTML=panel("Blood Transfusion Workflow",`<div class="workflowBox">
+ <h3>${esc(u.product)} ${esc(u.unitType)} — Unit ${esc(u.unitNumber)}</h3>
+ <div class="grid3"><div><b>Patient</b><br>${esc(p.name)}</div><div><b>Blood Type</b><br>Patient ${esc(p.bloodType||"Not entered")} • Unit ${esc(u.unitType||"")}</div><div><b>Status</b><br>${esc(u.status||"Available")}</div></div>
+ <h3 style="margin-top:12px">Baseline / Start</h3><div class="grid3">
+ <label>Student<input id="bloodStudent" value="${esc(r?.student||"")}"></label><label>Second Verifier<input id="bloodVerifier" value="${esc(r?.secondVerifier||"")}"></label><label>Start Time<input id="bloodStartTime" type="datetime-local" value="${esc(r?.startTime||nowLocal())}"></label>
+ <label>Baseline Temp °F<input id="bloodBaseTemp" value="${esc(r?.baseline?.temp||"")}"></label><label>Baseline HR<input id="bloodBaseHr" value="${esc(r?.baseline?.hr||"")}"></label><label>Baseline BP<input id="bloodBaseBp" value="${esc(r?.baseline?.bp||"")}"></label><label>Baseline RR<input id="bloodBaseRr" value="${esc(r?.baseline?.rr||"")}"></label><label>Baseline SpO₂<input id="bloodBaseSpo2" value="${esc(r?.baseline?.spo2||"")}"></label></div>
+ <div class="actions" style="margin-top:8px"><button id="startBloodBtn" class="primary">Begin Transfusion</button></div>
+ <h3 style="margin-top:14px">15-Minute Assessment</h3><div class="grid3">
+ <label>15-min Temp °F<input id="blood15Temp" value="${esc(r?.fifteenMin?.temp||"")}"></label><label>15-min HR<input id="blood15Hr" value="${esc(r?.fifteenMin?.hr||"")}"></label><label>15-min BP<input id="blood15Bp" value="${esc(r?.fifteenMin?.bp||"")}"></label><label>15-min RR<input id="blood15Rr" value="${esc(r?.fifteenMin?.rr||"")}"></label><label>15-min SpO₂<input id="blood15Spo2" value="${esc(r?.fifteenMin?.spo2||"")}"></label>
+ <label>Reaction Symptoms<select id="bloodReaction"><option value="">None</option><option>Fever/chills</option><option>Dyspnea</option><option>Back/flank pain</option><option>Hives/itching</option><option>Hypotension</option><option>Chest pain</option><option>Other</option></select></label></div>
+ <div class="actions" style="margin-top:8px"><button id="saveBlood15Btn" class="secondary">Save 15-Minute Assessment</button><button id="stopBloodReactionBtn" class="dangerBtn">STOP — Suspected Reaction</button></div>
+ <h3 style="margin-top:14px">Completion</h3><div class="grid"><label>Stop Time<input id="bloodStopTime" type="datetime-local" value="${esc(r?.stopTime||nowLocal())}"></label><label>Volume Infused (mL)<input id="bloodVolume" type="number" min="0" value="${esc(r?.volumeMl||"")}"></label><label class="wide">Final Assessment / Notes<textarea id="bloodFinalNotes">${esc(r?.finalNotes||"")}</textarea></label></div>
+ <div class="actions" style="margin-top:8px"><button id="completeBloodBtn" class="primary">Complete Transfusion</button></div>
+ </div>`);
+ document.getElementById("startBloodBtn").onclick=()=>v27StartBlood(u.id);
+ document.getElementById("saveBlood15Btn").onclick=()=>v27Blood15(u.id,false);
+ document.getElementById("stopBloodReactionBtn").onclick=()=>v27Blood15(u.id,true);
+ document.getElementById("completeBloodBtn").onclick=()=>v27CompleteBlood(u.id);
+}
+function v27StartBlood(id){
+ const p=activePatient(),u=state.bloodUnits.find(x=>x.id===id),student=document.getElementById("bloodStudent").value.trim(),ver=document.getElementById("bloodVerifier").value.trim(),base=v27Vitals("bloodBase");
+ if(!student||!ver||!base.temp||!base.hr||!base.bp||!base.rr){alert("Enter student, second verifier, and baseline vital signs.");return}
+ const r=v27BloodRecord(id);Object.assign(r,{student,secondVerifier:ver,startTime:document.getElementById("bloodStartTime").value||nowLocal(),baseline:base,status:"Infusing"});u.status="Infusing";
+ v27Audit("Blood transfusion started",p.id,`${u.product} ${u.unitType} Unit ${u.unitNumber}; student ${student}; verifier ${ver}`);save();renderAdmin();setTimeout(()=>{verifiedBloodUnit=id;v27RenderBlood(u)},0);
+}
+function v27Blood15(id,stop){
+ const p=activePatient(),u=state.bloodUnits.find(x=>x.id===id),r=v27BloodRecord(id),rx=document.getElementById("bloodReaction").value;
+ r.fifteenMin=v27Vitals("blood15");r.reaction=rx;
+ if(stop){r.status="Stopped for Reaction";r.stoppedAt=nowLocal();u.status="Stopped for Reaction";v27Audit("Suspected transfusion reaction",p.id,`${u.product} Unit ${u.unitNumber}; symptoms ${rx||"not specified"}; transfusion stopped`);alert("Transfusion marked STOPPED for suspected reaction. Continue the simulation reaction protocol and notify the provider/blood bank as directed.")}
+ else v27Audit("15-minute blood assessment",p.id,`${u.product} Unit ${u.unitNumber}; reaction ${rx||"none"}`);
+ save();renderAdmin();
+}
+function v27CompleteBlood(id){
+ const p=activePatient(),u=state.bloodUnits.find(x=>x.id===id),r=v27BloodRecord(id);
+ if(r.status!=="Infusing"&&u.status!=="Infusing"){alert("Begin the transfusion before documenting completion.");return}
+ r.stopTime=document.getElementById("bloodStopTime").value||nowLocal();r.volumeMl=document.getElementById("bloodVolume").value.trim();r.finalNotes=document.getElementById("bloodFinalNotes").value.trim();r.status="Completed";u.status="Completed";
+ v27Audit("Blood transfusion completed",p.id,`${u.product} ${u.unitType} Unit ${u.unitNumber}; ${r.volumeMl||"volume not entered"} mL`);verifiedBloodUnit=null;save();renderAdmin();
+}
+
+function renderHistory(){
+ const medRows=(state.administrations||[]).slice().reverse().map(a=>`<tr><td>${esc(a.administeredAt)}</td><td>${esc(a.patientName)}</td><td>${esc(a.medication)} ${esc(a.dose)}</td><td>${esc(a.route)}</td><td>${esc(a.student)}</td><td>${esc(a.site)}</td><td>${esc(a.notes)}</td></tr>`).join("");
+ const audits=(state.auditLog||[]).slice().reverse().map(a=>`<tr><td>${esc(a.at)}</td><td>${esc(a.patientName||"—")}</td><td>${esc(a.type)}</td><td>${esc(a.details||"—")}</td><td>${esc(a.method||"—")}</td></tr>`).join("");
+ document.getElementById("view").innerHTML=panel("Medication Administration History",`<table><thead><tr><th>Date/Time</th><th>Patient</th><th>Medication</th><th>Route</th><th>Student</th><th>Site</th><th>Notes</th></tr></thead><tbody>${medRows||'<tr><td colspan="7">No administrations.</td></tr>'}</tbody></table>`)
+ +panel("Audit Trail",`<table><thead><tr><th>Date/Time</th><th>Patient</th><th>Event</th><th>Details</th><th>Method</th></tr></thead><tbody>${audits||'<tr><td colspan="5">No audit events.</td></tr>'}</tbody></table>`);
+}
+
+function renderDebrief(){
+ const opts=state.patients.map(p=>`<option value="${esc(p.id)}" ${verifiedPatient===p.id?"selected":""}>${esc(p.name)} — ${esc(p.mrn)}</option>`).join("");
+ document.getElementById("view").innerHTML=panel("Simulation Summary / Debrief",`<div class="grid"><label>Patient<select id="debriefPatient"><option value="">— Select Patient —</option>${opts}</select></label><div style="align-self:end" class="actions"><button id="showDebriefBtn" class="primary">Build Summary</button><button id="printDebriefBtn" class="secondary">Print Summary</button></div></div><div id="debriefResults" style="margin-top:12px"></div>`);
+ document.getElementById("showDebriefBtn").onclick=()=>v27BuildDebrief(false);document.getElementById("printDebriefBtn").onclick=()=>v27BuildDebrief(true);if(verifiedPatient)v27BuildDebrief(false);
+}
+function v27DebriefHtml(id){
+ const p=state.patients.find(x=>x.id===id);if(!p)return '<div class="note">Select a patient.</div>';
+ const a=(state.auditLog||[]).filter(x=>x.patientId===id).sort((x,y)=>String(x.at).localeCompare(String(y.at)));
+ const meds=(state.administrations||[]).filter(x=>x.patientId===id),blood=(state.bloodAdministrations||[]).filter(x=>x.patientId===id),prn=(state.prnReassessments||[]).filter(x=>x.patientId===id);
+ const manual=a.filter(x=>x.type==="Manual override used").length,allergy=a.filter(x=>x.type==="Allergy override acknowledged").length,high=a.filter(x=>x.type==="High-alert double check").length;
+ return `<div class="success"><b>${esc(p.name)}</b> • MRN ${esc(p.mrn)} • Room ${esc(p.room||"—")}</div>
+ <div class="grid3" style="margin:10px 0"><div class="workflowBox"><b>Medications Given</b><br><span style="font-size:22px">${meds.length}</span></div><div class="workflowBox"><b>Blood Records</b><br><span style="font-size:22px">${blood.length}</span></div><div class="workflowBox"><b>Manual Overrides</b><br><span style="font-size:22px">${manual}</span></div></div>
+ <div class="note"><b>Safety:</b> Allergy overrides ${allergy} • High-alert checks ${high} • PRN reassessments ${prn.filter(x=>x.completed).length}/${prn.length} completed</div>
+ <h3>Chronological Timeline</h3><table><thead><tr><th>Time</th><th>Event</th><th>Details</th><th>Method</th></tr></thead><tbody>${a.map(x=>`<tr><td>${esc(x.at)}</td><td><b>${esc(x.type)}</b></td><td>${esc(x.details||"—")}</td><td>${esc(x.method||"—")}</td></tr>`).join("")||'<tr><td colspan="4">No events.</td></tr>'}</tbody></table>`;
+}
+function v27BuildDebrief(printIt){
+ const id=document.getElementById("debriefPatient").value,body=v27DebriefHtml(id),box=document.getElementById("debriefResults");if(box)box.innerHTML=body;
+ if(printIt&&id){const p=state.patients.find(x=>x.id===id),w=window.open("","_blank","width=1000,height=800");if(!w){alert("Allow pop-ups.");return}w.document.write(`<html><head><title>${esc(p.name)} Simulation Summary</title><style>body{font-family:Arial;padding:20px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #999;padding:6px;text-align:left}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.workflowBox{border:1px solid #777;padding:8px}.success{font-weight:bold}</style></head><body><h2>ATU Simulation Hospital — Debrief Summary</h2>${body}<script>window.onload=()=>window.print()<\/script></body></html>`);w.document.close()}
+}
+
+// Attach mode controls after DOM exists.
+setTimeout(()=>{
+ const btn=document.getElementById("toggleUserModeBtn");if(btn)btn.onclick=v27ToggleMode;
+ document.querySelectorAll("aside button").forEach(b=>{
+   const old=b.onclick;
+   b.onclick=()=>{
+     if(!v27Faculty()&&b.classList.contains("facultyOnly")){alert("Faculty Mode is required.");return}
+     currentView=b.dataset.view;render();
+   };
+ });
+ v27ApplyMode();
+},0);
+// ===== END v27 WORKFLOW =====
+
 function repairDataset(){
  state.deletedMedicationIds ||= [];
  const deletedMedicationIds=new Set(state.deletedMedicationIds);
@@ -1578,11 +2001,18 @@ function repairDataset(){
  state.medications=[...medMap.values()];
 
  state.patients.forEach(p=>{if(typeof p.active!=="boolean")p.active=true;if(!p.barcode)p.barcode=`PT-${slugBarcode(p.mrn||p.name)}`});
+ ensurePatientManualCodes();
  state.medications.forEach(m=>{if(!m.initialStatus)m.initialStatus=m.status||"Due";if(!m.barcode){const p=state.patients.find(x=>x.id===m.patientId);m.barcode=`MED-${slugBarcode(m.name)}-${slugBarcode(m.dose)}-${slugBarcode(p?.mrn||m.patientId)}`}});
  ensureMedicationManualCodes();
  state.bloodUnits ||= [];
  ensureBloodManualCodes();
  state.glucoseChecks ||= [];
+ state.auditLog ||= [];
+ state.prnReassessments ||= [];
+ state.bloodAdministrations ||= [];
+ state.settings ||= {bridgeUrl:"",notionEnabled:false,userMode:"faculty",facultyPin:"2026"};
+ state.settings.userMode ||= "faculty";
+ state.settings.facultyPin ||= "2026";
  save();
 }
 repairDataset();
