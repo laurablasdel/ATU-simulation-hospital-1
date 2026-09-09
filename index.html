@@ -36,6 +36,7 @@ table{width:100%;border-collapse:collapse}th,td{border:1px solid #c4cdd2;padding
 .status{font-size:10px;font-weight:800;border-radius:10px;padding:3px 7px;background:#e7ecef;display:inline-block}
 .patientCards{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
 .patientCard{border:1px solid var(--line);background:#fff;padding:10px;border-radius:5px}.patientCard h3{margin:0 0 5px;color:var(--green)}
+.levelTabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;border-bottom:2px solid var(--line);padding-bottom:8px}.levelTab{border:1px solid var(--green2);background:#fff;color:var(--green);padding:8px 16px;border-radius:4px 4px 0 0;font-weight:800}.levelTab.active{background:var(--green2);color:#fff}.levelCount{display:inline-block;margin-left:5px;padding:2px 6px;border-radius:10px;background:#00000012;font-size:11px}
 .kpi{border:1px solid var(--line);padding:10px;border-radius:4px;background:#fafcfd}.kpi b{font-size:20px}
 .qblTotal{background:#fff7d6;border:2px solid var(--gold);padding:12px;border-radius:5px;font-size:16px}.qblTotal b{font-size:24px;color:var(--red)}
 .hiddenByMode{display:none!important}
@@ -111,6 +112,15 @@ table{width:100%;border-collapse:collapse}th,td{border:1px solid #c4cdd2;padding
 const DATA_VERSION="6.0-postpartum-pph";
 const STORAGE_KEY="atuSimulationHospitalEHRv1";
 const SEED_PATIENTS=[{"id":"amelia-sung","name":"Amelia Sung","mrn":"SIM-201036","dob":"12/08/XXXX","room":"201","provider":"Dr. Darnell","allergies":["Shellfish","Penicillin"],"weightKg":69,"bloodType":"O+","codeStatus":"Full Code","age":"36","sex":"Female","ethnicity":"Filipino","primaryDiagnosis":"Induction of labor at 39 weeks due to gestational diabetes","gestationalAge":"39 weeks","gravida":"2","para":"1","fetus":"Male","gbs":"Positive","feedingPlan":"Breastfeeding","painPlan":"None","deliveryPreferences":"Delayed cord clamping and skin-to-skin after delivery","pphRisk":"Low","tdap":"Given at 28 weeks","gestationalDiabetes":"Diet controlled"},{"id":"jane-fowler","name":"Jane Fowler","mrn":"SIM-204051","dob":"01/28/XXXX","room":"204","provider":"Dr. Smith","allergies":["NKDA"],"weightKg":60,"bloodType":"A+","codeStatus":"Full Code","age":"79","sex":"Female","primaryDiagnosis":"Ovarian cancer \u2014 postoperative total abdominal hysterectomy with bilateral salpingo-oophorectomy","surgery":"Total abdominal hysterectomy with bilateral salpingo-oophorectomy and surgical staging","scenario":"Postoperative opioid intoxication / respiratory depression"},{"id":"fatima-sanogo","name":"Fatima Sanogo","mrn":"201038","dob":"07/08/XX","room":"211E","provider":"Nelson","allergies":["NKDA"],"weightKg":71,"bloodType":"","codeStatus":"Full Code"},{"id":"molly-thomas","name":"Molly Thomas","mrn":"20139","dob":"07/05/XX","room":"211C","provider":"Henderson","allergies":["NKDA"],"weightKg":7,"bloodType":"","codeStatus":"Full Code"},{"id":"stephanie-smith","name":"Stephanie Smith","mrn":"201040","dob":"07/14/XXXX","room":"211E","provider":"Henderson","allergies":["NKDA"],"weightKg":53.5,"bloodType":"","codeStatus":"Full Code"},{"id":"charles-jones","name":"Charles Jones","mrn":"201041","dob":"04/20/XX","room":"211A","provider":"Burris","allergies":["NKDA"],"weightKg":82,"bloodType":"","codeStatus":"Full Code"},{"id":"baby-boy-sung","name":"BABY BOY SUNG","mrn":"201042","dob":"TODAY","room":"211E","provider":"Craig","allergies":["NKDA"],"weightKg":4.37,"bloodType":"","codeStatus":"Full Code"}];
+SEED_PATIENTS.push(
+ {id:"vincent-brody",name:"Vincent Brody",mrn:"SIM-L3-001",dob:"06/28/XXXX",room:"Level 3",unit:"Medical Surgical and ICU",provider:"Simulation Faculty",allergies:["Not listed"],weightKg:"",bloodType:"",codeStatus:"Full Code"},
+ {id:"ruth-livingston",name:"Ruth Livingston",mrn:"SIM-L3-002",dob:"10/08/XXXX",room:"Level 3",unit:"Medical Surgical and ICU",provider:"Simulation Faculty",allergies:["Not listed"],weightKg:"",bloodType:"",codeStatus:"Full Code"},
+ {id:"carl-shapiro",name:"Carl Shapiro",mrn:"SIM-L3-003",dob:"07/19/XXXX",room:"Level 3",unit:"Medical Surgical and ICU",provider:"Simulation Faculty",allergies:["Not listed"],weightKg:"",bloodType:"",codeStatus:"Full Code"},
+ {id:"karl-sharp",name:"Karl Sharp",mrn:"SIM-L3-004",dob:"07/19/XXXX",room:"Level 3",unit:"Medical Surgical and ICU",provider:"Simulation Faculty",allergies:["Not listed"],weightKg:"",bloodType:"",codeStatus:"Full Code"},
+ {id:"vernon-watkins",name:"Vernon Watkins",mrn:"SIM-L3-005",dob:"04/09/XXXX",room:"Level 3",unit:"Medical Surgical and ICU",provider:"Simulation Faculty",allergies:["Not listed"],weightKg:"",bloodType:"",codeStatus:"Full Code"},
+ {id:"david-carter",name:"David Carter",mrn:"12855",dob:"12/03/XXXX",room:"Psychiatric Unit",unit:"Psychiatric Unit",provider:"Simulation Faculty",allergies:["NKDA"],weightKg:91,heightCm:155,bloodType:"",codeStatus:"Full Code",age:"28",sex:"Male",primaryDiagnosis:"Schizophrenia",scenario:"Brought in by police after a violent outburst; active hallucinations and delusions."}
+);
+const PATIENT_LEVELS={"charles-jones":1,"amelia-sung":2,"jane-fowler":2,"fatima-sanogo":2,"molly-thomas":2,"stephanie-smith":2,"baby-boy-sung":2,"vincent-brody":3,"ruth-livingston":3,"carl-shapiro":3,"karl-sharp":3,"vernon-watkins":3,"david-carter":3};
 
 
 const SEED_AMELIA_ORDERS=[
@@ -251,6 +261,8 @@ function loadState(){
    const s=JSON.parse(localStorage.getItem(STORAGE_KEY)||"null");
    if(s){
      s.patients ||= SEED_PATIENTS.map(x=>({...x}));
+     for(const seeded of SEED_PATIENTS)if(!s.patients.some(p=>p.id===seeded.id))s.patients.push({...seeded});
+     s.patients.forEach(p=>{if(PATIENT_LEVELS[p.id])p.level=PATIENT_LEVELS[p.id]});
      s.orders ||= [];s.assessments ||= [];s.vitals ||= [];s.io ||= [];s.notes ||= [];s.labs ||= [];s.mar ||= [];s.audit ||= [];s.laborProgress ||= [];s.postpartumRecovery ||= [];s.pphPads ||= [];s.pphMedications ||= [];s.bloodAdministration ||= [];s.surgicalChecklist ||= [];s.surgicalAssessments ||= [];s.scenarioStage ||= {};
      s.settings ||= {mode:"faculty",facultyPin:"2026"};s.releaseQueue ||= [];s.messages ||= [];s.notifications ||= [];s.diagnosticFiles ||= [];s.labPanels ||= [];
      return s;
@@ -262,7 +274,7 @@ function loadState(){
    settings:{mode:"faculty",facultyPin:"2026"},releaseQueue:[],messages:[],notifications:[],diagnosticFiles:[],labPanels:[]
  };
 }
-let state=loadState(),currentView="patients",activePatientId=null;
+let state=loadState(),currentView="patients",activePatientId=null,patientLevelTab=1;
 ensureSeededAmelia();
 ensureSeededJane();
 save();
@@ -572,18 +584,26 @@ function requirePatient(){
 function patientRows(arr){return arr.filter(x=>x.patientId===activePatientId)}
 
 function renderPatients(){
- document.getElementById("view").innerHTML=panel("Active Patients",`
- <div class="patientCards">${state.patients.map(p=>`<div class="patientCard">
-  <h3>${esc(p.name)}</h3><div class="note">MRN ${esc(p.mrn)} • Room ${esc(p.room)} • ${esc(p.provider)}</div>
+ const levels=[1,2,3],visible=state.patients.filter(p=>Number(p.level||PATIENT_LEVELS[p.id])===patientLevelTab);
+ const patientCards=patients=>`<div class="patientCards">${patients.map(p=>`<div class="patientCard">
+  <h3>${esc(p.name)}</h3><div class="note">MRN ${esc(p.mrn)} • DOB ${esc(p.dob)} • Room ${esc(p.room)} • ${esc(p.provider)}</div>
   <div class="note" style="margin:5px 0">Allergies: ${esc((p.allergies||[]).join(", "))}</div>
   <button class="primary openPatient" data-id="${esc(p.id)}">Open Chart</button>
- </div>`).join("")}</div>`);
+ </div>`).join("")||'<div class="note">No patients assigned.</div>'}</div>`;
+ const patientGroups=patientLevelTab===3
+  ? ["Medical Surgical and ICU","Psychiatric Unit"].map(unit=>`<h2 style="color:var(--green);margin:16px 0 8px">${esc(unit)}</h2>${patientCards(visible.filter(p=>p.unit===unit))}`).join("")
+  : patientCards(visible);
+ document.getElementById("view").innerHTML=panel("Active Patients",`
+ <div class="levelTabs" role="tablist" aria-label="Nursing level">${levels.map(level=>`<button class="levelTab ${level===patientLevelTab?"active":""}" role="tab" aria-selected="${level===patientLevelTab}" data-level="${level}">Level ${level}<span class="levelCount">${state.patients.filter(p=>Number(p.level||PATIENT_LEVELS[p.id])===level).length}</span></button>`).join("")}</div>
+ ${patientGroups}`);
+ document.querySelectorAll(".levelTab").forEach(b=>b.onclick=()=>{patientLevelTab=Number(b.dataset.level);renderPatients()});
  document.querySelectorAll(".openPatient").forEach(b=>b.onclick=()=>{activePatientId=b.dataset.id;currentView="summary";audit("Chart opened",activePatientId,"Patient chart opened");render()});
 }
 function renderSummary(){
  if(!requirePatient())return;const p=activePatient();
  const counts={orders:patientRows(state.orders).length,assess:patientRows(state.assessments).length,vitals:patientRows(state.vitals).length,notes:patientRows(state.notes).length,labs:patientRows(state.labs).length};
  const recent=[...state.audit].filter(a=>a.patientId===p.id).slice(-8).reverse();
+ const psychQuick=p.id==="david-carter"?panel("Psychiatric Snapshot",`<div class="grid3"><div><b>28 years</b><br><span class="note">Age</span></div><div><b>91 kg / 155 cm</b><br><span class="note">Weight / height</span></div><div><b>NKDA</b><br><span class="note">Allergies</span></div><div><b>Schizophrenia</b><br><span class="note">Primary diagnosis</span></div><div style="grid-column:span 2"><b>Current presentation</b><br><span class="note">Brought in by police after a violent outburst; active hallucinations and delusions.</span></div></div>`):"";
  const surgicalQuick=p.id==="jane-fowler"?panel("Surgical Snapshot",`
  <div class="grid3">
   <div><b>79 years</b><br><span class="note">Age</span></div>
@@ -610,6 +630,7 @@ function renderSummary(){
  <div><b>3 cm / 100% / -2</b><br><span class="note">Baseline cervical exam</span></div><div><b>FHR 140 — Category I</b><br><span class="note">Fetal assessment</span></div><div><b>Q3 min — moderate</b><br><span class="note">Contractions</span></div>
  <div><b>SROM — clear</b><br><span class="note">Membranes</span></div><div><b>Diet controlled</b><br><span class="note">Gestational diabetes</span></div><div><b>Low PPH risk</b><br><span class="note">Hemorrhage risk</span></div></div>`):"";
  document.getElementById("view").innerHTML=
+ psychQuick+
  surgicalQuick+
  prenatalQuick+
  obSnapshot+
