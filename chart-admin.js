@@ -107,6 +107,7 @@ window.initializeAdminEnhancements=function(){
  const baseSurgery=renderSurgery;renderSurgery=function(){baseSurgery();[...document.querySelectorAll('.panel')].find(x=>x.querySelector('h2')?.textContent==='Scenario Progression')?.remove();};
  const baseFlows=renderFlowsheets;renderFlowsheets=function(){baseFlows();document.querySelectorAll('#view details').forEach(d=>d.open=true);};
  const baseIO=renderIO;renderIO=function(){baseIO();document.querySelectorAll('#view details').forEach(d=>d.open=true);};
+ const baseLabs=renderLabs;renderLabs=function(){baseLabs();if(activePatientId==='charles-jones'){document.querySelectorAll('#view .panel').forEach(section=>{const text=section.textContent;if(text.includes('No released laboratory results.')||text.includes('No released diagnostic attachments.'))section.remove();});}};
  const baseMAR=renderMAR;renderMAR=function(){
   if(!isFaculty()&&state.marVisibility[activePatientId]===false){document.getElementById('view').innerHTML=panel('MAR','The MAR is hidden by faculty for this simulation.');return;}
   if(activePatientId==='charles-jones'){renderCharlesMAR();return;}
