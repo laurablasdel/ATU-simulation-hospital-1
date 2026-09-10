@@ -28,8 +28,17 @@ const charlesMeds=[
 for(let shift=1;shift<=4;shift++)added.push({id:`admin-charles-mar-${shift}`,patientId:'charles-jones',title:`MAR — Shift ${shift}`,category:'mar',status:shift===1?'released':'pending',content:`**${shift===1||shift===3?'Day Shift (7 AM–7 PM)':'Night Shift (7 PM–7 AM)'}**\n\n${charlesMeds.filter(m=>(shift===1||shift===3)?m[2]!=='2100':m[2]==='2100'||m[2]==='AC/HS').map(m=>`- ${m[0]} | ${m[1]} | Due ${m[2]}`).join('\n')}`});
 
 function compactContent(value){
- return String(value||'').replace(/^#\s*$/gm,'').replace(/<columns>[\s\S]*?<\/columns>/gi,m=>/<table|\w{3,}/i.test(m.replace(/<\/?(?:columns?|column)[^>]*>/gi,''))?m:'')
-  .replace(/<tr>(?:\s*<td[^>]*>\s*(?:<br>)?\s*<\/td>\s*)+<\/tr>/gi,'').replace(/(?:<br>\s*){3,}/gi,'<br><br>').replace(/\n[ \t]+\n/g,'\n\n').replace(/\n{3,}/g,'\n\n').trim();
+ return String(value||'').replace(/^\s*(?:#|---|[-|]\s*)\s*$/gm,'').replace(/<columns>[\s\S]*?<\/columns>/gi,m=>/<table|[A-Za-z0-9]{3,}/i.test(m.replace(/<\/?(?:columns?|column)[^>]*>/gi,''))?m:'')
+  .replace(/<tr>(?:\s*<td[^>]*>\s*(?:<br>)?\s*<\/td>\s*)+<\/tr>/gi,'').replace(/<p[^>]*>\s*(?:<br\s*\/?>)?\s*<\/p>/gi,'').replace(/(?:<br\s*\/?>\s*){2,}/gi,'<br>')
+  .replace(/[ \t]+$/gm,'').replace(/\n[ \t]+\n/g,'\n\n').replace(/\n{3,}/g,'\n\n').trim();
+}
+
+function compactRenderedView(){
+ const root=document.getElementById('view');if(!root)return;
+ root.querySelectorAll('tr').forEach(row=>{if(!row.textContent.trim()&&!row.querySelector('input,select,textarea,img,button'))row.remove();});
+ root.querySelectorAll('p,div,section').forEach(el=>{if(el!==root&&!el.textContent.trim()&&!el.querySelector('input,select,textarea,img,button,table,details')&&!el.classList.contains('actions'))el.remove();});
+ const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);const nodes=[];while(walker.nextNode())nodes.push(walker.currentNode);for(const node of nodes){const cleaned=node.nodeValue.replace(/(^|\n)\s*(?:#|---|\|\s*)\s*(?=\n|$)/g,'$1').replace(/[ \t]{2,}/g,' ');if(cleaned!==node.nodeValue)node.nodeValue=cleaned;}
+ root.querySelectorAll('details.chartRecord').forEach(d=>{if(['flowsheets','io'].includes(currentView))d.open=true;});
 }
 window.prepareAdminChartData=function(){
  for(let i=CHART_RECORDS.length-1;i>=0;i--)if(removeIds.has(CHART_RECORDS[i].id))CHART_RECORDS.splice(i,1);
@@ -97,5 +106,6 @@ window.initializeAdminEnhancements=function(){
   document.querySelectorAll('[data-live-collection]').forEach(card=>{const collection=card.dataset.liveCollection,id=card.dataset.liveId;const getRow=()=>state[collection].find(x=>x.id===id);card.querySelector('.liveSaveRow').onclick=()=>{try{const edited=JSON.parse(card.querySelector('.liveJson').value);Object.assign(getRow(),edited,{id,patientId:activePatientId});audit('Faculty edited chart data',activePatientId,`${collection}: ${id}`);renderFaculty();}catch(e){alert('Enter valid chart data. Check quotation marks and commas.');}};card.querySelector('.liveDeleteRow').onclick=()=>{if(!confirm('Delete this chart entry?'))return;state[collection]=state[collection].filter(x=>x.id!==id);audit('Faculty deleted chart data',activePatientId,`${collection}: ${id}`);renderFaculty();};card.querySelector('.livePendRow').onclick=()=>{const row={...getRow()},title=row.test||row.medication||row.text||row.type||`${collection} entry`,content=row.result||row.text||row.medication||row.narrative||JSON.stringify(row);state[collection]=state[collection].filter(x=>x.id!==id);queueRelease('chartdata',activePatientId,title,content,{targetCollection:collection,rowData:row});renderFaculty();};});
  };
  const baseMenu=applyPatientMenu;applyPatientMenu=function(){baseMenu();document.querySelector('[data-view="labor"]')?.classList.toggle('hiddenByPatient',activePatientId==='baby-boy-sung'||!((PATIENT_SPECIALTY_VIEWS[activePatientId]||[]).includes('labor')));};
+ const baseRender=render;render=function(){baseRender();compactRenderedView();};
 };
 })();
