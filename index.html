@@ -40,6 +40,7 @@ table{width:100%;border-collapse:collapse}th,td{border:1px solid #c4cdd2;padding
 .kpi{border:1px solid var(--line);padding:10px;border-radius:4px;background:#fafcfd}.kpi b{font-size:20px}
 .qblTotal{background:#fff7d6;border:2px solid var(--gold);padding:12px;border-radius:5px;font-size:16px}.qblTotal b{font-size:24px;color:var(--red)}
 .hiddenByMode{display:none!important}
+.hiddenByPatient{display:none!important}
 @media(max-width:1050px){.patientCards{grid-template-columns:repeat(2,1fr)}.meta{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:760px){.layout{display:block}aside{position:static;height:auto}.grid,.grid3,.grid4,.patientCards,.meta{grid-template-columns:1fr}}
 
@@ -48,6 +49,9 @@ table{width:100%;border-collapse:collapse}th,td{border:1px solid #c4cdd2;padding
 .releaseCard{border:1px solid var(--line);border-left:5px solid var(--gold);padding:10px;border-radius:4px;margin-bottom:8px;background:white}
 .releaseCard.released{border-left-color:var(--ok);background:#f6fbf8}
 .releaseCard.message{border-left-color:#4e72a5}
+.chartUpdateCard{border:2px solid #c72c43;border-left:8px solid #c72c43;background:#fff7f8}
+.releaseChartUpdate{background:#c72c43!important;border-color:#9f1730!important;color:#fff!important;font-size:16px!important;font-weight:900!important;padding:13px 20px!important;min-width:190px}
+.releaseChartUpdate:hover{background:#9f1730!important}
 .popupOverlay{position:fixed;inset:0;background:#0008;z-index:5000;display:flex;align-items:center;justify-content:center;padding:18px}
 .popupCard{background:white;width:min(560px,95vw);border-radius:8px;box-shadow:0 15px 45px #0006;overflow:hidden}
 .popupHead{background:var(--green);color:#fff;padding:12px 15px;border-bottom:4px solid var(--gold)}
@@ -91,10 +95,10 @@ table{width:100%;border-collapse:collapse}th,td{border:1px solid #c4cdd2;padding
  <div class="group">Patient</div>
  <button data-view="patients" class="active">Patient List</button>
  <button data-view="summary">Patient Summary</button>
- <button data-view="prenatal">Prenatal / OB Record</button>
- <button data-view="labor">Labor & Delivery</button>
- <button data-view="postpartum">Postpartum Recovery / PPH</button>
- <button data-view="surgery">Surgical / Post-Op</button>
+ <button data-view="prenatal" data-specialty="prenatal">Prenatal / OB Record</button>
+ <button data-view="labor" data-specialty="labor">Labor & Delivery</button>
+ <button data-view="postpartum" data-specialty="postpartum">Postpartum Recovery / PPH</button>
+ <button data-view="surgery" data-specialty="surgery">Surgical / Post-Op</button>
  <div class="group">Charting</div>
  <button data-view="assessments">Assessments</button>
  <button data-view="flowsheets">Flowsheets / Vitals</button>
@@ -117,6 +121,9 @@ table{width:100%;border-collapse:collapse}th,td{border:1px solid #c4cdd2;padding
 </main>
 </div>
 <script src="notion-data.js"></script>
+<script src="notion-data-additions.js"></script>
+<script src="notion-data-additions-2.js"></script>
+<script src="notion-data-fixes.js"></script>
 <script>
 const DATA_VERSION="6.0-postpartum-pph";
 const STORAGE_KEY="atuSimulationHospitalEHRv1";
@@ -142,6 +149,66 @@ const NOTION_PATIENT_OVERRIDES={
  "carl-shapiro":{age:"54",primaryDiagnosis:"NSTEMI",allergies:["NKDA"],codeStatus:"Full Code"},
  "karl-sharp":{age:"64",primaryDiagnosis:"NSTEMI",allergies:["NKDA"],codeStatus:"DNR"},
  "vernon-watkins":{age:"69",primaryDiagnosis:"Bowel perforation",allergies:["Penicillin (hives)"],codeStatus:"Full Code"}
+};
+
+const LEVEL3_MAR_MEDICATIONS={
+ "vincent-brody":[
+  ["D5 ½ NS with 20 mEq KCl at 50 mL/hr","IV infusion","","","Active"],
+  ["Albuterol 2.5 mg in 3 mL NS via nebulizer","Nebulizer","0000, 0400, 0800, 1200, 1600, 2000","0815 / CR","Active"],
+  ["Ipratropium 0.5 mg","Nebulizer","0400, 1200, 2000","0400 / LJ","Active"],
+  ["Prednisone 40 mg daily for 5 days","PO","0900","0915 / CR","Active"]
+ ],
+ "ruth-livingston":[
+  ["Lactated Ringer's at 75 mL/hr","IV infusion","","0800 / LJ","Discontinued by ICU order"],
+  ["Docusate sodium 100 mg twice daily","PO","0900, 2100","0900 / LJ","Active"],
+  ["Enoxaparin 40 mg daily","SQ","1700","","Active"],
+  ["Piperacillin-tazobactam 450 mg every 8 hours","IVPB","0600, 1400, 2200","0600 / LJ","Discontinued by ICU order"],
+  ["Calcium carbonate 650 mg daily","PO","0900","0900 / LJ","Active"],
+  ["Alendronate 70 mg weekly on Wednesday","PO","0900","","Active"],
+  ["Oxycodone 15 mg every 4 hours PRN pain","PO","PRN","0200 / LJ","Active"],
+  ["Acetaminophen 650 mg every 6 hours PRN temperature >101°F","PO","PRN","0600 / LJ","Active"],
+  ["Ketorolac 30 mg every 6 hours PRN pain; max 120 mg/day","IV push","PRN","","Active"],
+  ["Normal saline 500 mL over 30 minutes STAT","IV bolus","STAT","","Active"],
+  ["Normal saline at 125 mL/hr after bolus","IV infusion","Continuous","","Active"],
+  ["After fluid bolus, if MAP <65 or SBP <100: norepinephrine 2 mcg/min; titrate by 2 mcg every 5 minutes to MAP >65 or SBP >100; max 30 mcg/min","IV infusion","Conditional after bolus","","Active"],
+  ["Vancomycin 500 mg/250 mL every 8 hours over 2 hours","IVPB","Every 8 hours","","Active"]
+ ],
+ "carl-shapiro":[
+  ["Aspirin 81 mg daily, start tomorrow","PO","0900","","Active"],
+  ["Ticagrelor 180 mg loading dose once today","PO","Once today","","Active"],
+  ["Ticagrelor 90 mg twice daily, start tomorrow","PO","0900, 2100","","Active"],
+  ["Enoxaparin 110 mg every 12 hours","SQ","0900, 2100","0830 / CR","Active"],
+  ["Nitroglycerin 0.4 mg every 5 minutes PRN chest pain, up to 3 doses","SL","PRN","","Active"],
+  ["Normal saline at 25 mL/hr","IV infusion","Continuous","0830 / LJ","Active"]
+ ],
+ "karl-sharp":[
+  ["Aspirin 81 mg daily, start in AM","PO","0900","","Active"],
+  ["Ticagrelor 90 mg twice daily, start in AM","PO","0900, 2100","","Active"],
+  ["Enoxaparin 110 mg every 12 hours","SQ","0900, 2100","0900 / CR","Active"],
+  ["Nitroglycerin 0.4 mg every 5 minutes PRN chest pain, up to 3 doses","SL","PRN","","Active"],
+  ["Normal saline at 25 mL/hr","IV infusion","Continuous","0900 / LJ","Active"],
+  ["Ticagrelor 180 mg loading dose","PO","Given in ER","","Completed in ER"],
+  ["Aspirin 325 mg, chewed","PO","Given in ER","","Completed in ER"],
+  ["Nitroglycerin 0.4 mg every 5 minutes PRN chest pain, up to 3 doses","SL","Given in ER","","Completed in ER"],
+  ["Normal saline 500 mL bolus","IV bolus","Given in ER","","Completed in ER"]
+ ],
+ "vernon-watkins":[
+  ["Hydrochlorothiazide 25 mg daily","PO","0900","0900 / CR","Active"],
+  ["Ciprofloxacin 400 mg every 12 hours","IVPB","0900, 2100","0900 / CR","Active"],
+  ["Metronidazole 500 mg every 12 hours","IVPB","0600, 1800","0600 / LJ","Active"],
+  ["Enoxaparin 40 mg daily","SQ","0900","0900 / CR","Active"],
+  ["Acetaminophen 1 g — MAR says every 8 hours; provider order says every 12 hours","PO","Notion MAR: 0000, 0800, 1600","0800 / LJ","Faculty clarification required"],
+  ["Gabapentin 300 mg every 8 hours","PO","0000, 0800, 1600","0800 / LJ","Active"],
+  ["Oxycodone 5 mg every 4 hours PRN moderate pain 4–7","PO","PRN","","Active"],
+  ["Oxycodone 10 mg every 4 hours PRN severe pain 8–10","PO","PRN","","Active"]
+ ],
+ "david-carter":[
+  ["Olanzapine 10 mg now, then daily","PO","0900","0900 / LJ","Active"],
+  ["Venlafaxine XR 75 mg daily","PO","0900","0900 / LJ","Active"],
+  ["Lorazepam 2 mg every 8 hours PRN agitation","PO","PRN","JS","Active"],
+  ["Haloperidol 5 mg every 8 hours PRN agitation","PO","PRN","","Active"],
+  ["Acetaminophen 650 mg every 8 hours PRN pain","PO","PRN","","Active"]
+ ]
 };
 
 
@@ -309,10 +376,11 @@ function importedPanel(categories,title="Imported from Notion"){
 function appendImportedForView(view){
  const map={summary:["summary","notes"],prenatal:["prenatal"],labor:["labor"],surgery:["surgery"],assessments:["assessments"],flowsheets:["flowsheets"],io:["io"],orders:["orders"],labs:["labs"],mar:["mar"]};
  if(!map[view]||!activePatient())return;
- document.getElementById("view").insertAdjacentHTML("beforeend",importedPanel(map[view],view==="summary"?"Patient Overview & Provider Documentation":"Imported Source Record"));
+ document.getElementById("view").insertAdjacentHTML(view==="mar"?"beforeend":"afterbegin",importedPanel(map[view],view==="summary"?"Patient Overview & Provider Documentation":"Imported Source Record"));
 }
 function seedNotionPending(){
  state.releaseQueue ||= [];
+ state.releaseQueue=state.releaseQueue.filter(item=>!item.notionRecordId||NOTION_RECORDS.some(record=>record.id===item.notionRecordId));
  for(const r of NOTION_RECORDS.filter(x=>x.status==="pending")){
   if(state.releaseQueue.some(x=>x.notionRecordId===r.id))continue;
   state.releaseQueue.push({id:`pending-${r.id}`,kind:"result",patientId:r.patientId,title:r.title,content:r.content,status:"pending",createdAt:"Imported from Notion",releasedAt:"",resultType:"Diagnostic",flag:"Abnormal",notionRecordId:r.id});
@@ -610,6 +678,20 @@ function audit(type,patientId,details=""){
  save();
 }
 function activePatient(){return state.patients.find(x=>x.id===activePatientId)}
+const PATIENT_SPECIALTY_VIEWS={
+ "amelia-sung":["prenatal","labor"],
+ "fatima-sanogo":["prenatal","labor","postpartum"],
+ "baby-boy-sung":["prenatal","labor"],
+ "jane-fowler":["surgery"],
+ "ruth-livingston":["surgery"],
+ "vernon-watkins":["surgery"]
+};
+function applyPatientMenu(){
+ const allowed=PATIENT_SPECIALTY_VIEWS[activePatientId]||[];
+ document.querySelectorAll("aside [data-specialty]").forEach(button=>{
+  button.classList.toggle("hiddenByPatient",!allowed.includes(button.dataset.specialty));
+ });
+}
 // v4 tab-local mode handled above
 // v4 applyMode handled above
 // v4 toggleMode handled above
@@ -625,6 +707,7 @@ function renderBanner(){
 }
 function render(){
  document.querySelectorAll("aside button").forEach(b=>b.classList.toggle("active",b.dataset.view===currentView));
+ applyPatientMenu();
  renderBanner();
  if(currentView==="patients")renderPatients();
  if(currentView==="summary")renderSummary();
@@ -1030,10 +1113,34 @@ function renderLabs(){
  document.querySelectorAll(".openDiagFile").forEach(b=>b.onclick=()=>openDiagnosticFile(b.dataset.id));
 }
 function renderMAR(){
- if(!requirePatient())return;const orders=patientRows(state.orders).filter(o=>o.type==="Medication");
- document.getElementById("view").innerHTML=panel("Medication Administration Record",`
- <div class="note">This EHR v1 displays medication orders entered in this chart. The separate ATU BCMA project remains the dedicated barcode-administration system.</div>
- <table style="margin-top:8px"><thead><tr><th>Order Time</th><th>Medication Order</th><th>Provider</th><th>Status</th></tr></thead><tbody>${orders.map(o=>`<tr><td>${esc(o.time)}</td><td>${esc(o.text)}</td><td>${esc(o.provider)}</td><td>${esc(o.status)}</td></tr>`).join("")||'<tr><td colspan="4">No medication orders entered in this EHR yet.</td></tr>'}</tbody></table>`);
+ if(!requirePatient())return;
+ const orders=patientRows(state.orders).filter(o=>o.type==="Medication");
+ const baseline=LEVEL3_MAR_MEDICATIONS[activePatientId]||[];
+ const administrations=patientRows(state.mar).slice().reverse();
+ document.getElementById("view").innerHTML=
+ panel("Medication Administration Record",`
+ <div class="note">${baseline.length?"Baseline medications from this patient's Notion MAR and provider orders. Review source records below for full instructions.":"Medication orders and source MAR records for this patient appear below."}</div>
+ <table style="margin-top:8px"><thead><tr><th>Medication</th><th>Route</th><th>Time Due</th><th>Previously Given</th><th>Status</th></tr></thead><tbody>
+ ${baseline.map(m=>`<tr><td><b>${esc(m[0])}</b></td><td>${esc(m[1])}</td><td>${esc(m[2])}</td><td>${esc(m[3])}</td><td>${esc(m[4])}</td></tr>`).join("")||'<tr><td colspan="5">No baseline medication list is assigned for this patient.</td></tr>'}
+ </tbody></table>`)+
+ panel("New Medication Orders",`
+ <table><thead><tr><th>Order Time</th><th>Medication Order</th><th>Provider</th><th>Status</th></tr></thead><tbody>${orders.map(o=>`<tr><td>${esc(o.time)}</td><td>${esc(o.text)}</td><td>${esc(o.provider)}</td><td>${esc(o.status)}</td></tr>`).join("")||'<tr><td colspan="4">No additional medication orders entered.</td></tr>'}</tbody></table>`)+
+ panel("Document Medication Administration",`
+ <div class="grid4"><label>Administration Time<input id="marTime" type="datetime-local" value="${nowLocal()}"></label><label>Student / Initials<input id="marStudent"></label>
+ <label>Medication<input id="marMedication" list="marMedicationList" placeholder="Select or enter medication"><datalist id="marMedicationList">${baseline.map(m=>`<option value="${esc(m[0])}">`).join("")}</datalist></label>
+ <label>Dose<input id="marDose"></label><label>Route<input id="marRoute"></label><label>Scheduled / Due Time<input id="marDue"></label>
+ <label>Status<select id="marStatus"><option>Given</option><option>Held</option><option>Refused</option><option>Not given</option></select></label>
+ <label class="wide">Response / Reason<input id="marResponse" placeholder="Patient response or reason medication was not given"></label></div>
+ <div class="actions" style="margin-top:10px"><button id="saveMarAdministration" class="primary">Record Administration</button></div>`)+
+ panel("Administration History",`
+ <table><thead><tr><th>Administration Time</th><th>Medication</th><th>Dose / Route</th><th>Due</th><th>Status</th><th>Response / Reason</th><th>Student</th></tr></thead><tbody>
+ ${administrations.map(r=>`<tr><td>${esc(r.time)}</td><td><b>${esc(r.medication)}</b></td><td>${esc(r.dose)} ${esc(r.route)}</td><td>${esc(r.due)}</td><td>${esc(r.status)}</td><td>${esc(r.response)}</td><td>${esc(r.student)}</td></tr>`).join("")||'<tr><td colspan="7">No administrations documented in this session.</td></tr>'}
+ </tbody></table>`);
+ saveMarAdministration.onclick=()=>{
+  const r={id:uid("mar"),patientId:activePatientId,time:marTime.value,student:marStudent.value.trim(),medication:marMedication.value.trim(),dose:marDose.value.trim(),route:marRoute.value.trim(),due:marDue.value.trim(),status:marStatus.value,response:marResponse.value.trim()};
+  if(!r.time||!r.student||!r.medication){alert("Administration time, student/initials, and medication are required.");return}
+  state.mar.push(r);audit("Medication administration",activePatientId,`${r.medication}: ${r.status} by ${r.student}`);renderMAR();
+ };
 }
 
 function renderImportedChart(){
@@ -1077,10 +1184,21 @@ function renderFaculty(){
  if(!p){requirePatient();return}
  const selectedId=p.id;
  const pending=(state.releaseQueue||[]).filter(x=>x.patientId===selectedId&&x.status==="pending").slice().reverse();
+ const chartUpdates=pending.filter(x=>x.notionRecordId);
+ const otherPending=pending.filter(x=>!x.notionRecordId);
  const released=(state.releaseQueue||[]).filter(x=>x.patientId===selectedId&&x.status==="released").slice().reverse().slice(0,20);
 
  document.getElementById("view").innerHTML=
  `<div class="livebar"><span class="liveDot"></span><b>Faculty Live Control — ${esc(p.name)}</b><span class="note" style="color:#dbe9e3">All controls below apply only to this open chart.</span></div>`+
+ panel(`Chart Updates — Instructor Only (${chartUpdates.length})`,`
+   <div class="note" style="margin-bottom:10px"><b>Hidden from students.</b> Review each update, then use the red button when you are ready to place it in this patient's live chart.</div>
+   ${chartUpdates.map(item=>`<div class="releaseCard chartUpdateCard">
+     <div class="actions" style="justify-content:space-between;align-items:center">
+      <div><span class="pendingBadge">CHART UPDATE</span> <b>${esc(item.title)}</b><br><span class="note">${esc(p.name)} • Imported from instructor-only Notion updates</span></div>
+      <button class="releaseChartUpdate releaseNow" data-id="${esc(item.id)}">Release to Student</button>
+     </div>
+     <details style="margin-top:10px"><summary><b>Review update before release</b></summary><div class="notionRecordBody">${renderNotionDoc(item.content)}</div></details>
+   </div>`).join("")||'<div class="note">No instructor-only chart updates are waiting for this patient.</div>'}`)+
  panel("Create Pending Item",`
   <div class="grid3">
    <div class="kpi"><span class="note">Patient</span><br><b>${esc(p.name)}</b><br><span class="note">MRN ${esc(p.mrn)}</span></div>
@@ -1114,8 +1232,8 @@ function renderFaculty(){
   <div class="note" style="margin-top:6px">The file is stored in this browser until a cloud backend is connected. It stays hidden from students until you release the pending result.</div>
   <div class="actions" style="margin-top:8px"><button id="saveDiagPending" class="primary">Upload & Save as Pending</button></div>
  `)+
- panel(`Pending Releases (${pending.length})`,`
-   ${pending.map(item=>{
+ panel(`Other Pending Releases (${otherPending.length})`,`
+   ${otherPending.map(item=>{
      const pt=state.patients.find(x=>x.id===item.patientId);
      return `<div class="releaseCard ${item.kind==="message"?"message":""}">
        <div class="actions" style="justify-content:space-between">
