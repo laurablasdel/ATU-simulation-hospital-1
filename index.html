@@ -83,6 +83,9 @@ table{width:100%;border-collapse:collapse}th,td{border:1px solid #c4cdd2;padding
 .fileBadge{display:inline-block;background:#e8eef1;border:1px solid #a9b4bb;padding:3px 7px;border-radius:10px;font-size:10px;font-weight:800}
 
 fieldset{border:1px solid var(--line);margin:12px 0;padding:12px}legend{font-weight:700;color:var(--green)}output{display:block;font-weight:bold;margin:8px 0}.entryFeedback{margin-left:10px;color:var(--green)}
+.panel{margin-bottom:10px}.panel .body{padding:12px}.chartRecordBody{padding:10px}.chartRecordBody br+br{display:none}
+table th,table td{padding:7px 8px;vertical-align:top}.releaseCard{margin:8px 0;padding:10px}
+[data-admin-record] textarea{min-height:150px;font-family:inherit;line-height:1.35}
 </style>
 </head>
 <body>
@@ -109,8 +112,9 @@ fieldset{border:1px solid var(--line);margin:12px 0;padding:12px}legend{font-wei
  <button data-view="orders">Orders</button>
  <button data-view="labs">Labs / Diagnostics</button>
  <button data-view="mar">MAR</button>
- <button data-view="imported">Complete Chart Record</button>
- <button data-view="history">Chart History</button>
+ <button data-view="blood" data-specialty="blood">Blood Administration</button>
+ <button data-view="imported" class="facultyOnly">Complete Chart Record</button>
+ <button data-view="history" class="facultyOnly">Chart History</button>
  <button data-view="inbox">Messages / Alerts</button>
  <div class="group">Faculty</div>
  <button data-view="faculty" class="facultyOnly">Faculty Live Control</button>
@@ -123,6 +127,7 @@ fieldset{border:1px solid var(--line);margin:12px 0;padding:12px}legend{font-wei
 </div>
 <script src="chart-data.js"></script>
 <script src="chart-workflows.js"></script>
+<script src="chart-admin.js"></script>
 <script>
 const DATA_VERSION="6.0-postpartum-pph";
 const STORAGE_KEY="atuSimulationHospitalEHRv1";
@@ -412,6 +417,7 @@ let state=loadState(),currentView="patients",activePatientId=null,patientLevelTa
 for(const p of state.patients)if(PATIENT_OVERRIDES[p.id])Object.assign(p,PATIENT_OVERRIDES[p.id]);
 ensureSeededAmelia();
 ensureSeededJane();
+prepareAdminChartData();
 seedChartPending();
 save();
 
@@ -464,7 +470,7 @@ function applyMode(){
  const btn=document.getElementById("toggleMode")||document.getElementById("toggleUserModeBtn");
  if(badge)badge.textContent=faculty?"Faculty Mode":"Student Mode";
  if(btn)btn.textContent=faculty?"Student Mode":"Faculty Mode";
- if(!faculty&&["faculty","debrief"].includes(currentView)){currentView="patients";render()}
+ if(!faculty&&["faculty","debrief","imported","history"].includes(currentView)){currentView="patients";render()}
  updateNotificationCount();
 }
 function toggleMode(){
@@ -684,8 +690,9 @@ function audit(type,patientId,details=""){
 function activePatient(){return state.patients.find(x=>x.id===activePatientId)}
 const PATIENT_SPECIALTY_VIEWS={
  "amelia-sung":["prenatal","labor"],
- "fatima-sanogo":["prenatal","labor","postpartum"],
- "baby-boy-sung":["prenatal","labor"],
+ "fatima-sanogo":["prenatal","labor","postpartum","blood"],
+ "stephanie-smith":["blood"],
+ "baby-boy-sung":["prenatal"],
  "jane-fowler":["surgery"],
  "ruth-livingston":["surgery"],
  "vernon-watkins":["surgery"]
@@ -726,6 +733,7 @@ function render(){
  if(currentView==="orders")renderOrders();
  if(currentView==="labs")renderLabs();
  if(currentView==="mar")renderMAR();
+ if(currentView==="blood")renderBloodAdministration();
  if(currentView==="imported")renderImportedChart();
  if(currentView==="history")renderHistory();
  if(currentView==="inbox")renderInbox();
@@ -1362,7 +1370,7 @@ function renderDebrief(){
 }
 document.querySelectorAll("aside button").forEach(b=>b.onclick=()=>{if(!isFaculty()&&b.classList.contains("facultyOnly")){alert("Faculty Mode is required.");return}currentView=b.dataset.view;render()});
 document.getElementById("toggleMode").onclick=toggleMode;
-applyMode();initializeNativeCharts();
+applyMode();initializeNativeCharts();initializeAdminEnhancements();
 render();
 </script>
 </body>
