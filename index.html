@@ -465,7 +465,7 @@ function liveSave(eventType="",payload={}){
 function isFaculty(){return getTabMode()==="faculty"}
 function applyMode(){
  const faculty=isFaculty();
- document.querySelectorAll(".facultyOnly").forEach(x=>x.classList.toggle("hiddenByMode",!faculty));
+ document.querySelectorAll(".facultyOnly").forEach(x=>{x.classList.toggle("hiddenByMode",!faculty);x.hidden=!faculty;x.setAttribute("aria-hidden",String(!faculty));});
  const badge=document.getElementById("modeBadge")||document.getElementById("userModeBadge");
  const btn=document.getElementById("toggleMode")||document.getElementById("toggleUserModeBtn");
  if(badge)badge.textContent=faculty?"Faculty Mode":"Student Mode";
@@ -768,7 +768,6 @@ function renderPatients(){
 function renderSummary(){
  if(!requirePatient())return;const p=activePatient();
  const counts={orders:patientRows(state.orders).length,assess:patientRows(state.assessments).length,vitals:patientRows(state.vitals).length,notes:patientRows(state.notes).length,labs:patientRows(state.labs).length};
- const recent=[...state.audit].filter(a=>a.patientId===p.id).slice(-8).reverse();
  const psychQuick=p.id==="david-carter"?panel("Psychiatric Snapshot",`<div class="grid3"><div><b>28 years</b><br><span class="note">Age</span></div><div><b>91 kg / 155 cm</b><br><span class="note">Weight / height</span></div><div><b>NKDA</b><br><span class="note">Allergies</span></div><div><b>Schizophrenia</b><br><span class="note">Primary diagnosis</span></div><div style="grid-column:span 2"><b>Current presentation</b><br><span class="note">Brought in by police after a violent outburst; active hallucinations and delusions.</span></div></div>`):"";
  const surgicalQuick=p.id==="jane-fowler"?panel("Surgical Snapshot",`
  <div class="grid3">
@@ -807,8 +806,7 @@ function renderSummary(){
   <div class="kpi"><span class="note">Nursing Notes</span><br><b>${counts.notes}</b></div>
   <div class="kpi"><span class="note">Labs / Diagnostics</span><br><b>${counts.labs}</b></div>
   <div class="kpi"><span class="note">Weight</span><br><b>${esc(p.weightKg)} kg</b></div>
- </div>`)+
- panel("Recent Chart Activity",`<table><thead><tr><th>Time</th><th>Event</th><th>Details</th></tr></thead><tbody>${recent.map(a=>`<tr><td>${esc(a.at)}</td><td>${esc(a.type)}</td><td>${esc(a.details)}</td></tr>`).join("")||'<tr><td colspan="3">No chart activity yet.</td></tr>'}</tbody></table>`);
+ </div>`);
 }
 
 function renderPrenatal(){
