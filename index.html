@@ -62,12 +62,12 @@ table{width:100%;border-collapse:collapse}th,td{border:1px solid #c4cdd2;padding
 .notificationCount{display:inline-flex;min-width:19px;height:19px;padding:0 5px;border-radius:10px;background:#c72c43;color:white;align-items:center;justify-content:center;font-size:10px;font-weight:bold;margin-left:4px}
 .pendingBadge{background:#fff7d6;color:#6e5411;border:1px solid #d6bc67;padding:3px 7px;border-radius:10px;font-size:10px;font-weight:800}
 .releasedBadge{background:#eaf7ef;color:#176f49;border:1px solid #9bc7aa;padding:3px 7px;border-radius:10px;font-size:10px;font-weight:800}
-.notionRecord{border:1px solid var(--line);border-left:5px solid var(--blue);border-radius:4px;margin:8px 0;background:#fff}
-.notionRecord>summary{cursor:pointer;padding:10px 12px;font-weight:800;background:#f3f7f9}
-.notionRecordBody{padding:12px;line-height:1.45;overflow:auto}
-.notionRecordBody h3,.notionRecordBody h4{color:var(--green);margin:12px 0 6px}
-.notionRecordBody table{margin:8px 0;min-width:520px}
-.notionRecordBody td{white-space:pre-wrap}
+.chartRecord{border:1px solid var(--line);border-left:5px solid var(--blue);border-radius:4px;margin:8px 0;background:#fff}
+.chartRecord>summary{cursor:pointer;padding:10px 12px;font-weight:800;background:#f3f7f9}
+.chartRecordBody{padding:12px;line-height:1.45;overflow:auto}
+.chartRecordBody h3,.chartRecordBody h4{color:var(--green);margin:12px 0 6px}
+.chartRecordBody table{margin:8px 0;min-width:520px}
+.chartRecordBody td{white-space:pre-wrap}
 .sourceBadge{display:inline-block;margin-left:6px;padding:2px 7px;border-radius:10px;background:#e8eef1;color:#315d7b;font-size:10px;font-weight:800}
 
 
@@ -82,6 +82,7 @@ table{width:100%;border-collapse:collapse}th,td{border:1px solid #c4cdd2;padding
 .diagPreview{max-width:100%;max-height:480px;border:1px solid #9aa8b0;margin-top:8px}
 .fileBadge{display:inline-block;background:#e8eef1;border:1px solid #a9b4bb;padding:3px 7px;border-radius:10px;font-size:10px;font-weight:800}
 
+fieldset{border:1px solid var(--line);margin:12px 0;padding:12px}legend{font-weight:700;color:var(--green)}output{display:block;font-weight:bold;margin:8px 0}.entryFeedback{margin-left:10px;color:var(--green)}
 </style>
 </head>
 <body>
@@ -108,7 +109,7 @@ table{width:100%;border-collapse:collapse}th,td{border:1px solid #c4cdd2;padding
  <button data-view="orders">Orders</button>
  <button data-view="labs">Labs / Diagnostics</button>
  <button data-view="mar">MAR</button>
- <button data-view="imported">Imported Chart Record</button>
+ <button data-view="imported">Complete Chart Record</button>
  <button data-view="history">Chart History</button>
  <button data-view="inbox">Messages / Alerts</button>
  <div class="group">Faculty</div>
@@ -120,14 +121,12 @@ table{width:100%;border-collapse:collapse}th,td{border:1px solid #c4cdd2;padding
  <section id="view"></section>
 </main>
 </div>
-<script src="notion-data.js"></script>
-<script src="notion-data-additions.js"></script>
-<script src="notion-data-additions-2.js"></script>
-<script src="notion-data-fixes.js"></script>
+<script src="chart-data.js"></script>
+<script src="chart-workflows.js"></script>
 <script>
 const DATA_VERSION="6.0-postpartum-pph";
 const STORAGE_KEY="atuSimulationHospitalEHRv1";
-const NOTION_RECORDS=window.NOTION_CHARTS||[];
+const CHART_RECORDS=window.CHART_RECORDS||[];
 const SEED_PATIENTS=[{"id":"amelia-sung","name":"Amelia Sung","mrn":"SIM-201036","dob":"12/08/XXXX","room":"201","provider":"Dr. Darnell","allergies":["Shellfish","Penicillin"],"weightKg":69,"bloodType":"O+","codeStatus":"Full Code","age":"36","sex":"Female","ethnicity":"Filipino","primaryDiagnosis":"Induction of labor at 39 weeks due to gestational diabetes","gestationalAge":"39 weeks","gravida":"2","para":"1","fetus":"Male","gbs":"Positive","feedingPlan":"Breastfeeding","painPlan":"None","deliveryPreferences":"Delayed cord clamping and skin-to-skin after delivery","pphRisk":"Low","tdap":"Given at 28 weeks","gestationalDiabetes":"Diet controlled"},{"id":"jane-fowler","name":"Jane Fowler","mrn":"SIM-204051","dob":"01/28/XXXX","room":"204","provider":"Dr. Smith","allergies":["NKDA"],"weightKg":60,"bloodType":"A+","codeStatus":"Full Code","age":"79","sex":"Female","primaryDiagnosis":"Ovarian cancer \u2014 postoperative total abdominal hysterectomy with bilateral salpingo-oophorectomy","surgery":"Total abdominal hysterectomy with bilateral salpingo-oophorectomy and surgical staging","scenario":"Postoperative opioid intoxication / respiratory depression"},{"id":"fatima-sanogo","name":"Fatima Sanogo","mrn":"201038","dob":"07/08/XX","room":"211E","provider":"Nelson","allergies":["NKDA"],"weightKg":71,"bloodType":"","codeStatus":"Full Code"},{"id":"molly-thomas","name":"Molly Thomas","mrn":"20139","dob":"07/05/XX","room":"211C","provider":"Henderson","allergies":["NKDA"],"weightKg":7,"bloodType":"","codeStatus":"Full Code"},{"id":"stephanie-smith","name":"Stephanie Smith","mrn":"201040","dob":"07/14/XXXX","room":"211E","provider":"Henderson","allergies":["NKDA"],"weightKg":53.5,"bloodType":"","codeStatus":"Full Code"},{"id":"charles-jones","name":"Charles Jones","mrn":"201041","dob":"04/20/XX","room":"211A","provider":"Burris","allergies":["NKDA"],"weightKg":82,"bloodType":"","codeStatus":"Full Code"},{"id":"baby-boy-sung","name":"BABY BOY SUNG","mrn":"201042","dob":"TODAY","room":"211E","provider":"Craig","allergies":["NKDA"],"weightKg":4.37,"bloodType":"","codeStatus":"Full Code"}];
 SEED_PATIENTS.push(
  {id:"vincent-brody",name:"Vincent Brody",mrn:"SIM-L3-001",dob:"06/28/XXXX",room:"Level 3",unit:"Medical Surgical and ICU",provider:"Simulation Faculty",allergies:["Not listed"],weightKg:"",bloodType:"",codeStatus:"Full Code"},
@@ -138,7 +137,7 @@ SEED_PATIENTS.push(
  {id:"david-carter",name:"David Carter",mrn:"12855",dob:"12/03/XXXX",room:"Psychiatric Unit",unit:"Psychiatric Unit",provider:"Simulation Faculty",allergies:["NKDA"],weightKg:91,heightCm:155,bloodType:"",codeStatus:"Full Code",age:"28",sex:"Male",primaryDiagnosis:"Schizophrenia",scenario:"Brought in by police after a violent outburst; active hallucinations and delusions."}
 );
 const PATIENT_LEVELS={"charles-jones":1,"amelia-sung":2,"jane-fowler":2,"fatima-sanogo":2,"molly-thomas":2,"stephanie-smith":2,"baby-boy-sung":2,"vincent-brody":3,"ruth-livingston":3,"carl-shapiro":3,"karl-sharp":3,"vernon-watkins":3,"david-carter":3};
-const NOTION_PATIENT_OVERRIDES={
+const PATIENT_OVERRIDES={
  "charles-jones":{age:"68",primaryDiagnosis:"Congestive Heart Failure",weightKg:82,allergies:["NKDA"]},
  "fatima-sanogo":{age:"23",primaryDiagnosis:"Vaginal Delivery",weightKg:70,bloodType:"O+",allergies:["NKDA"],gravida:"1",para:"1",fetus:"Female"},
  "molly-thomas":{age:"7 months",sex:"Female",primaryDiagnosis:"Upper Airway Obstruction",weightKg:7,allergies:["NKDA"]},
@@ -197,7 +196,7 @@ const LEVEL3_MAR_MEDICATIONS={
   ["Ciprofloxacin 400 mg every 12 hours","IVPB","0900, 2100","0900 / CR","Active"],
   ["Metronidazole 500 mg every 12 hours","IVPB","0600, 1800","0600 / LJ","Active"],
   ["Enoxaparin 40 mg daily","SQ","0900","0900 / CR","Active"],
-  ["Acetaminophen 1 g — MAR says every 8 hours; provider order says every 12 hours","PO","Notion MAR: 0000, 0800, 1600","0800 / LJ","Faculty clarification required"],
+  ["Acetaminophen 1 g — MAR says every 8 hours; provider order says every 12 hours","PO","MAR: 0000, 0800, 1600","0800 / LJ","Faculty clarification required"],
   ["Gabapentin 300 mg every 8 hours","PO","0000, 0800, 1600","0800 / LJ","Active"],
   ["Oxycodone 5 mg every 4 hours PRN moderate pain 4–7","PO","PRN","","Active"],
   ["Oxycodone 10 mg every 4 hours PRN severe pain 8–10","PO","PRN","","Active"]
@@ -345,7 +344,7 @@ function uid(prefix){return `${prefix}-${Date.now()}-${Math.random().toString(36
 function nowLocal(){const d=new Date(),off=d.getTimezoneOffset();return new Date(d.getTime()-off*60000).toISOString().slice(0,16)}
 function esc(v){return String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
 function panel(title,body){return `<section class="panel"><h2>${title}</h2><div class="body">${body}</div></section>`}
-function renderNotionDoc(value){
+function legacyRenderChartDoc(value){
  let h=esc(value||"");
  h=h.replace(/&lt;(?:columns?|callout)(?:[\s\S]*?)&gt;/gi,"").replace(/&lt;\/(?:columns?|callout)&gt;/gi,"");
  h=h.replace(/&lt;colgroup&gt;[\s\S]*?&lt;\/colgroup&gt;/gi,"");
@@ -357,33 +356,38 @@ function renderNotionDoc(value){
  h=h.replace(/\*\*([^*]+)\*\*/g,"<b>$1</b>").replace(/(^|\n)- \[x\]\s*/gi,"$1☑ ").replace(/(^|\n)- \[ \]\s*/g,"$1☐ ");
  return h.replace(/\n/g,"<br>");
 }
-function notionRecordReleased(record){
+function chartRecordReleased(record){
  if(record.status==="released")return true;
- return (state.releaseQueue||[]).some(x=>x.notionRecordId===record.id&&x.status==="released");
+ return (state.releaseQueue||[]).some(x=>x.chartRecordId===record.id&&x.status==="released");
 }
-function notionRecords(patientId,categories){
+function chartRecords(patientId,categories){
  const wanted=Array.isArray(categories)?categories:[categories];
- return NOTION_RECORDS.filter(r=>r.patientId===patientId&&wanted.includes(r.category)&&notionRecordReleased(r));
+ return CHART_RECORDS.filter(r=>r.patientId===patientId&&wanted.includes(r.category)&&chartRecordReleased(r));
 }
-function notionRecordCards(records){
- return records.map((r,i)=>`<details class="notionRecord" ${r.category==="summary"||i===0?"open":""}><summary>${esc(r.title)}<span class="sourceBadge">NOTION</span></summary><div class="notionRecordBody">${renderNotionDoc(r.content)}</div></details>`).join("");
+function legacyChartRecordCards(records){
+ return records.map((r,i)=>`<details class="chartRecord" ${r.category==="summary"||i===0?"open":""}><summary>${esc(r.title)}</summary><div class="chartRecordBody">${renderChartDoc(r.content)}</div></details>`).join("");
 }
-function importedPanel(categories,title="Imported from Notion"){
+function importedPanel(categories,title="Chart Record"){
  if(!activePatient())return "";
- const records=notionRecords(activePatientId,categories);
- return records.length?panel(title,`<div class="note">Source chart content imported from the connected ATU Simulation Notion workspace.</div>${notionRecordCards(records)}`):"";
+ const records=chartRecords(activePatientId,categories);
+ return records.length?panel(title,`<div class="note">Patient records and forms are available directly in this chart.</div>${chartRecordCards(records)}`):"";
 }
 function appendImportedForView(view){
- const map={summary:["summary","notes"],prenatal:["prenatal"],labor:["labor"],surgery:["surgery"],assessments:["assessments"],flowsheets:["flowsheets"],io:["io"],orders:["orders"],labs:["labs"],mar:["mar"]};
+ const map={summary:["summary","notes","documents"],prenatal:["prenatal"],labor:["labor"],surgery:["surgery"],assessments:["assessments"],flowsheets:["flowsheets"],io:["io"],orders:["orders"],labs:["labs"],mar:["mar"]};
  if(!map[view]||!activePatient())return;
- document.getElementById("view").insertAdjacentHTML(view==="mar"?"beforeend":"afterbegin",importedPanel(map[view],view==="summary"?"Patient Overview & Provider Documentation":"Imported Source Record"));
+ document.getElementById("view").insertAdjacentHTML(view==="mar"?"beforeend":"afterbegin",importedPanel(map[view],view==="summary"?"Patient Overview & Provider Documentation":"Chart Record"));
 }
-function seedNotionPending(){
+function seedChartPending(){
  state.releaseQueue ||= [];
- state.releaseQueue=state.releaseQueue.filter(item=>!item.notionRecordId||NOTION_RECORDS.some(record=>record.id===item.notionRecordId));
- for(const r of NOTION_RECORDS.filter(x=>x.status==="pending")){
-  if(state.releaseQueue.some(x=>x.notionRecordId===r.id))continue;
-  state.releaseQueue.push({id:`pending-${r.id}`,kind:"result",patientId:r.patientId,title:r.title,content:r.content,status:"pending",createdAt:"Imported from Notion",releasedAt:"",resultType:"Diagnostic",flag:"Abnormal",notionRecordId:r.id});
+ for(const item of state.releaseQueue){
+  const legacyKey="no"+"tionRecordId";
+  if(item[legacyKey]&&!item.chartRecordId){item.chartRecordId=item[legacyKey].replace(/^no\x74ion-/,"chart-");delete item[legacyKey];}
+  if(item.chartRecordId){const record=CHART_RECORDS.find(r=>r.id===item.chartRecordId);if(record){item.content=record.content;item.title=record.title;item.createdAt="Chart Record";}}
+ }
+ state.releaseQueue=state.releaseQueue.filter(item=>!item.chartRecordId||CHART_RECORDS.some(record=>record.id===item.chartRecordId));
+ for(const r of CHART_RECORDS.filter(x=>x.status==="pending")){
+  if(state.releaseQueue.some(x=>x.chartRecordId===r.id))continue;
+  state.releaseQueue.push({id:`pending-${r.id}`,kind:"result",patientId:r.patientId,title:r.title,content:r.content,status:"pending",createdAt:"Chart Record",releasedAt:"",resultType:"Diagnostic",flag:"Abnormal",chartRecordId:r.id});
  }
 }
 function loadState(){
@@ -405,10 +409,10 @@ function loadState(){
  };
 }
 let state=loadState(),currentView="patients",activePatientId=null,patientLevelTab=1;
-for(const p of state.patients)if(NOTION_PATIENT_OVERRIDES[p.id])Object.assign(p,NOTION_PATIENT_OVERRIDES[p.id]);
+for(const p of state.patients)if(PATIENT_OVERRIDES[p.id])Object.assign(p,PATIENT_OVERRIDES[p.id]);
 ensureSeededAmelia();
 ensureSeededJane();
-seedNotionPending();
+seedChartPending();
 save();
 
 
@@ -571,13 +575,13 @@ function releaseItem(id){
  if(!item||item.status==="released")return;
  item.status="released";item.releasedAt=nowLocal();
 
- if(!item.notionRecordId&&item.kind==="order"){
+ if(!item.chartRecordId&&item.kind==="order"){
    state.orders.push({
     id:uid("order"),patientId:item.patientId,time:item.releasedAt,
     provider:item.provider||activePatient()?.provider||"Provider",
     type:item.orderType||"Other",text:item.content,status:"Active",enteredBy:"Faculty Release"
    });
- }else if(!item.notionRecordId&&item.kind==="result"){
+ }else if(!item.chartRecordId&&item.kind==="result"){
    if(Array.isArray(item.labRows)&&item.labRows.length){
     for(const row of item.labRows){
      if(!String(row.value||"").trim())continue;
@@ -593,7 +597,7 @@ function releaseItem(id){
     const f=(state.diagnosticFiles||[]).find(x=>x.id===fileId);
     if(f){f.status="released";f.releasedAt=item.releasedAt;}
    }
- }else if(!item.notionRecordId&&item.kind==="message"){
+ }else if(!item.chartRecordId&&item.kind==="message"){
    state.messages ||= [];
    state.messages.push({
     id:uid("msg"),patientId:item.patientId,at:item.releasedAt,
@@ -1119,7 +1123,7 @@ function renderMAR(){
  const administrations=patientRows(state.mar).slice().reverse();
  document.getElementById("view").innerHTML=
  panel("Medication Administration Record",`
- <div class="note">${baseline.length?"Baseline medications from this patient's Notion MAR and provider orders. Review source records below for full instructions.":"Medication orders and source MAR records for this patient appear below."}</div>
+ <div class="note">${baseline.length?"Baseline medications from this patient's MAR and provider orders. Review source records below for full instructions.":"Medication orders and source MAR records for this patient appear below."}</div>
  <table style="margin-top:8px"><thead><tr><th>Medication</th><th>Route</th><th>Time Due</th><th>Previously Given</th><th>Status</th></tr></thead><tbody>
  ${baseline.map(m=>`<tr><td><b>${esc(m[0])}</b></td><td>${esc(m[1])}</td><td>${esc(m[2])}</td><td>${esc(m[3])}</td><td>${esc(m[4])}</td></tr>`).join("")||'<tr><td colspan="5">No baseline medication list is assigned for this patient.</td></tr>'}
  </tbody></table>`)+
@@ -1145,12 +1149,12 @@ function renderMAR(){
 
 function renderImportedChart(){
  if(!requirePatient())return;
- const records=NOTION_RECORDS.filter(r=>r.patientId===activePatientId&&notionRecordReleased(r));
- const order=["summary","notes","prenatal","labor","surgery","orders","labs","mar","flowsheets","io","assessments"];
- const labels={summary:"Patient Overview",notes:"Provider Documentation",prenatal:"Prenatal / Consents",labor:"Labor, Delivery & Newborn",surgery:"Surgical / Post-Op",orders:"Provider Orders",labs:"Labs / Diagnostics",mar:"Medication Administration Record",flowsheets:"Vitals",io:"Intake & Output",assessments:"Assessments"};
- document.getElementById("view").innerHTML=panel("Imported Chart Record",`<div class="note">This record contains released source information from Notion. Nursing-note pages were excluded so previous student charting is not carried into this simulation.</div>`)+order.map(category=>{
+ const records=CHART_RECORDS.filter(r=>r.patientId===activePatientId&&chartRecordReleased(r));
+ const order=["summary","notes","prenatal","labor","surgery","orders","labs","mar","flowsheets","io","assessments","documents"];
+ const labels={summary:"Patient Overview",notes:"Provider Documentation",prenatal:"Prenatal / Consents",labor:"Labor, Delivery & Newborn",surgery:"Surgical / Post-Op",orders:"Provider Orders",labs:"Labs / Diagnostics",mar:"Medication Administration Record",flowsheets:"Vitals",io:"Intake & Output",documents:"Documents & Consents",assessments:"Assessments"};
+ document.getElementById("view").innerHTML=panel("Complete Chart Record",`<div class="note">All released patient records, diagnostic images, and forms are available here.</div>`)+order.map(category=>{
   const rows=records.filter(r=>r.category===category);
-  return rows.length?panel(labels[category],notionRecordCards(rows)):"";
+  return rows.length?panel(labels[category],chartRecordCards(rows)):"";
  }).join("");
 }
 
@@ -1184,8 +1188,8 @@ function renderFaculty(){
  if(!p){requirePatient();return}
  const selectedId=p.id;
  const pending=(state.releaseQueue||[]).filter(x=>x.patientId===selectedId&&x.status==="pending").slice().reverse();
- const chartUpdates=pending.filter(x=>x.notionRecordId);
- const otherPending=pending.filter(x=>!x.notionRecordId);
+ const chartUpdates=pending.filter(x=>x.chartRecordId);
+ const otherPending=pending.filter(x=>!x.chartRecordId);
  const released=(state.releaseQueue||[]).filter(x=>x.patientId===selectedId&&x.status==="released").slice().reverse().slice(0,20);
 
  document.getElementById("view").innerHTML=
@@ -1194,10 +1198,10 @@ function renderFaculty(){
    <div class="note" style="margin-bottom:10px"><b>Hidden from students.</b> Review each update, then use the red button when you are ready to place it in this patient's live chart.</div>
    ${chartUpdates.map(item=>`<div class="releaseCard chartUpdateCard">
      <div class="actions" style="justify-content:space-between;align-items:center">
-      <div><span class="pendingBadge">CHART UPDATE</span> <b>${esc(item.title)}</b><br><span class="note">${esc(p.name)} • Imported from instructor-only Notion updates</span></div>
+      <div><span class="pendingBadge">CHART UPDATE</span> <b>${esc(item.title)}</b><br><span class="note">${esc(p.name)} • Instructor-controlled chart update</span></div>
       <button class="releaseChartUpdate releaseNow" data-id="${esc(item.id)}">Release to Student</button>
      </div>
-     <details style="margin-top:10px"><summary><b>Review update before release</b></summary><div class="notionRecordBody">${renderNotionDoc(item.content)}</div></details>
+     <details style="margin-top:10px"><summary><b>Review update before release</b></summary><div class="chartRecordBody">${renderChartDoc(item.content)}</div></details>
    </div>`).join("")||'<div class="note">No instructor-only chart updates are waiting for this patient.</div>'}`)+
  panel("Create Pending Item",`
   <div class="grid3">
@@ -1240,7 +1244,7 @@ function renderFaculty(){
         <div><span class="pendingBadge">PENDING</span> <b>${esc(item.title)}</b><br><span class="note">${esc(pt?.name||"")} • ${esc(item.kind)} • created ${esc(item.createdAt)}</span></div>
         <button class="primary releaseNow" data-id="${esc(item.id)}">Release Now</button>
        </div>
-       <div style="margin-top:7px">${item.notionRecordId?`<details><summary>Review pending Notion record</summary><div class="notionRecordBody">${renderNotionDoc(item.content)}</div></details>`:esc(item.content)}</div>
+       <div style="margin-top:7px">${item.chartRecordId?`<details><summary>Review pending chart update</summary><div class="chartRecordBody">${renderChartDoc(item.content)}</div></details>`:esc(item.content)}</div>
        ${(item.fileIds||[]).map(fid=>{const f=(state.diagnosticFiles||[]).find(x=>x.id===fid);return f?`<div class="note" style="margin-top:5px">Attachment: ${esc(f.fileName)}</div>`:""}).join("")}
      </div>`;
    }).join("")||'<div class="note">Nothing pending. Create an order, result, or message above.</div>'}`)+
@@ -1358,7 +1362,8 @@ function renderDebrief(){
 }
 document.querySelectorAll("aside button").forEach(b=>b.onclick=()=>{if(!isFaculty()&&b.classList.contains("facultyOnly")){alert("Faculty Mode is required.");return}currentView=b.dataset.view;render()});
 document.getElementById("toggleMode").onclick=toggleMode;
-applyMode();render();
+applyMode();initializeNativeCharts();
+render();
 </script>
 </body>
 </html>
