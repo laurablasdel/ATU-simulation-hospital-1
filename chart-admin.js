@@ -4,7 +4,8 @@ const removeIds=new Set([
  'chart-1d0195d201d5810a9acac8451e662014','chart-1d0195d201d5818b8449cd92cc20db7b',
  'chart-279195d201d580c18d3bcf4493eb6d56','chart-27e195d201d580188376fefb97c68085',
  'chart-1d0195d201d581a696f3d43f99ff1b11','chart-1d0195d201d5813a9544cca0547f2612',
- 'chart-318195d201d5805e84bdc3cf5591db4','chart-25d195d201d58111ba41db57ea4e0b76'
+ 'chart-318195d201d5805e84bdc3cf5591db4','chart-25d195d201d58111ba41db57ea4e0b76',
+ 'chart-form-baby-boy-sung','chart-document-newborn-glucose-protocol.pdf','chart-256195d201d581a1b665e359a34c9c03'
 ]);
 const changes={
  'chart-27e195d201d5801891bbde543471af1e':{status:'pending',title:'Shift 3 New Orders'},
@@ -15,7 +16,7 @@ const changes={
  'chart-293195d201d58002af36d9c313178804':{status:'pending',title:'Shift 4 Follow-up Labs'},
  'chart-1d0195d201d5812d9d21cf4f7bac2e52':{title:'Admission Labs'},
  'chart-286195d201d580489c7bc8e0770135bf':{status:'pending',title:'MD Orders',content:'**Provider Orders — Pending**\n\n- Racepinephrine 2.25% inhalation solution, 0.5 mL mixed with 3 mL of 0.9% Normal Saline, to be given by respiratory therapy. Call respiratory when needed.\n- Dexamethasone 0.6 mg/kg IV now.'},
- 'chart-256195d201d581aebb87f3902a0c5bc0':{status:'pending',title:'Chest X-ray and Radiology Report'}
+ 'chart-256195d201d581aebb87f3902a0c5bc0':{status:'pending',title:'Chest X-ray',content:'![Baby Boy Sung chest radiograph](assets/baby-boy-sung-chest-xray.png)\n\n**Chest X-ray Report**\n\nFracture of the left clavicle noted. Full expansion of both right and left lung noted, no lung involvement.'}
 };
 const added=[
  {id:'admin-jane-respiratory',patientId:'jane-fowler',title:'Respiratory Depression — MD Orders',category:'orders',status:'pending',content:'**Change in condition:** Patient is unresponsive; respiratory rate 6/min and SpO₂ 85%.\n\n**Provider orders:**\n- Naloxone 0.2 mg IV push every 2–3 minutes PRN respiratory rate less than 6/min or change in level of consciousness.\n- Ketorolac 30 mg IV push once now.'},
