@@ -124,6 +124,7 @@ fieldset{margin:8px 0;padding:9px}output{margin:5px 0}.patientBanner{padding:8px
  <button data-view="inbox">Messages / Alerts</button>
  <div class="group">Faculty</div>
  <button data-view="faculty" class="facultyOnly">Faculty Live Control</button>
+ <button data-view="barcodes" class="facultyOnly">Medication & Barcode Center</button>
  <button data-view="debrief" class="facultyOnly">Debrief / Audit</button>
 </aside>
 <main>
@@ -134,6 +135,7 @@ fieldset{margin:8px 0;padding:9px}output{margin:5px 0}.patientBanner{padding:8px
 <script src="chart-data.js"></script>
 <script src="chart-workflows.js"></script>
 <script src="chart-admin.js"></script>
+<script src="medication-system.js"></script>
 <script>
 const DATA_VERSION="6.0-postpartum-pph";
 const STORAGE_KEY="atuSimulationHospitalEHRv1";
@@ -744,6 +746,7 @@ function render(){
  if(currentView==="history")renderHistory();
  if(currentView==="inbox")renderInbox();
  if(currentView==="faculty")renderFaculty();
+ if(currentView==="barcodes")renderBarcodeCenter();
  if(currentView==="debrief")renderDebrief();
  appendImportedForView(currentView);
  applyMode();
@@ -1375,7 +1378,7 @@ function renderDebrief(){
 }
 document.querySelectorAll("aside button").forEach(b=>b.onclick=()=>{if(!isFaculty()&&b.classList.contains("facultyOnly")){alert("Faculty Mode is required.");return}currentView=b.dataset.view;render()});
 document.getElementById("toggleMode").onclick=toggleMode;
-applyMode();initializeNativeCharts();initializeAdminEnhancements();
+applyMode();initializeNativeCharts();initializeAdminEnhancements();initializeMedicationSystem();
 render();
 </script>
 </body>
