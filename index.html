@@ -118,6 +118,7 @@ fieldset{margin:8px 0;padding:9px}output{margin:5px 0}.patientBanner{padding:8px
  <button data-view="orders">Orders</button>
  <button data-view="labs">Labs / Diagnostics</button>
  <button data-view="mar">MAR</button>
+ <button data-view="glucose">Blood Glucose &amp; Insulin</button>
  <button data-view="blood" data-specialty="blood">Blood Administration</button>
  <button data-view="imported" class="facultyOnly">Complete Chart Record</button>
  <button data-view="history" class="facultyOnly">Chart History</button>
@@ -741,6 +742,7 @@ function render(){
  if(currentView==="orders")renderOrders();
  if(currentView==="labs")renderLabs();
  if(currentView==="mar")renderMAR();
+ if(currentView==="glucose")renderGlucoseModule();
  if(currentView==="blood")renderBloodAdministration();
  if(currentView==="imported")renderImportedChart();
  if(currentView==="history")renderHistory();
