@@ -4,7 +4,7 @@ const removeIds=new Set([
  'chart-1d0195d201d5810a9acac8451e662014','chart-1d0195d201d5818b8449cd92cc20db7b',
  'chart-279195d201d580c18d3bcf4493eb6d56','chart-27e195d201d580188376fefb97c68085',
  'chart-1d0195d201d581a696f3d43f99ff1b11','chart-1d0195d201d5813a9544cca0547f2612',
- 'chart-318195d201d5805e84bdc3cf5591db4','chart-25d195d201d58111ba41db57ea4e0b76',
+ 'chart-318195d201d5805e84bdc3cf5591db4','chart-318195d201d5805e84bdc3cf5591db4e','chart-25d195d201d58111ba41db57ea4e0b76',
  'chart-form-baby-boy-sung','chart-document-newborn-glucose-protocol.pdf','chart-256195d201d581a1b665e359a34c9c03'
 ]);
 const changes={
@@ -43,6 +43,7 @@ function compactRenderedView(){
  root.querySelectorAll('p,div,section').forEach(el=>{if(el!==root&&!el.textContent.trim()&&!el.querySelector('input,select,textarea,img,button,table,details')&&!el.classList.contains('actions'))el.remove();});
  const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);const nodes=[];while(walker.nextNode())nodes.push(walker.currentNode);for(const node of nodes){const cleaned=node.nodeValue.replace(/(^|\n)\s*(?:#|---|\|\s*)\s*(?=\n|$)/g,'$1').replace(/[ \t]{2,}/g,' ');if(cleaned!==node.nodeValue)node.nodeValue=cleaned;}
  root.querySelectorAll('details.chartRecord').forEach(d=>{if(['flowsheets','io'].includes(currentView))d.open=true;});
+ if(activePatientId==='charles-jones')root.querySelectorAll('.panel').forEach(section=>{const heading=section.querySelector(':scope > h2')?.textContent.trim()||'',text=section.textContent;if((currentView==='labs'&&(text.includes('No released laboratory results.')||text.includes('No released diagnostic attachments.')))||(currentView==='mar'&&heading==='Chart Record')||(currentView==='io'&&/Output day 1|Output day 2|\bDay 2\b/i.test(text)))section.remove();});
 }
 window.prepareAdminChartData=function(){
  for(let i=CHART_RECORDS.length-1;i>=0;i--)if(removeIds.has(CHART_RECORDS[i].id))CHART_RECORDS.splice(i,1);
