@@ -471,7 +471,7 @@ function liveSave(eventType="",payload={}){
 function isFaculty(){return getTabMode()==="faculty"}
 function applyMode(){
  const faculty=isFaculty();
- document.querySelectorAll(".facultyOnly").forEach(x=>{x.classList.toggle("hiddenByMode",!faculty);x.hidden=!faculty;x.setAttribute("aria-hidden",String(!faculty));});
+ document.querySelectorAll(".facultyOnly").forEach(x=>{x.classList.toggle("hiddenByMode",!faculty);x.hidden=!faculty;x.style.display=faculty?"":"none";x.setAttribute("aria-hidden",String(!faculty));});
  const badge=document.getElementById("modeBadge")||document.getElementById("userModeBadge");
  const btn=document.getElementById("toggleMode")||document.getElementById("toggleUserModeBtn");
  if(badge)badge.textContent=faculty?"Faculty Mode":"Student Mode";
@@ -1191,6 +1191,7 @@ function renderInbox(){
 }
 
 function renderHistory(){
+ if(!isFaculty()){currentView="patients";render();return}
  if(!requirePatient())return;const rows=state.audit.filter(a=>a.patientId===activePatientId).slice().reverse();
  document.getElementById("view").innerHTML=panel("Chart History",`<table><thead><tr><th>Date/Time</th><th>Event</th><th>Details</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.at)}</td><td>${esc(r.type)}</td><td>${esc(r.details)}</td></tr>`).join("")||'<tr><td colspan="3">No chart activity.</td></tr>'}</tbody></table>`);
 }
