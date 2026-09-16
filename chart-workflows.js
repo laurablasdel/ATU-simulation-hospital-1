@@ -55,7 +55,7 @@ function nativeAssessmentForms(){
   html+=nativeForm('newborn-glucose','Newborn Glucose & Feeding Record',nativeSection('Monitoring',['Blood glucose (mg/dL)','Time checked','Feeding method','Feeding amount','Symptoms observed','Glucose gel dose administered (mL)','Dose number','Administration time','Repeat glucose (mg/dL)','Repeat time','Provider notified / time','IV glucose / time',['Response and follow-up','textarea']]));
  }
  if(['molly-thomas','stephanie-smith'].includes(p)){
-  html+=nativeForm('pediatric-assessment','Pediatric Assessment',nativeSection('PEWS',[['Behavior score','text',['0','1','2','3']],['Cardiovascular score','text',['0','1','2','3']],['Respiratory score','text',['0','1','2','3']]])+'<output data-score="pews">PEWS total: —</output>'+nativeSection('Development, Pain & Feeding',['Pain scale (FLACC / FACES / numeric)','Pain score','Behavior','Cry','Fontanelles','Development appropriate','Feeding type','Amount / tolerance','Diaper / output','Urine color','Skin / tone',['Escalation and follow-up','textarea']]));
+  html+=nativeForm('pediatric-assessment','Pediatric Assessment',nativeSection('Development, Pain & Feeding',['Pain scale (FLACC / FACES / numeric)','Pain score','Behavior','Cry','Fontanelles','Development appropriate','Feeding type','Amount / tolerance','Diaper / output','Urine color','Skin / tone',['Escalation and follow-up','textarea']]));
  }
  if(p==='david-carter')html+=nativeForm('mental-status','Mental Status Assessment',nativeSection('Mental status',['Appearance','Behavior','Speech','Mood','Affect','Orientation','Thought process','Thought content','Perceptual disturbances','Insight','Judgment','Suicide / self-harm assessment','Harm-to-others assessment',['Safety interventions','textarea'],['Narrative','textarea']]));
  html+=nativeForm('detailed-head-to-toe','Detailed Head-to-Toe Assessment',
@@ -69,7 +69,6 @@ function updateNativeScores(form){
  const val=name=>form.elements.namedItem(name)?.value??'';
  const sum=names=>names.every(n=>val(n)!==''&&Number.isFinite(Number(val(n))))?names.reduce((s,n)=>s+Number(val(n)),0):'—';
  for(const m of [1,5,10]){const out=form.querySelector(`[data-score="apgar-${m}"]`);if(out)out.textContent='Total: '+sum(['Appearance','Pulse','Grimace','Activity','Respiration'].map(k=>`${m} min ${k}`));}
- const pews=form.querySelector('[data-score="pews"]');if(pews)pews.textContent='PEWS total: '+sum(['Behavior score','Cardiovascular score','Respiratory score']);
  const ballard=form.querySelector('[data-score="ballard"]');if(ballard)ballard.textContent='Ballard total: '+sum(['Posture','Square window','Arm recoil','Popliteal angle','Scarf sign','Heel to ear','Skin','Lanugo','Plantar surface','Breast','Eye / ear','Genitals']);
 }
 function initializeNativeCharts(){
