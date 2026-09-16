@@ -28,7 +28,7 @@ const added=[
  {id:'admin-stephanie-chest-xray',patientId:'stephanie-smith',title:'Chest X-Ray',category:'orders',status:'pending',content:'Provider: Henderson\n\nChest X-Ray.'},
  {id:'admin-stephanie-prbc-2units',patientId:'stephanie-smith',title:'Infuse 2 Units PRBC',category:'orders',status:'pending',content:'Provider: Henderson\n\nInfuse 2 units packed red blood cells (PRBCs). Complete blood-product verification and transfusion monitoring per protocol.'},
  {id:'admin-stephanie-ceftriaxone',patientId:'stephanie-smith',title:'Ceftriaxone 500 mg/100 mL q12h',category:'orders',status:'pending',content:'Provider: Henderson\n\nCeftriaxone 500 mg/100 mL every 12 hours.'},
- {id:'admin-stephanie-acetaminophen',patientId:'stephanie-smith',title:'Acetaminophen 325 mg',category:'orders',status:'pending',content:'Provider: Henderson\n\nAcetaminophen 325 mg.'},
+ {id:'admin-stephanie-acetaminophen',patientId:'stephanie-smith',title:'Acetaminophen 650 mg',category:'orders',status:'pending',content:'Provider: Henderson\n\nAcetaminophen 650 mg.'},
  {id:'admin-stephanie-cbc-am',patientId:'stephanie-smith',title:'CBC in AM',category:'orders',status:'pending',content:'Provider: Henderson\n\nCBC in AM.'}
 ];
 const charlesMeds=[
@@ -176,10 +176,29 @@ function removeSmithIcePackOrders(){
  const base=state.simulationBases?.['stephanie-smith'];
  if(base){base.collections.orders=cleanRows(base.collections.orders);base.chartRecords=cleanRows(base.chartRecords);base.releaseQueue=cleanQueue(base.releaseQueue);}
 }
+function updateSmithTylenolDose(){
+ if(state.smithTylenol650V1)return;
+ const correct=text=>String(text||'').replace(/\b(Tylenol|Acetaminophen)(\s*(?:\([^)]*\))?\s*)\d+(?:\.\d+)?\s*mg\b/gi,(_,name,gap)=>name+gap+'650 mg');
+ const update=row=>{
+  if(!row)return;
+  const name=row.name||row.medication||'';
+  if(/^(?:Tylenol|Acetaminophen)\b/i.test(name)&&!/[+/]/.test(name))row.dose='650 mg';
+  for(const key of ['title','content','text','name','medication'])if(typeof row[key]==='string')row[key]=correct(row[key]);
+ };
+ const smith=row=>row.patientId==='stephanie-smith';
+ for(const row of CHART_RECORDS.filter(r=>smith(r)&&r.category==='orders')){update(row);update(state.chartContentEdits?.[row.id]);}
+ for(const row of (state.customChartRecords||[]).filter(r=>smith(r)&&r.category==='orders'))update(row);
+ for(const collection of ['orders','medicationCatalog'])for(const row of (state[collection]||[]).filter(smith))update(row);
+ for(const item of (state.releaseQueue||[]).filter(smith)){if(item.kind==='order'||['orders','medicationCatalog'].includes(item.targetCollection)||item.chartRecordId==='admin-stephanie-acetaminophen'){update(item);update(item.rowData);}}
+ const base=state.simulationBases?.['stephanie-smith'];
+ if(base){for(const row of base.chartRecords||[])if(row.category==='orders')update(row);for(const key of ['orders','medicationCatalog'])for(const row of base.collections?.[key]||[])update(row);for(const item of base.releaseQueue||[])if(item.kind==='order'||['orders','medicationCatalog'].includes(item.targetCollection)||item.chartRecordId==='admin-stephanie-acetaminophen'){update(item);update(item.rowData);}}
+ state.smithTylenol650V1=true;
+}
 window.initializeAdminEnhancements=function(){
  state.chartContentEdits ||= {};state.customChartRecords ||= [];state.marVisibility ||= {};state.marHiddenRecords ||= {};state.simulationBases ||= {};
  for(const [id,edit] of Object.entries(state.chartContentEdits)){const r=CHART_RECORDS.find(x=>x.id===id);if(r){Object.assign(r,edit);r.content=compactContent(r.content);edit.content=r.content;}}
  removeSmithIcePackOrders();
+ updateSmithTylenolDose();
  const baseRelease=releaseItem;releaseItem=function(id){const item=(state.releaseQueue||[]).find(x=>x.id===id),record=item?.chartRecordId&&CHART_RECORDS.find(r=>r.id===item.chartRecordId);if(record)item.kind=record.category==='orders'?'order':record.category==='mar'?'mar':'result';baseRelease(id);if(item&&item.status==='released'){if(item.kind==='chartdata'&&item.targetCollection&&item.rowData){const existing=state[item.targetCollection].find(x=>x.id===item.rowData.id);if(!existing)state[item.targetCollection].push(item.rowData);if(item.targetCollection==='medicationCatalog')Object.assign(existing||item.rowData,{releaseStatus:'released',status:(existing||item.rowData).status==='Pending'?'Due':(existing||item.rowData).status});}const n=(state.notifications||[]).find(x=>x.releaseItemId===item.id);if(n&&record?.category==='mar'){n.title='New MAR Sheet';n.type='mar';}sendReleaseMessage(item);liveSave('released_to_chart',{patientId:item.patientId,itemId:item.id,target:item.targetCollection||record?.category});}};
  const baseChartRecords=chartRecords;chartRecords=function(patientId,categories){return baseChartRecords(patientId,categories).filter(r=>isFaculty()||!state.marHiddenRecords[r.id]);};
  const baseNativeInput=nativeInput;nativeInput=function(label,type='text',options=null){
