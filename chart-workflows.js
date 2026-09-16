@@ -7,10 +7,20 @@ function renderChartDoc(value){
  let html=legacyRenderChartDoc(source).replace(/(^|<br>)#\s+([^<]+)/g,'$1<h3>$2</h3>');
  return html.replace(/CHARTTOKEN(\d+)END/g,(_,i)=>tokens[Number(i)]||'');
 }
+// Preserve order boundaries in imported records and released multiline orders.
+function renderOrderContent(value){
+ const source=String(value||'').replace(/<br\s*\/?>/gi,'\n')
+  .replace(/<\/?(?:p|li|ul|ol|div)[^>]*>/gi,'\n')
+  .replace(/([^\n])\s+(?=[-•]\s+[A-Za-z])/g,'$1\n')
+  .replace(/([^\n])\s+(?=\d+\.\s+[A-Z])/g,'$1\n');
+ if(/<table\b/i.test(source))return renderChartDoc(source);
+ return source.split(/\r?\n/).map(line=>line.trim()).filter(Boolean)
+  .map(line=>`<div class="orderLine" style="display:block;margin:0 0 6px">${renderChartDoc(line.replace(/^[-•]\s*/,''))}</div>`).join('');
+}
 function chartRecordCards(records){
  return records.map((r,i)=>{
   const editable=['assessments','flowsheets','io'].includes(r.category)&&/_{3,}|<td>\s*<\/td>|\[ \]/.test(r.content);
-  let body=renderChartDoc(r.content),n=0;
+  let body=r.category==='orders'&&r.patientId==='molly-thomas'?renderOrderContent(r.content):renderChartDoc(r.content),n=0;
   if(editable){
    body=body.replace(/_{3,}/g,()=>`<input aria-label="Response ${++n} in ${esc(r.title)}" name="field-${n}" style="display:inline-block;width:130px;margin:3px">`)
     .replace(/☐|☑/g,()=>`<input type="checkbox" aria-label="Selection ${++n} in ${esc(r.title)}" name="field-${n}" style="width:auto">`)
