@@ -96,7 +96,8 @@ fieldset{margin:8px 0;padding:9px}output{margin:5px 0}.patientBanner{padding:8px
 .pewsGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:12px 0}.pewsGrid select{min-height:72px;white-space:normal}
 .pewsTotal{margin:12px 0;padding:14px;border:2px solid var(--green2);background:#f3faf6;border-radius:5px;font-size:20px;font-weight:900}.pewsTotal strong{font-size:30px;color:var(--green)}
 .pewsGuideGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.pewsGuide{border:1px solid var(--line);border-radius:5px;overflow:hidden}.pewsGuide h3{margin:0;padding:9px;background:#243d4b;color:#fff}.pewsGuideRow{display:grid;grid-template-columns:36px 1fr;gap:8px;align-items:start;padding:9px;border-top:1px solid var(--line)}.pewsScoreBox{display:flex;align-items:center;justify-content:center;background:#eef5f1;border:1px solid var(--green2);border-radius:4px;min-height:30px}
-@media(max-width:900px){.pewsGrid,.pewsGuideGrid{grid-template-columns:1fr}}
+.pewsRisk{margin:12px 0;padding:14px 16px;border-radius:6px;border:2px solid;font-size:15px}.pewsRiskTitle{font-size:20px;font-weight:900;margin-bottom:7px}.pewsCareTitle{font-weight:900;margin-top:8px}.pewsRisk ul{margin:7px 0 0 20px;padding:0}.pewsRisk li{margin:5px 0}.pewsNeutral{background:#f4f6f7;border-color:#aeb8bf;color:#26343c}.pewsGreen{background:#e8f7ed!important;border-color:#3aa35b!important;color:#165b2c!important}.pewsYellow{background:#fff4cc!important;border-color:#d79a00!important;color:#694900!important}.pewsRed{background:#ffe5e8!important;border-color:#d62f3f!important;color:#861522!important}.pewsTraffic{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin:10px 0 14px}.pewsTrafficCard{border:2px solid;border-radius:6px;padding:9px 11px;display:flex;flex-direction:column;gap:3px}
+@media(max-width:900px){.pewsGrid,.pewsGuideGrid,.pewsTraffic{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -907,6 +908,11 @@ function renderPEWS(){
  ];
  const opts=(items,label)=>'<option value="">Select '+label+' score…</option>'+items.map(([score,desc])=>'<option value="'+score+'">'+score+' — '+esc(desc)+'</option>').join("");
  const guide=(title,items)=>'<div class="pewsGuide"><h3>'+title+'</h3>'+items.map(([score,desc])=>'<div class="pewsGuideRow"><b class="pewsScoreBox">'+score+'</b><span>'+esc(desc)+'</span></div>').join("")+'</div>';
+ const riskInfo=(score)=>{
+  if(score>=7)return {level:"RED",label:"High Risk — Immediate Action",cls:"pewsRed",care:["Call MET / Rapid Response per facility protocol.","Notify charge nurse, senior staff, and attending provider immediately.","Initiate emergency interventions per protocol.","Use continuous monitoring and increase frequency of vital signs and reassessment.","Prepare for a higher level of care if indicated; stay with the patient."]};
+  if(score>=4)return {level:"YELLOW / AMBER",label:"Intermediate Risk",cls:"pewsYellow",care:["Notify charge nurse and responsible provider.","Increase frequency of vital signs and PEWS reassessment per facility policy.","Perform focused reassessment and provide indicated interventions.","Monitor closely for worsening findings and escalate if the score or condition deteriorates."]};
+  return {level:"GREEN",label:"Low Risk / Stable",cls:"pewsGreen",care:["Continue routine care and monitoring.","Reassess PEWS and vital signs per facility policy.","Continue to observe for any change in condition and escalate for clinical concern regardless of score."]};
+ };
  document.getElementById("view").innerHTML=
  panel("Pediatric Early Warning Score (PEWS)",`
   <div class="note" style="margin-bottom:10px">Select one score for each category. The total calculates automatically.</div>
@@ -920,6 +926,12 @@ function renderPEWS(){
    <label><b>Respiratory</b><select id="pewsResp">${opts(respiratory,"Respiratory")}</select></label>
   </div>
   <div class="pewsTotal">PEWS TOTAL: <strong id="pewsTotal">—</strong> <span id="pewsMath" class="note"></span></div>
+  <div id="pewsRisk" class="pewsRisk pewsNeutral"><div class="pewsRiskTitle">Complete all 3 categories to calculate risk level.</div></div>
+  <div class="pewsTraffic">
+   <div class="pewsTrafficCard pewsGreen"><b>GREEN (0–3)</b><span>Low Risk / Stable</span></div>
+   <div class="pewsTrafficCard pewsYellow"><b>YELLOW / AMBER (4–6)</b><span>Intermediate Risk</span></div>
+   <div class="pewsTrafficCard pewsRed"><b>RED (≥7)</b><span>High Risk / Immediate Action</span></div>
+  </div>
   <div class="actions"><button id="savePEWS" class="primary">Save PEWS Score</button></div>
  `)+
  panel("PEWS Scoring Guide — Full Descriptions",`
@@ -931,9 +943,16 @@ function renderPEWS(){
  `);
  const total=()=>{
   const vals=[pewsBehavior.value,pewsCardio.value,pewsResp.value];
-  if(vals.some(v=>v==="")){pewsTotal.textContent="—";pewsMath.textContent="Complete all 3 categories";return null}
-  const nums=vals.map(Number),sum=nums.reduce((a,b)=>a+b,0);
-  pewsTotal.textContent=String(sum);pewsMath.textContent=`(${nums[0]} + ${nums[1]} + ${nums[2]})`;
+  if(vals.some(v=>v==="")){
+   pewsTotal.textContent="—";pewsMath.textContent="Complete all 3 categories";
+   pewsRisk.className="pewsRisk pewsNeutral";
+   pewsRisk.innerHTML='<div class="pewsRiskTitle">Complete all 3 categories to calculate risk level.</div>';
+   return null;
+  }
+  const nums=vals.map(Number),sum=nums.reduce((a,b)=>a+b,0),risk=riskInfo(sum);
+  pewsTotal.textContent=String(sum);pewsMath.textContent="("+nums[0]+" + "+nums[1]+" + "+nums[2]+")";
+  pewsRisk.className="pewsRisk "+risk.cls;
+  pewsRisk.innerHTML='<div class="pewsRiskTitle">'+esc(risk.level)+' — '+esc(risk.label)+'</div><div class="pewsCareTitle">Suggested Care / Escalation</div><ul>'+risk.care.map(x=>'<li>'+esc(x)+'</li>').join("")+'</ul>';
   return sum;
  };
  [pewsBehavior,pewsCardio,pewsResp].forEach(el=>el.onchange=total);
@@ -944,7 +963,8 @@ function renderPEWS(){
   const student=pewsStudent.value.trim();
   if(!student){alert("Enter student name or RN initials.");return}
   state.pewsAssessments ||= [];
-  state.pewsAssessments.push({id:uid("pews"),patientId:activePatientId,time:pewsTime.value||nowLocal(),student,behavior:Number(pewsBehavior.value),cardiovascular:Number(pewsCardio.value),respiratory:Number(pewsResp.value),total:score});
+  const risk=riskInfo(score);
+  state.pewsAssessments.push({id:uid("pews"),patientId:activePatientId,time:pewsTime.value||nowLocal(),student,behavior:Number(pewsBehavior.value),cardiovascular:Number(pewsCardio.value),respiratory:Number(pewsResp.value),total:score,riskLevel:risk.level,riskLabel:risk.label});
   audit("PEWS documented",activePatientId,`PEWS ${score} — Behavior ${pewsBehavior.value}, Cardiovascular ${pewsCardio.value}, Respiratory ${pewsResp.value}`);
   liveSave("pews_saved",{patientId:activePatientId,total:score});
   renderPEWS();
