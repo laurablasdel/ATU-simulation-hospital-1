@@ -161,6 +161,11 @@ window.initializeAdminEnhancements=function(){
   'Medication documentation':['Complete','Incomplete','Not applicable'],
   'Report given':['Yes','No','Not yet'],
   'Needs follow-up':['No','Yes'],
+  'Pain score / scale':['0 — No pain','1','2','3','4','5','6','7','8','9','10 — Worst pain','FLACC','FACES','Unable to assess'],
+  'Fluid':['None / saline lock','Normal saline','Lactated Ringers','D5W','D5 1/2 NS','Other'],
+  'Inserted by':['Existing on admission','Student with supervision','RN','Provider','Other'],
+  'Other lines / drains':['None','NG / OG tube','JP drain','Chest tube','Central line / PICC','Wound vac','Ostomy','Multiple — describe in abnormal findings','Other'],
+
 
   // Pediatric assessment
   'Pain scale (FLACC / FACES / numeric)':['FLACC','FACES','Numeric 0–10','NIPS','Unable to assess'],
