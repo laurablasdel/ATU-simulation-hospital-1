@@ -1312,21 +1312,33 @@ function renderFaculty(){
 
  document.getElementById("view").innerHTML=
  `<div class="livebar"><span class="liveDot"></span><b>Faculty Live Control — ${esc(p.name)}</b><span class="note" style="color:#dbe9e3">All controls below apply only to this open chart.</span></div>`+
-<div style="margin:10px 0 8px;padding:9px 12px;background:#fff7d6;border:1px solid #dac56f;border-left:6px solid var(--gold);font-weight:900">ACTION ITEMS — Messages and Pending Releases</div>
+<div style="margin:10px 0 8px;padding:10px 12px;background:#eef7f2;border:1px solid #a9cdb9;border-left:6px solid var(--green);font-weight:900">MESSAGES — Faculty ↔ Student</div>
 
- panel(`Messages — Action Center (${pendingMessages.length} pending)`,`
-   <div class="note" style="margin-bottom:10px"><b>Messages are at the top so anything needing faculty action is visible first.</b> Pending messages remain hidden from the student until released.</div>
-   ${pendingMessages.map(item=>`<div class="releaseCard message">
-     <div class="actions" style="justify-content:space-between;align-items:center">
-      <div><span class="pendingBadge">PENDING MESSAGE</span> <b>${esc(item.title||"Faculty Message")}</b><br><span class="note">Created ${esc(item.createdAt||"")}</span></div>
-      <button class="primary releaseNow" data-id="${esc(item.id)}">Send to Student</button>
-     </div>
-     <div style="margin-top:7px">${esc(item.content||"")}</div>
-   </div>`).join("")||'<div class="success"><b>No pending messages.</b></div>'}
-   <details style="margin-top:10px" ${facultyMessages.some(m=>!m.read)?'open':''}>
+ panel(`Messages (${pendingMessages.length} pending)`,`
+   <div class="grid" style="margin-bottom:10px">
+    <label>Subject<input id="facultyMessageSubject" placeholder="Message subject"></label>
+    <label class="wide">Message to Student<textarea id="facultyMessageBody" placeholder="Type a message to the student working in this patient's chart."></textarea></label>
+   </div>
+   <div class="actions" style="margin-bottom:12px">
+    <button id="facultySendMessageNow" class="primary">Send Message Now</button>
+    <button id="facultySaveMessagePending" class="secondary">Save Message as Pending</button>
+   </div>
+   <div style="border-top:1px solid var(--line);padding-top:10px">
+    <b>Pending Messages</b>
+    ${pendingMessages.map(item=>`<div class="releaseCard message">
+      <div class="actions" style="justify-content:space-between;align-items:center">
+       <div><span class="pendingBadge">PENDING MESSAGE</span> <b>${esc(item.title||"Faculty Message")}</b><br><span class="note">Created ${esc(item.createdAt||"")}</span></div>
+       <button class="primary releaseNow" data-id="${esc(item.id)}">Send to Student</button>
+      </div>
+      <div style="margin-top:7px">${esc(item.content||"")}</div>
+    </div>`).join("")||'<div class="note" style="margin-top:6px">No pending messages.</div>'}
+   </div>
+   <details style="margin-top:12px" ${facultyMessages.some(m=>!m.read)?'open':''}>
     <summary><b>Recent Messages / Read Status (${facultyMessages.length})</b></summary>
     <div style="margin-top:8px">${facultyMessages.map(m=>`<div class="studentMessage"><b>${esc(m.subject||"Faculty Message")}</b><br><span class="note">${esc(m.at||"")} • ${m.read?"Read by student":"Unread"}</span><div style="margin-top:5px">${esc(m.message||"")}</div></div>`).join("")||'<div class="note">No messages have been sent for this patient.</div>'}</div>
    </details>`)+
+
+<div style="margin:12px 0 8px;padding:9px 12px;background:#fff7d6;border:1px solid #dac56f;border-left:6px solid var(--gold);font-weight:900">ACTION ITEMS — Pending Releases</div>
 
  panel(`Chart Updates — Instructor Only (${chartUpdates.length})`,`
    <div class="note" style="margin-bottom:10px"><b>Hidden from students.</b> Review each update, then use the red button when you are ready to place it in this patient's live chart.</div>
@@ -1352,7 +1364,7 @@ function renderFaculty(){
  panel("Create Pending Item",`
   <div class="grid3">
    <div class="kpi"><span class="note">Patient</span><br><b>${esc(p.name)}</b><br><span class="note">MRN ${esc(p.mrn)}</span></div>
-   <label>Item Type<select id="liveKind"><option value="order">New Provider Order</option><option value="result">New Lab / Diagnostic Result</option><option value="message">Message to Student</option></select></label>
+   <label>Item Type<select id="liveKind"><option value="order">New Provider Order</option><option value="result">New Lab / Diagnostic Result</option></select></label>
    <label>Title<input id="liveTitle" placeholder="e.g., Stat CBC / Chest X-ray / Provider Message"></label>
    <label id="liveOrderTypeWrap">Order Category<select id="liveOrderType"><option>Medication</option><option>IV / Fluids</option><option>Lab</option><option>Imaging</option><option>Nursing</option><option>Diet</option><option>Activity</option><option>Consult</option><option>Other</option></select></label>
    <label>Provider<input id="liveProvider" value="${esc(p?.provider||"")}"></label>
@@ -1361,7 +1373,6 @@ function renderFaculty(){
   </div>
   <div class="actions" style="margin-top:10px">
    <button id="savePendingItem" class="primary">Save as Pending</button>
-   <button id="sendImmediateMessage" class="secondary">Send Message Now</button>
   </div>`)+
  panel("Common Laboratory Panel",`
  <div class="grid3">
@@ -1448,10 +1459,18 @@ function renderFaculty(){
    });
    renderFaculty();
  };
- sendImmediateMessage.onclick=()=>{
+ facultySaveMessagePending.onclick=()=>{
    const patientId=selectedId;
-   const title=liveTitle.value.trim()||"Faculty Message";
-   const content=liveContent.value.trim();
+   const title=facultyMessageSubject.value.trim()||"Faculty Message";
+   const content=facultyMessageBody.value.trim();
+   if(!content){alert("Enter a message.");return}
+   queueRelease("message",patientId,title,content,{provider:"Faculty"});
+   renderFaculty();
+ };
+ facultySendMessageNow.onclick=()=>{
+   const patientId=selectedId;
+   const title=facultyMessageSubject.value.trim()||"Faculty Message";
+   const content=facultyMessageBody.value.trim();
    if(!content){alert("Enter a message.");return}
    const item=queueRelease("message",patientId,title,content,{provider:"Faculty"});
    releaseItem(item.id);
