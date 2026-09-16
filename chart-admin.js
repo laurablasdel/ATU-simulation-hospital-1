@@ -61,6 +61,18 @@ window.prepareAdminChartData=function(){
  for(const record of CHART_RECORDS){if(changes[record.id])Object.assign(record,changes[record.id]);record.content=compactContent(record.content);}
  const amelia=CHART_RECORDS.find(r=>r.patientId==='amelia-sung'&&r.category==='orders');
  if(amelia)amelia.content=amelia.content.replace(/No additional orders entered\. Record new provider orders in the Provider Orders section\.?/gi,'').trim();
+ // Stephanie's post-chest-X-ray orders must not appear in her original Admission Orders.
+ // They remain separate pending faculty-release items and appear only after individually released.
+ for(const record of CHART_RECORDS.filter(r=>r.patientId==='stephanie-smith'&&r.category==='orders'&&/admission/i.test(r.title||''))){
+  record.content=compactContent(record.content
+   .replace(/^.*(?:infuse\s*)?2\s*units?.*PRBC.*$/gmi,'')
+   .replace(/^.*ceftriaxone.*$/gmi,'')
+   .replace(/^.*acetaminophen.*$/gmi,'')
+   .replace(/^.*CBC\s*(?:in\s*)?(?:the\s*)?(?:AM|morning).*$/gmi,''));
+ }
+ if(Array.isArray(state.orders)){
+  state.orders=state.orders.filter(o=>!(o.patientId==='stephanie-smith'&&/admission/i.test(o.type||o.title||o.orderSet||'')&&/(?:2\s*units?.*PRBC|ceftriaxone|acetaminophen|CBC\s*(?:in\s*)?(?:the\s*)?(?:AM|morning))/i.test(o.text||o.order||o.medication||'')));
+ }
  const babyOrders=CHART_RECORDS.find(r=>r.id==='chart-256195d201d5815b8c66c36fd7f6f9b9');
  if(babyOrders)babyOrders.content=compactContent(babyOrders.content.replace(/<tr><td>[^<]*<\/td><td>Chest\s*[Xx]-?\s*ray<\/td><td>[^<]*(?:Laney|Darrelle)[\s\S]*?<\/td><\/tr>/i,''));
  const sanogo=CHART_RECORDS.find(r=>r.id==='chart-28b195d201d5805ca4d1c8978c9278be');
