@@ -92,6 +92,11 @@ fieldset{margin:8px 0;padding:9px}output{margin:5px 0}.patientBanner{padding:8px
 [data-admin-record] textarea{min-height:150px;font-family:inherit;line-height:1.35}
 .scanGrid{display:grid;grid-template-columns:1fr 38px 1fr 1fr;gap:10px;align-items:start}.scanGrid h3{margin:0 0 5px;color:var(--green2);font-size:14px}.scanArrow{align-self:center;text-align:center;font-size:24px;color:var(--green2)}.verifyBox{border:1px solid var(--line);background:#f3f7f9;padding:9px;border-radius:4px}code{font-size:11px;overflow-wrap:anywhere}
 @media(max-width:900px){.scanGrid{grid-template-columns:1fr}.scanArrow{transform:rotate(90deg)}}
+
+.pewsGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:12px 0}.pewsGrid select{min-height:72px;white-space:normal}
+.pewsTotal{margin:12px 0;padding:14px;border:2px solid var(--green2);background:#f3faf6;border-radius:5px;font-size:20px;font-weight:900}.pewsTotal strong{font-size:30px;color:var(--green)}
+.pewsGuideGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.pewsGuide{border:1px solid var(--line);border-radius:5px;overflow:hidden}.pewsGuide h3{margin:0;padding:9px;background:#243d4b;color:#fff}.pewsGuideRow{display:grid;grid-template-columns:36px 1fr;gap:8px;align-items:start;padding:9px;border-top:1px solid var(--line)}.pewsScoreBox{display:flex;align-items:center;justify-content:center;background:#eef5f1;border:1px solid var(--green2);border-radius:4px;min-height:30px}
+@media(max-width:900px){.pewsGrid,.pewsGuideGrid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -111,6 +116,7 @@ fieldset{margin:8px 0;padding:9px}output{margin:5px 0}.patientBanner{padding:8px
  <button data-view="surgery" data-specialty="surgery">Surgical / Post-Op</button>
  <div class="group">Charting</div>
  <button data-view="assessments">Assessments</button>
+ <button data-view="pews" data-specialty="pews">PEWS Scoring</button>
  <button data-view="flowsheets">Flowsheets / Vitals</button>
  <button data-view="io">Intake & Output</button>
  <button data-view="notes">Nursing Notes</button>
@@ -438,14 +444,14 @@ function loadState(){
      for(const seeded of SEED_PATIENTS)if(!s.patients.some(p=>p.id===seeded.id))s.patients.push({...seeded});
      s.patients.forEach(p=>{if(PATIENT_LEVELS[p.id])p.level=PATIENT_LEVELS[p.id]});
      s.orders ||= [];s.assessments ||= [];s.vitals ||= [];s.io ||= [];s.notes ||= [];s.labs ||= [];s.mar ||= [];s.audit ||= [];s.laborProgress ||= [];s.postpartumRecovery ||= [];s.pphPads ||= [];s.pphMedications ||= [];s.bloodAdministration ||= [];s.surgicalChecklist ||= [];s.surgicalAssessments ||= [];s.scenarioStage ||= {};
-     s.settings ||= {mode:"faculty",facultyPin:"2026"};s.releaseQueue ||= [];s.messages ||= [];s.notifications ||= [];s.diagnosticFiles ||= [];s.labPanels ||= [];
+     s.settings ||= {mode:"faculty",facultyPin:"2026"};s.releaseQueue ||= [];s.messages ||= [];s.notifications ||= [];s.diagnosticFiles ||= [];s.labPanels ||= [];s.pewsAssessments ||= [];
      return s;
    }
  }catch(e){}
  return {
    version:DATA_VERSION,patients:SEED_PATIENTS.map(x=>({...x})),
    orders:[],assessments:[],vitals:[],io:[],notes:[],labs:[],mar:[],audit:[],laborProgress:[],postpartumRecovery:[],pphPads:[],pphMedications:[],bloodAdministration:[],surgicalChecklist:[],surgicalAssessments:[],scenarioStage:{},
-   settings:{mode:"faculty",facultyPin:"2026"},releaseQueue:[],messages:[],notifications:[],diagnosticFiles:[],labPanels:[]
+   settings:{mode:"faculty",facultyPin:"2026"},releaseQueue:[],messages:[],notifications:[],diagnosticFiles:[],labPanels:[],pewsAssessments:[]
  };
 }
 let state=loadState(),currentView="patients",activePatientId=null,patientLevelTab=1;
@@ -478,6 +484,7 @@ function reloadSharedState(){
      state.notifications ||= [];
      state.diagnosticFiles ||= [];
      state.labPanels ||= [];
+     state.pewsAssessments ||= [];
      state.scenarioStage ||= {};
      state.postpartumRecovery ||= [];
      state.pphPads ||= [];
@@ -814,7 +821,8 @@ function activePatient(){return state.patients.find(x=>x.id===activePatientId)}
 const PATIENT_SPECIALTY_VIEWS={
  "amelia-sung":["prenatal","labor"],
  "fatima-sanogo":["prenatal","labor","postpartum","blood"],
- "stephanie-smith":["blood"],
+ "stephanie-smith":["blood","pews"],
+ "molly-thomas":["pews"],
  "baby-boy-sung":["prenatal"],
  "jane-fowler":["surgery"],
  "ruth-livingston":["surgery"],
@@ -850,6 +858,7 @@ function render(){
  if(currentView==="postpartum")renderPostpartum();
  if(currentView==="surgery")renderSurgery();
  if(currentView==="assessments")renderAssessments();
+ if(currentView==="pews")renderPEWS();
  if(currentView==="flowsheets")renderFlowsheets();
  if(currentView==="io")renderIO();
  if(currentView==="notes")renderNotes();
@@ -873,6 +882,74 @@ function requirePatient(){
  return false;
 }
 function patientRows(arr){return arr.filter(x=>x.patientId===activePatientId)}
+
+
+function renderPEWS(){
+ if(!requirePatient())return;
+ const rows=(state.pewsAssessments||[]).filter(x=>x.patientId===activePatientId).slice().reverse();
+ const behavior=[
+  ["0","Playing / appropriate — active, alert, and interacting appropriately for age."],
+  ["1","Sleeping — asleep but otherwise appropriate when aroused."],
+  ["2","Irritable — difficult to console or noticeably more irritable than expected."],
+  ["3","Lethargic, confused, or reduced response to pain — markedly decreased interaction or responsiveness."]
+ ];
+ const cardiovascular=[
+  ["0","Pink color OR capillary refill 1–2 seconds."],
+  ["1","Pale color OR capillary refill about 3 seconds."],
+  ["2","Gray color OR capillary refill about 4 seconds OR heart rate 20 beats/min above the normal range for age."],
+  ["3","Gray / mottled color OR capillary refill 5 seconds or longer OR heart rate 30 beats/min above the normal range for age OR bradycardia."]
+ ];
+ const respiratory=[
+  ["0","Respiratory rate and effort within the expected range for age; no retractions."],
+  ["1","Respiratory rate more than 10 breaths/min above the expected range for age OR accessory-muscle use OR approximately 30% oxygen requirement."],
+  ["2","Respiratory rate more than 20 breaths/min above the expected range for age OR retractions OR approximately 40% oxygen requirement."],
+  ["3","Respiratory rate 5 or more breaths/min below the expected range for age with retractions or grunting OR approximately 50% oxygen requirement."]
+ ];
+ const opts=(items,label)=>'<option value="">Select '+label+' score…</option>'+items.map(([score,desc])=>'<option value="'+score+'">'+score+' — '+esc(desc)+'</option>').join("");
+ const guide=(title,items)=>'<div class="pewsGuide"><h3>'+title+'</h3>'+items.map(([score,desc])=>'<div class="pewsGuideRow"><b class="pewsScoreBox">'+score+'</b><span>'+esc(desc)+'</span></div>').join("")+'</div>';
+ document.getElementById("view").innerHTML=
+ panel("Pediatric Early Warning Score (PEWS)",`
+  <div class="note" style="margin-bottom:10px">Select one score for each category. The total calculates automatically.</div>
+  <div class="grid">
+   <label>Student / RN Initials<input id="pewsStudent" placeholder="Initials or student name"></label>
+   <label>Date / Time<input id="pewsTime" type="datetime-local"></label>
+  </div>
+  <div class="pewsGrid">
+   <label><b>Behavior</b><select id="pewsBehavior">${opts(behavior,"Behavior")}</select></label>
+   <label><b>Cardiovascular</b><select id="pewsCardio">${opts(cardiovascular,"Cardiovascular")}</select></label>
+   <label><b>Respiratory</b><select id="pewsResp">${opts(respiratory,"Respiratory")}</select></label>
+  </div>
+  <div class="pewsTotal">PEWS TOTAL: <strong id="pewsTotal">—</strong> <span id="pewsMath" class="note"></span></div>
+  <div class="actions"><button id="savePEWS" class="primary">Save PEWS Score</button></div>
+ `)+
+ panel("PEWS Scoring Guide — Full Descriptions",`
+  <div class="pewsGuideGrid">${guide("Behavior",behavior)}${guide("Cardiovascular",cardiovascular)}${guide("Respiratory",respiratory)}</div>
+ `)+
+ panel("Previous PEWS Scores",`
+  <table><thead><tr><th>Date / Time</th><th>Student / RN</th><th>Behavior</th><th>Cardiovascular</th><th>Respiratory</th><th>Total</th></tr></thead>
+  <tbody>${rows.map(x=>`<tr><td>${esc(x.time)}</td><td>${esc(x.student)}</td><td>${esc(x.behavior)}</td><td>${esc(x.cardiovascular)}</td><td>${esc(x.respiratory)}</td><td><b>${esc(x.total)}</b></td></tr>`).join("")||'<tr><td colspan="6">No PEWS scores documented yet.</td></tr>'}</tbody></table>
+ `);
+ const total=()=>{
+  const vals=[pewsBehavior.value,pewsCardio.value,pewsResp.value];
+  if(vals.some(v=>v==="")){pewsTotal.textContent="—";pewsMath.textContent="Complete all 3 categories";return null}
+  const nums=vals.map(Number),sum=nums.reduce((a,b)=>a+b,0);
+  pewsTotal.textContent=String(sum);pewsMath.textContent=`(${nums[0]} + ${nums[1]} + ${nums[2]})`;
+  return sum;
+ };
+ [pewsBehavior,pewsCardio,pewsResp].forEach(el=>el.onchange=total);
+ pewsTime.value=new Date(Date.now()-new Date().getTimezoneOffset()*60000).toISOString().slice(0,16);
+ savePEWS.onclick=()=>{
+  const score=total();
+  if(score===null){alert("Select a Behavior, Cardiovascular, and Respiratory score.");return}
+  const student=pewsStudent.value.trim();
+  if(!student){alert("Enter student name or RN initials.");return}
+  state.pewsAssessments ||= [];
+  state.pewsAssessments.push({id:uid("pews"),patientId:activePatientId,time:pewsTime.value||nowLocal(),student,behavior:Number(pewsBehavior.value),cardiovascular:Number(pewsCardio.value),respiratory:Number(pewsResp.value),total:score});
+  audit("PEWS documented",activePatientId,`PEWS ${score} — Behavior ${pewsBehavior.value}, Cardiovascular ${pewsCardio.value}, Respiratory ${pewsResp.value}`);
+  liveSave("pews_saved",{patientId:activePatientId,total:score});
+  renderPEWS();
+ };
+}
 
 function renderPatients(){
  const levels=[1,2,3],visible=state.patients.filter(p=>Number(p.level||PATIENT_LEVELS[p.id])===patientLevelTab);
