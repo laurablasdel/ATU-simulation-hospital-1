@@ -133,6 +133,7 @@ fieldset{margin:8px 0;padding:9px}output{margin:5px 0}.patientBanner{padding:8px
  <section id="view"></section>
 </main>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="chart-data.js"></script>
 <script src="chart-workflows.js"></script>
 <script src="chart-admin.js"></script>
@@ -140,6 +141,14 @@ fieldset{margin:8px 0;padding:9px}output{margin:5px 0}.patientBanner{padding:8px
 <script>
 const DATA_VERSION="6.0-postpartum-pph";
 const STORAGE_KEY="atuSimulationHospitalEHRv1";
+/* ATU_LIVE_CLOUD_V1 */
+const ATU_SUPABASE_URL="https://dfbctsvvkqendktkzejr.supabase.co";
+const ATU_SUPABASE_KEY="sb_publishable_xhffhMmOkYNvuqJBt91P2g_F2sbrb0s";
+const ATU_CLOUD_ROW_COLLECTION="app";
+const ATU_CLOUD_ROW_ID="simulation-state";
+const ATU_CLOUD_CLIENT=sessionStorage.getItem("atuCloudClient")||("client-"+Date.now()+"-"+Math.random().toString(36).slice(2,8));
+sessionStorage.setItem("atuCloudClient",ATU_CLOUD_CLIENT);
+let atuSupabase=null,atuCloudReady=false,atuCloudApplying=false,atuCloudTimer=null,atuCloudChannel=null;
 const CHART_RECORDS=window.CHART_RECORDS||[];
 const SEED_PATIENTS=[{"id":"amelia-sung","name":"Amelia Sung","mrn":"SIM-201036","dob":"12/08/XXXX","room":"201","provider":"Dr. Darnell","allergies":["Shellfish","Penicillin"],"weightKg":69,"bloodType":"O+","codeStatus":"Full Code","age":"36","sex":"Female","ethnicity":"Filipino","primaryDiagnosis":"Induction of labor at 39 weeks due to gestational diabetes","gestationalAge":"39 weeks","gravida":"2","para":"1","fetus":"Male","gbs":"Positive","feedingPlan":"Breastfeeding","painPlan":"None","deliveryPreferences":"Delayed cord clamping and skin-to-skin after delivery","pphRisk":"Low","tdap":"Given at 28 weeks","gestationalDiabetes":"Diet controlled"},{"id":"jane-fowler","name":"Jane Fowler","mrn":"SIM-204051","dob":"01/28/XXXX","room":"204","provider":"Dr. Smith","allergies":["NKDA"],"weightKg":60,"bloodType":"A+","codeStatus":"Full Code","age":"79","sex":"Female","primaryDiagnosis":"Ovarian cancer \u2014 postoperative total abdominal hysterectomy with bilateral salpingo-oophorectomy","surgery":"Total abdominal hysterectomy with bilateral salpingo-oophorectomy and surgical staging","scenario":"Postoperative opioid intoxication / respiratory depression"},{"id":"fatima-sanogo","name":"Fatima Sanogo","mrn":"201038","dob":"07/08/XX","room":"211E","provider":"Nelson","allergies":["NKDA"],"weightKg":71,"bloodType":"","codeStatus":"Full Code"},{"id":"molly-thomas","name":"Molly Thomas","mrn":"20139","dob":"07/05/XX","room":"211C","provider":"Henderson","allergies":["NKDA"],"weightKg":7,"bloodType":"","codeStatus":"Full Code"},{"id":"stephanie-smith","name":"Stephanie Smith","mrn":"201040","dob":"07/14/XXXX","room":"211E","provider":"Henderson","allergies":["NKDA"],"weightKg":53.5,"bloodType":"","codeStatus":"Full Code"},{"id":"charles-jones","name":"Charles Jones","mrn":"201041","dob":"04/20/XX","room":"211A","provider":"Burris","allergies":["NKDA"],"weightKg":82,"bloodType":"","codeStatus":"Full Code"},{"id":"baby-boy-sung","name":"BABY BOY SUNG","mrn":"201042","dob":"TODAY","room":"211E","provider":"Craig","allergies":["NKDA"],"weightKg":4.37,"bloodType":"","codeStatus":"Full Code"}];
 SEED_PATIENTS.push(
@@ -506,24 +515,34 @@ function openFileDb(){
  });
 }
 async function storeDiagnosticFile(file){
- const db=await openFileDb();
- const key=uid("diagfile");
- await new Promise((resolve,reject)=>{
-  const tx=db.transaction(FILE_DB_STORE,"readwrite");
-  tx.objectStore(FILE_DB_STORE).put(file,key);
-  tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);
- });
- return key;
+ if(atuCloudReady&&atuSupabase){
+  const safe=String(file.name||"diagnostic").replace(/[^a-zA-Z0-9._-]/g,"_");
+  const path=`${Date.now()}-${Math.random().toString(36).slice(2,8)}-${safe}`;
+  const {error}=await atuSupabase.storage.from("diagnostics").upload(path,file,{contentType:file.type,upsert:false});
+  if(error)throw error;
+  return "cloud:"+path;
+ }
+ const db=await openFileDb(),key=uid("diagfile");
+ await new Promise((resolve,reject)=>{const tx=db.transaction(FILE_DB_STORE,"readwrite");tx.objectStore(FILE_DB_STORE).put(file,key);tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error)});
+ return "local:"+key;
 }
 async function getDiagnosticFile(key){
- const db=await openFileDb();
- return await new Promise((resolve,reject)=>{
-  const tx=db.transaction(FILE_DB_STORE,"readonly"),req=tx.objectStore(FILE_DB_STORE).get(key);
-  req.onsuccess=()=>resolve(req.result||null);req.onerror=()=>reject(req.error);
- });
+ if(String(key).startsWith("cloud:")){
+  if(!atuSupabase)return null;
+  const {data,error}=await atuSupabase.storage.from("diagnostics").download(String(key).slice(6));
+  if(error){console.error(error);return null}
+  return data;
+ }
+ const localKey=String(key).replace(/^local:/,""),db=await openFileDb();
+ return await new Promise((resolve,reject)=>{const tx=db.transaction(FILE_DB_STORE,"readonly"),req=tx.objectStore(FILE_DB_STORE).get(localKey);req.onsuccess=()=>resolve(req.result||null);req.onerror=()=>reject(req.error)});
 }
 async function deleteDiagnosticFile(key){
- try{const db=await openFileDb();await new Promise((res,rej)=>{const tx=db.transaction(FILE_DB_STORE,"readwrite");tx.objectStore(FILE_DB_STORE).delete(key);tx.oncomplete=res;tx.onerror=()=>rej(tx.error)})}catch(e){}
+ if(String(key).startsWith("cloud:")){
+  if(atuSupabase)try{await atuSupabase.storage.from("diagnostics").remove([String(key).slice(6)])}catch(e){}
+  return;
+ }
+ const localKey=String(key).replace(/^local:/,"");
+ try{const db=await openFileDb();await new Promise((resolve,reject)=>{const tx=db.transaction(FILE_DB_STORE,"readwrite");tx.objectStore(FILE_DB_STORE).delete(localKey);tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error)})}catch(e){}
 }
 async function openDiagnosticFile(fileId){
  const meta=(state.diagnosticFiles||[]).find(f=>f.id===fileId);
@@ -665,7 +684,7 @@ function showNextNotification(){
  };
 }
 function receiveLiveEvent(evt){
- reloadSharedState();
+ if(!atuCloudReady)reloadSharedState();
  updateNotificationCount();
  if(!isFaculty()){
    if(evt?.eventType==="item_released"||evt?.eventType==="message_sent"){
@@ -687,9 +706,87 @@ window.addEventListener("storage",e=>{
  }
 });
 
+function atuCloudBadge(text){
+ const b=document.getElementById("saveBadge");
+ if(b)b.textContent=text;
+}
+async function atuCloudPull(){
+ const {data,error}=await atuSupabase.from("ehr_sync").select("payload,updated_by,updated_at").eq("collection",ATU_CLOUD_ROW_COLLECTION).eq("item_id",ATU_CLOUD_ROW_ID).maybeSingle();
+ if(error)throw error;
+ if(!data?.payload)return false;
+ atuCloudApplying=true;
+ try{
+  const incoming=data.payload;
+  const tabMode=getTabMode();
+  state=incoming;
+  state.settings ||= {mode:"faculty",facultyPin:"2026"};
+  state.releaseQueue ||= [];state.messages ||= [];state.notifications ||= [];state.diagnosticFiles ||= [];state.labPanels ||= [];
+  localStorage.setItem(STORAGE_KEY,JSON.stringify(state));
+  setTabMode(tabMode);
+ }finally{atuCloudApplying=false}
+ return true;
+}
+async function atuCloudPush(){
+ if(!atuCloudReady||atuCloudApplying||!atuSupabase)return;
+ const payload=JSON.parse(JSON.stringify(state));
+ const {error}=await atuSupabase.from("ehr_sync").upsert({
+  collection:ATU_CLOUD_ROW_COLLECTION,item_id:ATU_CLOUD_ROW_ID,patient_id:null,
+  payload,updated_by:ATU_CLOUD_CLIENT,updated_at:new Date().toISOString()
+ },{onConflict:"collection,item_id"});
+ if(error)throw error;
+}
+function atuCloudSchedule(){
+ if(!atuCloudReady||atuCloudApplying)return;
+ clearTimeout(atuCloudTimer);
+ atuCloudTimer=setTimeout(async()=>{
+  try{atuCloudBadge("Cloud: syncing…");await atuCloudPush();atuCloudBadge("Cloud: LIVE ✓")}
+  catch(e){console.error("ATU cloud sync",e);atuCloudBadge("Cloud sync error")}
+ },120);
+}
+async function atuCloudReceive(payload){
+ const row=payload.new||payload.old;
+ if(!row||row.collection!==ATU_CLOUD_ROW_COLLECTION||row.item_id!==ATU_CLOUD_ROW_ID||row.updated_by===ATU_CLOUD_CLIENT)return;
+ if(payload.eventType==="DELETE")return;
+ atuCloudApplying=true;
+ try{
+  const tabMode=getTabMode();
+  state=row.payload;
+  state.settings ||= {mode:"faculty",facultyPin:"2026"};
+  state.releaseQueue ||= [];state.messages ||= [];state.notifications ||= [];state.diagnosticFiles ||= [];state.labPanels ||= [];
+  localStorage.setItem(STORAGE_KEY,JSON.stringify(state));
+  setTabMode(tabMode);
+ }finally{atuCloudApplying=false}
+ atuCloudBadge("Cloud: LIVE ✓ • update received");
+ applyMode();render();
+ if(!isFaculty())setTimeout(showNextNotification,100);
+}
+async function atuCloudInit(){
+ try{
+  if(!window.supabase?.createClient)throw new Error("Supabase library did not load");
+  atuSupabase=window.supabase.createClient(ATU_SUPABASE_URL,ATU_SUPABASE_KEY,{realtime:{params:{eventsPerSecond:20}}});
+  atuCloudBadge("Cloud: connecting…");
+  atuCloudChannel=atuSupabase.channel("atu-simulation-hospital-live")
+   .on("postgres_changes",{event:"*",schema:"public",table:"ehr_sync",filter:"collection=eq.app"},atuCloudReceive)
+   .subscribe(status=>{
+    if(status==="SUBSCRIBED")atuCloudBadge("Cloud: LIVE ✓");
+    if(status==="CHANNEL_ERROR"||status==="TIMED_OUT")atuCloudBadge("Cloud: disconnected");
+   });
+  const found=await atuCloudPull();
+  atuCloudReady=true;
+  if(!found)await atuCloudPush();
+  atuCloudBadge("Cloud: LIVE ✓");
+  applyMode();render();
+  if(!isFaculty())setTimeout(showNextNotification,100);
+ }catch(e){
+  console.error("ATU cloud initialization failed",e);
+  atuCloudReady=false;atuCloudBadge("Cloud offline • local backup");
+ }
+}
+
 function save(){
  localStorage.setItem(STORAGE_KEY,JSON.stringify(state));
- const b=document.getElementById("saveBadge");if(b)b.textContent="Saved in this browser";
+ const b=document.getElementById("saveBadge");if(b)b.textContent=atuCloudReady?"Local backup • syncing":"Saved locally";
+ atuCloudSchedule();
 }
 function audit(type,patientId,details=""){
  const p=state.patients.find(x=>x.id===patientId);
@@ -1252,7 +1349,7 @@ function renderFaculty(){
    <label class="wide">Upload PDF, JPG/JPEG, or PNG<input id="diagFileInput" type="file" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png"></label>
    <label class="wide">Impression / Result<textarea id="diagImpression" placeholder="Enter radiology impression or diagnostic result"></textarea></label>
   </div>
-  <div class="note" style="margin-top:6px">The file is stored in this browser until a cloud backend is connected. It stays hidden from students until you release the pending result.</div>
+  <div class="note" style="margin-top:6px">The file is stored in shared cloud storage. It stays hidden from students until you release the pending result, then it can be opened on another computer.</div>
   <div class="actions" style="margin-top:8px"><button id="saveDiagPending" class="primary">Upload & Save as Pending</button></div>
  `)+
  panel(`Other Pending Releases (${otherPending.length})`,`
@@ -1382,7 +1479,7 @@ function renderDebrief(){
 document.querySelectorAll("aside button").forEach(b=>b.onclick=()=>{if(!isFaculty()&&b.classList.contains("facultyOnly")){alert("Faculty Mode is required.");return}currentView=b.dataset.view;render()});
 document.getElementById("toggleMode").onclick=toggleMode;
 applyMode();initializeNativeCharts();initializeAdminEnhancements();initializeMedicationSystem();
-render();
+render();atuCloudInit();
 </script>
 </body>
 </html>
