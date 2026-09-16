@@ -1366,7 +1366,7 @@ function renderOrders(){
  <label class="wide">Order<textarea id="oText" placeholder="Enter complete provider order"></textarea></label><label>Status<select id="oStatus"><option>Active</option><option>Completed</option><option>Discontinued</option><option>Held</option></select></label>
  <label>Entered By<input id="oEnteredBy" placeholder="Faculty/provider"></label></div>
  <div class="actions" style="margin-top:10px"><button id="saveOrder" class="primary">Enter Order</button></div>`)+
- panel("Order List",`<table><thead><tr><th>Time</th><th>Type</th><th>Order</th><th>Provider</th><th>Status</th><th>Entered By</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.time)}</td><td>${esc(r.type)}</td><td>${activePatientId==='molly-thomas'?renderOrderContent(r.text):esc(r.text)}</td><td>${esc(r.provider)}</td><td>${esc(r.status)}</td><td>${esc(r.enteredBy)}</td></tr>`).join("")||'<tr><td colspan="6">No orders entered.</td></tr>'}</tbody></table>`);
+ panel("Order List",`<table><thead><tr><th>Time</th><th>Type</th><th>Order</th><th>Provider</th><th>Status</th><th>Entered By</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.time)}</td><td>${esc(r.type)}</td><td>${renderOrderContent(r.text)}</td><td>${esc(r.provider)}</td><td>${esc(r.status)}</td><td>${esc(r.enteredBy)}</td></tr>`).join("")||'<tr><td colspan="6">No orders entered.</td></tr>'}</tbody></table>`);
  saveOrder.onclick=()=>{const r={id:uid("order"),patientId:activePatientId,time:oTime.value,provider:oProvider.value.trim(),type:oType.value,text:oText.value.trim(),status:oStatus.value,enteredBy:oEnteredBy.value.trim()};if(!r.text||!r.provider){alert("Provider and order are required.");return}state.orders.push(r);audit("Order entered",activePatientId,`${r.type}: ${r.text}`);renderOrders()};
 }
 function renderLabs(){
@@ -1509,7 +1509,7 @@ function renderFaculty(){
       <div><span class="pendingBadge">CHART UPDATE</span> <b>${esc(item.title)}</b><br><span class="note">${esc(p.name)} • Instructor-controlled chart update</span></div>
       <button class="releaseChartUpdate releaseNow" data-id="${esc(item.id)}">Release to Student</button>
      </div>
-     <details style="margin-top:10px"><summary><b>Review update before release</b></summary><div class="chartRecordBody">${renderChartDoc(item.content)}</div></details>
+     <details style="margin-top:10px"><summary><b>Review update before release</b></summary><div class="chartRecordBody">${item.kind==="order"?renderOrderContent(item.content):renderChartDoc(item.content)}</div></details>
    </div>`).join("")||'<div class="note">No instructor-only chart updates are waiting for this patient.</div>'}`)+
  panel(`Other Pending Releases (${otherPending.length})`,`
    ${otherPending.map(item=>{
@@ -1519,7 +1519,7 @@ function renderFaculty(){
         <div><span class="pendingBadge">PENDING</span> <b>${esc(item.title)}</b><br><span class="note">${esc(pt?.name||"")} • ${esc(item.kind)} • created ${esc(item.createdAt)}</span></div>
         <button class="primary releaseNow" data-id="${esc(item.id)}">Release Now</button>
        </div>
-       <div style="margin-top:7px">${item.chartRecordId?`<details><summary>Review pending chart update</summary><div class="chartRecordBody">${renderChartDoc(item.content)}</div></details>`:esc(item.content)}</div>
+       <div style="margin-top:7px">${item.chartRecordId?`<details><summary>Review pending chart update</summary><div class="chartRecordBody">${item.kind==="order"?renderOrderContent(item.content):renderChartDoc(item.content)}</div></details>`:esc(item.content)}</div>
        ${(item.fileIds||[]).map(fid=>{const f=(state.diagnosticFiles||[]).find(x=>x.id===fid);return f?`<div class="note" style="margin-top:5px">Attachment: ${esc(f.fileName)}</div>`:""}).join("")}
      </div>`;
    }).join("")||'<div class="note">Nothing pending. Create an order, result, or message above.</div>'}`)+

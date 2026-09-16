@@ -221,7 +221,15 @@ window.initializeAdminEnhancements=function(){
 };
  const baseSummary=renderSummary;renderSummary=function(){baseSummary();[...document.querySelectorAll('.panel')].find(x=>x.querySelector('h2')?.textContent.includes('Recent Chart Activity'))?.remove();};
  const baseSurgery=renderSurgery;renderSurgery=function(){baseSurgery();[...document.querySelectorAll('.panel')].find(x=>x.querySelector('h2')?.textContent==='Scenario Progression')?.remove();};
- const baseFlows=renderFlowsheets;renderFlowsheets=function(){baseFlows();document.querySelectorAll('#view details').forEach(d=>d.open=true);};
+ const baseFlows=renderFlowsheets;renderFlowsheets=function(){
+ baseFlows();document.querySelectorAll('#view details').forEach(d=>d.open=true);
+ const fahrenheit=document.getElementById('vTemp');
+ if(activePatientId!=='stephanie-smith'||!fahrenheit)return;
+ fahrenheit.closest('label').insertAdjacentHTML('beforebegin','<label>Temp °C → °F<input id="vTempC" type="number" step="0.1" placeholder="Enter Celsius"><span class="note">Automatically fills Temp °F</span></label>');
+ const celsius=document.getElementById('vTempC');
+ celsius.oninput=()=>{const value=celsius.value.trim();fahrenheit.value=value!==''&&Number.isFinite(Number(value))?(Number(value)*9/5+32).toFixed(1):'';};
+ fahrenheit.addEventListener('input',()=>{celsius.value='';});
+};
  const baseIO=renderIO;renderIO=function(){baseIO();document.querySelectorAll('#view details').forEach(d=>d.open=true);};
  const baseLabs=renderLabs;renderLabs=function(){baseLabs();if(activePatientId==='charles-jones'){document.querySelectorAll('#view .panel').forEach(section=>{const text=section.textContent;if(text.includes('No released laboratory results.')||text.includes('No released diagnostic attachments.'))section.remove();});}};
  const baseMAR=renderMAR;renderMAR=function(){
