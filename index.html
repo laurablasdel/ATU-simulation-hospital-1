@@ -146,7 +146,7 @@ fieldset{margin:8px 0;padding:9px}output{margin:5px 0}.patientBanner{padding:8px
 <script src="chart-admin.js?v=20260916-stephanie-orders-3"></script>
 <script src="medication-system.js?v=20260916-2"></script>
 <script>
-const DATA_VERSION="6.2-live-student-charting";
+const DATA_VERSION="6.3-student-draft-autosave";
 const ATU_ERROR_ENDPOINT="https://dfbctsvvkqendktkzejr.supabase.co/rest/v1/ehr_events";
 const ATU_ERROR_KEY="sb_publishable_xhffhMmOkYNvuqJBt91P2g_F2sbrb0s";
 function atuReportRuntimeError(message,source,line,col,error){
@@ -711,6 +711,7 @@ function showNextNotification(){
  };
 }
 function receiveLiveEvent(evt){
+ saveCurrentViewDraft();
  reloadSharedState();
  updateNotificationCount();
  if(!isFaculty()){
@@ -725,6 +726,8 @@ function receiveLiveEvent(evt){
  }
 }
 if(liveChannel)liveChannel.onmessage=e=>receiveLiveEvent(e.data);
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="hidden")saveCurrentViewDraft()});
+window.addEventListener("pagehide",saveCurrentViewDraft);
 window.addEventListener("storage",e=>{
  if(e.key===STORAGE_KEY||e.key===STORAGE_KEY+"_live_event"){
    let evt={eventType:"state_changed"};
@@ -824,6 +827,48 @@ function audit(type,patientId,details=""){
  broadcastLive("chart_updated",{patientId,type,details});
 }
 function activePatient(){return state.patients.find(x=>x.id===activePatientId)}
+
+/* Student charting draft autosave: preserves in-progress fields when moving between chart tabs. */
+const ATU_DRAFT_KEY=STORAGE_KEY+"_student_drafts_v1";
+function draftStore(){
+ try{return JSON.parse(localStorage.getItem(ATU_DRAFT_KEY)||"{}")||{}}catch(e){return {}}
+}
+function draftId(view=currentView,patientId=activePatientId){
+ return patientId&&view ? patientId+"::"+view : "";
+}
+function saveCurrentViewDraft(){
+ if(isFaculty()||!activePatientId||!currentView)return;
+ const root=document.getElementById("view");if(!root)return;
+ const values={};let hasValue=false;
+ root.querySelectorAll("input[id],textarea[id],select[id]").forEach(el=>{
+  if(el.type==="file"||el.type==="button"||el.type==="submit")return;
+  const value=(el.type==="checkbox"||el.type==="radio")?!!el.checked:el.value;
+  values[el.id]=value;
+  if((typeof value==="boolean"&&value)||String(value??"").trim())hasValue=true;
+ });
+ if(!Object.keys(values).length)return;
+ const all=draftStore(),key=draftId();
+ if(hasValue){
+  all[key]={patientId:activePatientId,view:currentView,values,savedAt:new Date().toISOString()};
+  localStorage.setItem(ATU_DRAFT_KEY,JSON.stringify(all));
+  atuCloudBadge("Draft auto-saved");
+ }else if(all[key]){
+  delete all[key];localStorage.setItem(ATU_DRAFT_KEY,JSON.stringify(all));
+ }
+}
+function restoreCurrentViewDraft(){
+ if(isFaculty()||!activePatientId||!currentView)return;
+ const d=draftStore()[draftId()];if(!d?.values)return;
+ const root=document.getElementById("view");if(!root)return;
+ Object.entries(d.values).forEach(([id,value])=>{
+  const el=root.querySelector("#"+CSS.escape(id));if(!el||el.type==="file")return;
+  if(el.type==="checkbox"||el.type==="radio")el.checked=!!value;else el.value=value??"";
+ });
+}
+function clearCurrentViewDraft(){
+ const key=draftId();if(!key)return;
+ const all=draftStore();if(all[key]){delete all[key];localStorage.setItem(ATU_DRAFT_KEY,JSON.stringify(all));}
+}
 const PATIENT_SPECIALTY_VIEWS={
  "amelia-sung":["prenatal","labor"],
  "fatima-sanogo":["prenatal","labor","postpartum","blood"],
@@ -881,6 +926,7 @@ function render(){
  if(currentView==="debrief")renderDebrief();
  appendImportedForView(currentView);
  applyMode();
+ restoreCurrentViewDraft();
 }
 function requirePatient(){
  if(activePatient())return true;
@@ -990,7 +1036,7 @@ function renderPatients(){
  <div class="levelTabs" role="tablist" aria-label="Nursing level">${levels.map(level=>`<button class="levelTab ${level===patientLevelTab?"active":""}" role="tab" aria-selected="${level===patientLevelTab}" data-level="${level}">Level ${level}<span class="levelCount">${state.patients.filter(p=>Number(p.level||PATIENT_LEVELS[p.id])===level).length}</span></button>`).join("")}</div>
  ${patientGroups}`);
  document.querySelectorAll(".levelTab").forEach(b=>b.onclick=()=>{patientLevelTab=Number(b.dataset.level);renderPatients()});
- document.querySelectorAll(".openPatient").forEach(b=>b.onclick=()=>{activePatientId=b.dataset.id;currentView="summary";audit("Chart opened",activePatientId,"Patient chart opened");render()});
+ document.querySelectorAll(".openPatient").forEach(b=>b.onclick=()=>{saveCurrentViewDraft();activePatientId=b.dataset.id;currentView="summary";audit("Chart opened",activePatientId,"Patient chart opened");render()});
 }
 function renderSummary(){
  if(!requirePatient())return;const p=activePatient();
@@ -1195,7 +1241,7 @@ function renderAssessments(){
  panel("Assessment History",`<table><thead><tr><th>Time</th><th>Student</th><th>Pain</th><th>Neuro</th><th>Resp</th><th>Cardio</th><th>GI/GU</th><th>Skin</th><th>Notes</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.time)}</td><td>${esc(r.student)}</td><td>${esc(r.pain)}</td><td>${esc(r.neuro)}</td><td>${esc(r.resp)}</td><td>${esc(r.cardio)}</td><td>${esc(r.gi)} / ${esc(r.gu)}</td><td>${esc(r.skin)}</td><td>${esc(r.narrative)}</td></tr>`).join("")||'<tr><td colspan="9">No assessments charted.</td></tr>'}</tbody></table>`);
  document.getElementById("saveAssessment").onclick=()=>{
   const r={id:uid("assessment"),patientId:activePatientId,time:aTime.value,student:aStudent.value.trim(),pain:aPain.value,neuro:aNeuro.value,resp:aResp.value,cardio:aCardio.value,gi:aGI.value,gu:aGU.value,skin:aSkin.value,mobility:aMobility.value,lines:aLines.value,oxygen:aO2.value,narrative:aNarrative.value.trim()};
-  if(!r.student){alert("Enter student name/initials.");return}state.assessments.push(r);audit("Assessment charted",activePatientId,`Head-to-toe assessment by ${r.student}`);atuCloudBadge(atuCloudReady?"Saved & sharing…":"Saved locally");renderAssessments();
+  if(!r.student){alert("Enter student name/initials.");return}state.assessments.push(r);clearCurrentViewDraft();audit("Assessment charted",activePatientId,`Head-to-toe assessment by ${r.student}`);atuCloudBadge(atuCloudReady?"Saved & sharing…":"Saved locally");renderAssessments();
  };
 }
 function renderFlowsheets(){
@@ -1208,7 +1254,7 @@ function renderFlowsheets(){
   <label class="wide">Comments<input id="vComments"></label>
  </div><div class="actions" style="margin-top:10px"><button id="saveVitals" class="primary">Save Flowsheet Entry</button></div>`)+
  panel("Vitals History",`<table><thead><tr><th>Time</th><th>Temp</th><th>HR</th><th>RR</th><th>BP</th><th>SpO₂</th><th>Pain</th><th>BG</th><th>Student</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.time)}</td><td>${esc(r.temp)}</td><td>${esc(r.hr)}</td><td>${esc(r.rr)}</td><td>${esc(r.bp)}</td><td>${esc(r.spo2)}</td><td>${esc(r.pain)}</td><td>${esc(r.bg)}</td><td>${esc(r.student)}</td></tr>`).join("")||'<tr><td colspan="9">No vitals charted.</td></tr>'}</tbody></table>`);
- saveVitals.onclick=()=>{const r={id:uid("vital"),patientId:activePatientId,time:vTime.value,student:vStudent.value.trim(),temp:vTemp.value.trim(),hr:vHR.value.trim(),rr:vRR.value.trim(),bp:vBP.value.trim(),spo2:vSpo2.value.trim(),pain:vPain.value.trim(),bg:vBG.value.trim(),weight:vWt.value.trim(),comments:vComments.value.trim()};if(!r.student){alert("Enter student.");return}state.vitals.push(r);audit("Flowsheet entry",activePatientId,`Vitals documented by ${r.student}`);atuCloudBadge(atuCloudReady?"Saved & sharing…":"Saved locally");renderFlowsheets()};
+ saveVitals.onclick=()=>{const r={id:uid("vital"),patientId:activePatientId,time:vTime.value,student:vStudent.value.trim(),temp:vTemp.value.trim(),hr:vHR.value.trim(),rr:vRR.value.trim(),bp:vBP.value.trim(),spo2:vSpo2.value.trim(),pain:vPain.value.trim(),bg:vBG.value.trim(),weight:vWt.value.trim(),comments:vComments.value.trim()};if(!r.student){alert("Enter student.");return}state.vitals.push(r);clearCurrentViewDraft();audit("Flowsheet entry",activePatientId,`Vitals documented by ${r.student}`);atuCloudBadge(atuCloudReady?"Saved & sharing…":"Saved locally");renderFlowsheets()};
 }
 function renderIO(){
  if(!requirePatient())return;const rows=patientRows(state.io).slice().reverse();
@@ -1220,7 +1266,7 @@ function renderIO(){
  <div class="actions" style="margin-top:10px"><button id="saveIO" class="primary">Add I&O Entry</button></div>
  <div class="success" style="margin-top:10px"><b>Total Intake:</b> ${tin} mL &nbsp; <b>Total Output:</b> ${tout} mL &nbsp; <b>Balance:</b> ${tin-tout} mL</div>`)+
  panel("I&O History",`<table><thead><tr><th>Time</th><th>Type</th><th>Intake</th><th>Output</th><th>Description</th><th>Student</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.time)}</td><td>${esc(r.type)}</td><td>${esc(r.intake)}</td><td>${esc(r.output)}</td><td>${esc(r.description)}</td><td>${esc(r.student)}</td></tr>`).join("")||'<tr><td colspan="6">No I&O charted.</td></tr>'}</tbody></table>`);
- saveIO.onclick=()=>{const r={id:uid("io"),patientId:activePatientId,time:ioTime.value,student:ioStudent.value.trim(),type:ioType.value,intake:ioIn.value,output:ioOut.value,description:ioDesc.value.trim()};if(!r.student){alert("Enter student.");return}state.io.push(r);audit("I&O charted",activePatientId,`${r.type}: in ${r.intake||0} mL / out ${r.output||0} mL`);atuCloudBadge(atuCloudReady?"Saved & sharing…":"Saved locally");renderIO()};
+ saveIO.onclick=()=>{const r={id:uid("io"),patientId:activePatientId,time:ioTime.value,student:ioStudent.value.trim(),type:ioType.value,intake:ioIn.value,output:ioOut.value,description:ioDesc.value.trim()};if(!r.student){alert("Enter student.");return}state.io.push(r);clearCurrentViewDraft();audit("I&O charted",activePatientId,`${r.type}: in ${r.intake||0} mL / out ${r.output||0} mL`);atuCloudBadge(atuCloudReady?"Saved & sharing…":"Saved locally");renderIO()};
 }
 function renderNotes(){
  if(!requirePatient())return;const rows=patientRows(state.notes).slice().reverse();
@@ -1229,7 +1275,7 @@ function renderNotes(){
  <label class="wide">Narrative<textarea id="nNarrative" placeholder="Enter the complete nursing narrative note."></textarea></label></div>
  <div class="actions" style="margin-top:10px"><button id="saveNote" class="primary">Sign Note</button></div>`)+
  panel("Signed Notes",`${rows.map(r=>{const narrative=r.narrative||[r.situation,r.background,r.assessment,r.recommendation].filter(Boolean).join(" ");return `<div class="patientCard" style="margin-bottom:8px"><b>${esc(r.type||"Nursing Note")}</b> • ${esc(r.time)} • ${esc(r.student)}<br><span class="note">${esc(narrative)}</span></div>`}).join("")||'<div class="note">No signed notes.</div>'}`);
- saveNote.onclick=()=>{const r={id:uid("note"),patientId:activePatientId,time:nTime.value,student:nStudent.value.trim(),type:"Nursing Note",narrative:nNarrative.value.trim()};if(!r.student||!r.narrative){alert("Student and narrative are required.");return}state.notes.push(r);audit("Nursing note signed",activePatientId,`Nursing Note by ${r.student}`);atuCloudBadge(atuCloudReady?"Saved & sharing…":"Saved locally");renderNotes()};
+ saveNote.onclick=()=>{const r={id:uid("note"),patientId:activePatientId,time:nTime.value,student:nStudent.value.trim(),type:"Nursing Note",narrative:nNarrative.value.trim()};if(!r.student||!r.narrative){alert("Student and narrative are required.");return}state.notes.push(r);clearCurrentViewDraft();audit("Nursing note signed",activePatientId,`Nursing Note by ${r.student}`);atuCloudBadge(atuCloudReady?"Saved & sharing…":"Saved locally");renderNotes()};
 }
 function renderPostpartum(){
  if(!requirePatient())return;
@@ -1630,7 +1676,7 @@ function renderDebrief(){
  </span></div>`:"";
  dResult.innerHTML=`<div class="success"><b>${esc(p.name)}</b> — MRN ${esc(p.mrn)}</div><div class="grid4" style="margin:10px 0"><div class="kpi"><span class="note">Assessments</span><br><b>${counts.assess}</b></div><div class="kpi"><span class="note">Orders</span><br><b>${counts.orders}</b></div><div class="kpi"><span class="note">Notes</span><br><b>${counts.notes}</b></div><div class="kpi"><span class="note">Vitals</span><br><b>${counts.vitals}</b></div></div><table><thead><tr><th>Time</th><th>Event</th><th>Details</th></tr></thead><tbody>${a.map(x=>`<tr><td>${esc(x.at)}</td><td>${esc(x.type)}</td><td>${esc(x.details)}</td></tr>`).join("")||'<tr><td colspan="3">No activity.</td></tr>'}</tbody></table>`;};
 }
-document.querySelectorAll("aside button").forEach(b=>b.onclick=()=>{if(!isFaculty()&&b.classList.contains("facultyOnly")){alert("Faculty Mode is required.");return}currentView=b.dataset.view;render()});
+document.querySelectorAll("aside button").forEach(b=>b.onclick=()=>{if(!isFaculty()&&b.classList.contains("facultyOnly")){alert("Faculty Mode is required.");return}saveCurrentViewDraft();currentView=b.dataset.view;render()});
 document.getElementById("toggleMode").onclick=toggleMode;
 try{applyMode()}catch(e){atuReportRuntimeError("Apply mode: "+e.message,"startup",0,0,e)}
 try{initializeNativeCharts()}catch(e){atuReportRuntimeError("Native charts: "+e.message,"startup",0,0,e)}
