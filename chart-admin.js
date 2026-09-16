@@ -146,9 +146,40 @@ function renderCharlesMAR(){
  cjVerifyButton.onclick=verify;cjPatientScan.oninput=cjMedScan.oninput=()=>{verifiedMed=null;cjAdminArea.innerHTML='';cjVerifyStatus.textContent='Codes changed. Verify again.';};cjPatientScan.onkeydown=e=>{if(e.key==='Enter')verify();};cjMedScan.onkeydown=e=>{if(e.key==='Enter')verify();};
 }
 
+// Remove the retired ice-pack order from Smith's saved and starting orders.
+function removeSmithIcePackOrders(){
+ const hasIce=text=>/\bice[\s-]*packs?\b/i.test(String(text||''));
+ const clean=text=>String(text||'')
+  .replace(/<tr\b[^>]*>[\s\S]*?<\/tr>/gi,row=>hasIce(row)?'':row)
+  .split(/(\r?\n|<br\s*\/?>|(?<=[.!?;])\s+(?=[A-Z]))/i)
+  .filter(part=>!hasIce(part)).join('').trim();
+ const cleanRows=rows=>(rows||[]).filter(row=>{
+  if(row.patientId&&row.patientId!=='stephanie-smith')return true;
+  if(row.category&&row.category!=='orders')return true;
+  for(const key of ['text','content'])if(hasIce(row[key]))row[key]=clean(row[key]);
+  return !(['text','content'].some(key=>key in row)&&!row.text&&!row.content);
+ });
+ state.orders=cleanRows(state.orders);
+ const records=cleanRows(CHART_RECORDS);CHART_RECORDS.splice(0,CHART_RECORDS.length,...records);
+ state.customChartRecords=cleanRows(state.customChartRecords);
+ for(const [id,edit] of Object.entries(state.chartContentEdits||{})){
+  const record=CHART_RECORDS.find(r=>r.id===id);
+  if(record?.patientId==='stephanie-smith'&&record.category==='orders'&&hasIce(edit.content))edit.content=clean(edit.content);
+ }
+ const cleanQueue=queue=>(queue||[]).filter(item=>{
+  if(item.patientId!=='stephanie-smith'||!(item.kind==='order'||item.targetCollection==='orders'||item.chartRecordId&&CHART_RECORDS.some(r=>r.id===item.chartRecordId&&r.category==='orders')))return true;
+  if(item.rowData&&!cleanRows([item.rowData]).length)return false;
+  if(hasIce(item.content))item.content=clean(item.content);
+  return !!item.content||!!item.rowData?.text;
+ });
+ state.releaseQueue=cleanQueue(state.releaseQueue);
+ const base=state.simulationBases?.['stephanie-smith'];
+ if(base){base.collections.orders=cleanRows(base.collections.orders);base.chartRecords=cleanRows(base.chartRecords);base.releaseQueue=cleanQueue(base.releaseQueue);}
+}
 window.initializeAdminEnhancements=function(){
  state.chartContentEdits ||= {};state.customChartRecords ||= [];state.marVisibility ||= {};state.marHiddenRecords ||= {};state.simulationBases ||= {};
  for(const [id,edit] of Object.entries(state.chartContentEdits)){const r=CHART_RECORDS.find(x=>x.id===id);if(r){Object.assign(r,edit);r.content=compactContent(r.content);edit.content=r.content;}}
+ removeSmithIcePackOrders();
  const baseRelease=releaseItem;releaseItem=function(id){const item=(state.releaseQueue||[]).find(x=>x.id===id),record=item?.chartRecordId&&CHART_RECORDS.find(r=>r.id===item.chartRecordId);if(record)item.kind=record.category==='orders'?'order':record.category==='mar'?'mar':'result';baseRelease(id);if(item&&item.status==='released'){if(item.kind==='chartdata'&&item.targetCollection&&item.rowData){const existing=state[item.targetCollection].find(x=>x.id===item.rowData.id);if(!existing)state[item.targetCollection].push(item.rowData);if(item.targetCollection==='medicationCatalog')Object.assign(existing||item.rowData,{releaseStatus:'released',status:(existing||item.rowData).status==='Pending'?'Due':(existing||item.rowData).status});}const n=(state.notifications||[]).find(x=>x.releaseItemId===item.id);if(n&&record?.category==='mar'){n.title='New MAR Sheet';n.type='mar';}sendReleaseMessage(item);liveSave('released_to_chart',{patientId:item.patientId,itemId:item.id,target:item.targetCollection||record?.category});}};
  const baseChartRecords=chartRecords;chartRecords=function(patientId,categories){return baseChartRecords(patientId,categories).filter(r=>isFaculty()||!state.marHiddenRecords[r.id]);};
  const baseNativeInput=nativeInput;nativeInput=function(label,type='text',options=null){

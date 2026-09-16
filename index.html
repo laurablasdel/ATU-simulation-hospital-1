@@ -121,6 +121,7 @@ fieldset{margin:8px 0;padding:9px}output{margin:5px 0}.patientBanner{padding:8px
  <button data-view="flowsheets">Flowsheets / Vitals</button>
  <button data-view="io">Intake & Output</button>
  <button data-view="notes">Nursing Notes</button>
+ <button data-view="education">Education</button>
  <div class="group">Clinical Record</div>
  <button data-view="orders">Orders</button>
  <button data-view="labs">Labs / Diagnostics</button>
@@ -913,6 +914,7 @@ function render(){
  if(currentView==="flowsheets")renderFlowsheets();
  if(currentView==="io")renderIO();
  if(currentView==="notes")renderNotes();
+ if(currentView==="education")renderEducation();
  if(currentView==="orders")renderOrders();
  if(currentView==="labs")renderLabs();
  if(currentView==="mar")renderMAR();
@@ -1268,8 +1270,40 @@ function renderIO(){
  panel("I&O History",`<table><thead><tr><th>Time</th><th>Type</th><th>Intake</th><th>Output</th><th>Description</th><th>Student</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.time)}</td><td>${esc(r.type)}</td><td>${esc(r.intake)}</td><td>${esc(r.output)}</td><td>${esc(r.description)}</td><td>${esc(r.student)}</td></tr>`).join("")||'<tr><td colspan="6">No I&O charted.</td></tr>'}</tbody></table>`);
  saveIO.onclick=()=>{const r={id:uid("io"),patientId:activePatientId,time:ioTime.value,student:ioStudent.value.trim(),type:ioType.value,intake:ioIn.value,output:ioOut.value,description:ioDesc.value.trim()};if(!r.student){alert("Enter student.");return}state.io.push(r);clearCurrentViewDraft();audit("I&O charted",activePatientId,`${r.type}: in ${r.intake||0} mL / out ${r.output||0} mL`);atuCloudBadge(atuCloudReady?"Saved & sharing…":"Saved locally");renderIO()};
 }
+function renderEducation(){
+ if(!requirePatient())return;
+ const rows=patientRows(state.notes).filter(r=>r.type==='Patient Education').slice().reverse();
+ const select=(id,choices)=>`<select id="${id}">${choices.map(x=>`<option>${esc(x)}</option>`).join('')}</select>`;
+ document.getElementById('view').innerHTML=panel('Patient & Family Education',`
+ <div class="grid3">
+ <label>Date / Time<input id="edTime" type="datetime-local" value="${nowLocal()}"></label>
+ <label>Student / Initials<input id="edStudent"></label>
+ <label>Teaching Topic${select('edTopic',['Medications','Diagnosis / condition','Procedure / treatment','Pain management','Safety / fall prevention','Diet / nutrition','Activity / mobility','Discharge / home care','Infant / child care','Other'])}</label>
+ <label>Learner${select('edLearner',['Patient','Parent / guardian','Family / caregiver','Patient and family'])}</label>
+ <label>Teaching Method${select('edMethod',['Discussion','Demonstration','Written instructions','Video','Discussion and demonstration','Other'])}</label>
+ <label>Understanding / Evaluation${select('edUnderstanding',['Select evaluation','Teach-back successful','Return demonstration successful','Verbalizes understanding','Needs reinforcement','Unable to assess'])}</label>
+ <label class="wide">Learning Barriers / Accommodations<input id="edBarriers" placeholder="Language, readiness, interpreter, or none identified"></label>
+ <label class="wide">Education Provided<textarea id="edContent" placeholder="Document what you taught the patient or family."></textarea></label>
+ <label class="wide">Response / Follow-up Plan<textarea id="edFollowup" placeholder="Learner response and any additional teaching needed."></textarea></label>
+ </div><div class="actions"><button id="saveEducation" class="primary">Save Education</button></div>`)+
+ panel('Education History',rows.map(r=>`<div class="patientCard" style="margin-bottom:8px">
+ <b>${esc(r.topic||'Patient Education')}</b> • ${esc(r.time)} • ${esc(r.student)}
+ <div><b>Learner:</b> ${esc(r.learner)} · <b>Method:</b> ${esc(r.method)}</div>
+ <div><b>Evaluation:</b> ${esc(r.understanding)}</div>
+ <div style="white-space:pre-wrap"><b>Education:</b> ${esc(r.narrative)}</div>
+ ${r.barriers?`<div><b>Barriers:</b> ${esc(r.barriers)}</div>`:''}
+ ${r.followup?`<div style="white-space:pre-wrap"><b>Response / Follow-up:</b> ${esc(r.followup)}</div>`:''}
+ </div>`).join('')||'<div class="note">No education documented for this patient.</div>');
+ document.getElementById('saveEducation').onclick=()=>{
+ const get=id=>document.getElementById(id).value.trim();
+ if(!get('edStudent')||!get('edTime')||!get('edContent')||get('edUnderstanding')==='Select evaluation'){alert('Enter the date/time, student initials, education provided, and evaluation.');return;}
+ state.notes.push({id:uid('education'),patientId:activePatientId,type:'Patient Education',time:get('edTime'),student:get('edStudent'),topic:get('edTopic'),learner:get('edLearner'),method:get('edMethod'),understanding:get('edUnderstanding'),barriers:get('edBarriers'),narrative:get('edContent'),followup:get('edFollowup')});
+ clearCurrentViewDraft();audit('Patient education documented',activePatientId,`${get('edTopic')} — ${get('edLearner')}`);renderEducation();
+ };
+}
+
 function renderNotes(){
- if(!requirePatient())return;const rows=patientRows(state.notes).slice().reverse();
+ if(!requirePatient())return;const rows=patientRows(state.notes).filter(r=>r.type!=="Patient Education").slice().reverse();
  document.getElementById("view").innerHTML=panel("Nursing Note",`
  <div class="grid"><label>Date/Time<input id="nTime" type="datetime-local" value="${nowLocal()}"></label><label>Student<input id="nStudent"></label>
  <label class="wide">Narrative<textarea id="nNarrative" placeholder="Enter the complete nursing narrative note."></textarea></label></div>
