@@ -146,7 +146,7 @@ fieldset{margin:8px 0;padding:9px}output{margin:5px 0}.patientBanner{padding:8px
 <script src="chart-admin.js?v=20260916-stephanie-orders-3"></script>
 <script src="medication-system.js?v=20260916-2"></script>
 <script>
-const DATA_VERSION="6.1-stephanie-vitals-cleared";
+const DATA_VERSION="6.2-live-student-charting";
 const ATU_ERROR_ENDPOINT="https://dfbctsvvkqendktkzejr.supabase.co/rest/v1/ehr_events";
 const ATU_ERROR_KEY="sb_publishable_xhffhMmOkYNvuqJBt91P2g_F2sbrb0s";
 function atuReportRuntimeError(message,source,line,col,error){
@@ -711,7 +711,7 @@ function showNextNotification(){
  };
 }
 function receiveLiveEvent(evt){
- if(!atuCloudReady)reloadSharedState();
+ reloadSharedState();
  updateNotificationCount();
  if(!isFaculty()){
    if(evt?.eventType==="item_released"||evt?.eventType==="message_sent"){
@@ -769,7 +769,7 @@ function atuCloudSchedule(){
  atuCloudTimer=setTimeout(async()=>{
   try{atuCloudBadge("Cloud: syncing…");await atuCloudPush();atuCloudBadge("Cloud: LIVE ✓")}
   catch(e){console.error("ATU cloud sync",e);atuCloudBadge("Cloud sync error")}
- },120);
+ },40);
 }
 async function atuCloudReceive(payload){
  const row=payload.new||payload.old;
@@ -821,6 +821,7 @@ function audit(type,patientId,details=""){
  const p=state.patients.find(x=>x.id===patientId);
  state.audit.push({id:uid("audit"),at:nowLocal(),patientId,patientName:p?.name||"",type,details});
  save();
+ broadcastLive("chart_updated",{patientId,type,details});
 }
 function activePatient(){return state.patients.find(x=>x.id===activePatientId)}
 const PATIENT_SPECIALTY_VIEWS={
@@ -1194,7 +1195,7 @@ function renderAssessments(){
  panel("Assessment History",`<table><thead><tr><th>Time</th><th>Student</th><th>Pain</th><th>Neuro</th><th>Resp</th><th>Cardio</th><th>GI/GU</th><th>Skin</th><th>Notes</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.time)}</td><td>${esc(r.student)}</td><td>${esc(r.pain)}</td><td>${esc(r.neuro)}</td><td>${esc(r.resp)}</td><td>${esc(r.cardio)}</td><td>${esc(r.gi)} / ${esc(r.gu)}</td><td>${esc(r.skin)}</td><td>${esc(r.narrative)}</td></tr>`).join("")||'<tr><td colspan="9">No assessments charted.</td></tr>'}</tbody></table>`);
  document.getElementById("saveAssessment").onclick=()=>{
   const r={id:uid("assessment"),patientId:activePatientId,time:aTime.value,student:aStudent.value.trim(),pain:aPain.value,neuro:aNeuro.value,resp:aResp.value,cardio:aCardio.value,gi:aGI.value,gu:aGU.value,skin:aSkin.value,mobility:aMobility.value,lines:aLines.value,oxygen:aO2.value,narrative:aNarrative.value.trim()};
-  if(!r.student){alert("Enter student name/initials.");return}state.assessments.push(r);audit("Assessment charted",activePatientId,`Head-to-toe assessment by ${r.student}`);renderAssessments();
+  if(!r.student){alert("Enter student name/initials.");return}state.assessments.push(r);audit("Assessment charted",activePatientId,`Head-to-toe assessment by ${r.student}`);atuCloudBadge(atuCloudReady?"Saved & sharing…":"Saved locally");renderAssessments();
  };
 }
 function renderFlowsheets(){
@@ -1207,7 +1208,7 @@ function renderFlowsheets(){
   <label class="wide">Comments<input id="vComments"></label>
  </div><div class="actions" style="margin-top:10px"><button id="saveVitals" class="primary">Save Flowsheet Entry</button></div>`)+
  panel("Vitals History",`<table><thead><tr><th>Time</th><th>Temp</th><th>HR</th><th>RR</th><th>BP</th><th>SpO₂</th><th>Pain</th><th>BG</th><th>Student</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.time)}</td><td>${esc(r.temp)}</td><td>${esc(r.hr)}</td><td>${esc(r.rr)}</td><td>${esc(r.bp)}</td><td>${esc(r.spo2)}</td><td>${esc(r.pain)}</td><td>${esc(r.bg)}</td><td>${esc(r.student)}</td></tr>`).join("")||'<tr><td colspan="9">No vitals charted.</td></tr>'}</tbody></table>`);
- saveVitals.onclick=()=>{const r={id:uid("vital"),patientId:activePatientId,time:vTime.value,student:vStudent.value.trim(),temp:vTemp.value.trim(),hr:vHR.value.trim(),rr:vRR.value.trim(),bp:vBP.value.trim(),spo2:vSpo2.value.trim(),pain:vPain.value.trim(),bg:vBG.value.trim(),weight:vWt.value.trim(),comments:vComments.value.trim()};if(!r.student){alert("Enter student.");return}state.vitals.push(r);audit("Flowsheet entry",activePatientId,`Vitals documented by ${r.student}`);renderFlowsheets()};
+ saveVitals.onclick=()=>{const r={id:uid("vital"),patientId:activePatientId,time:vTime.value,student:vStudent.value.trim(),temp:vTemp.value.trim(),hr:vHR.value.trim(),rr:vRR.value.trim(),bp:vBP.value.trim(),spo2:vSpo2.value.trim(),pain:vPain.value.trim(),bg:vBG.value.trim(),weight:vWt.value.trim(),comments:vComments.value.trim()};if(!r.student){alert("Enter student.");return}state.vitals.push(r);audit("Flowsheet entry",activePatientId,`Vitals documented by ${r.student}`);atuCloudBadge(atuCloudReady?"Saved & sharing…":"Saved locally");renderFlowsheets()};
 }
 function renderIO(){
  if(!requirePatient())return;const rows=patientRows(state.io).slice().reverse();
@@ -1219,7 +1220,7 @@ function renderIO(){
  <div class="actions" style="margin-top:10px"><button id="saveIO" class="primary">Add I&O Entry</button></div>
  <div class="success" style="margin-top:10px"><b>Total Intake:</b> ${tin} mL &nbsp; <b>Total Output:</b> ${tout} mL &nbsp; <b>Balance:</b> ${tin-tout} mL</div>`)+
  panel("I&O History",`<table><thead><tr><th>Time</th><th>Type</th><th>Intake</th><th>Output</th><th>Description</th><th>Student</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.time)}</td><td>${esc(r.type)}</td><td>${esc(r.intake)}</td><td>${esc(r.output)}</td><td>${esc(r.description)}</td><td>${esc(r.student)}</td></tr>`).join("")||'<tr><td colspan="6">No I&O charted.</td></tr>'}</tbody></table>`);
- saveIO.onclick=()=>{const r={id:uid("io"),patientId:activePatientId,time:ioTime.value,student:ioStudent.value.trim(),type:ioType.value,intake:ioIn.value,output:ioOut.value,description:ioDesc.value.trim()};if(!r.student){alert("Enter student.");return}state.io.push(r);audit("I&O charted",activePatientId,`${r.type}: in ${r.intake||0} mL / out ${r.output||0} mL`);renderIO()};
+ saveIO.onclick=()=>{const r={id:uid("io"),patientId:activePatientId,time:ioTime.value,student:ioStudent.value.trim(),type:ioType.value,intake:ioIn.value,output:ioOut.value,description:ioDesc.value.trim()};if(!r.student){alert("Enter student.");return}state.io.push(r);audit("I&O charted",activePatientId,`${r.type}: in ${r.intake||0} mL / out ${r.output||0} mL`);atuCloudBadge(atuCloudReady?"Saved & sharing…":"Saved locally");renderIO()};
 }
 function renderNotes(){
  if(!requirePatient())return;const rows=patientRows(state.notes).slice().reverse();
@@ -1228,7 +1229,7 @@ function renderNotes(){
  <label class="wide">Narrative<textarea id="nNarrative" placeholder="Enter the complete nursing narrative note."></textarea></label></div>
  <div class="actions" style="margin-top:10px"><button id="saveNote" class="primary">Sign Note</button></div>`)+
  panel("Signed Notes",`${rows.map(r=>{const narrative=r.narrative||[r.situation,r.background,r.assessment,r.recommendation].filter(Boolean).join(" ");return `<div class="patientCard" style="margin-bottom:8px"><b>${esc(r.type||"Nursing Note")}</b> • ${esc(r.time)} • ${esc(r.student)}<br><span class="note">${esc(narrative)}</span></div>`}).join("")||'<div class="note">No signed notes.</div>'}`);
- saveNote.onclick=()=>{const r={id:uid("note"),patientId:activePatientId,time:nTime.value,student:nStudent.value.trim(),type:"Nursing Note",narrative:nNarrative.value.trim()};if(!r.student||!r.narrative){alert("Student and narrative are required.");return}state.notes.push(r);audit("Nursing note signed",activePatientId,`Nursing Note by ${r.student}`);renderNotes()};
+ saveNote.onclick=()=>{const r={id:uid("note"),patientId:activePatientId,time:nTime.value,student:nStudent.value.trim(),type:"Nursing Note",narrative:nNarrative.value.trim()};if(!r.student||!r.narrative){alert("Student and narrative are required.");return}state.notes.push(r);audit("Nursing note signed",activePatientId,`Nursing Note by ${r.student}`);atuCloudBadge(atuCloudReady?"Saved & sharing…":"Saved locally");renderNotes()};
 }
 function renderPostpartum(){
  if(!requirePatient())return;
