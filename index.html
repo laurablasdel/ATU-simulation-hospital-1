@@ -140,6 +140,23 @@ fieldset{margin:8px 0;padding:9px}output{margin:5px 0}.patientBanner{padding:8px
 <script src="medication-system.js"></script>
 <script>
 const DATA_VERSION="6.0-postpartum-pph";
+const ATU_ERROR_ENDPOINT="https://dfbctsvvkqendktkzejr.supabase.co/rest/v1/ehr_events";
+const ATU_ERROR_KEY="sb_publishable_xhffhMmOkYNvuqJBt91P2g_F2sbrb0s";
+function atuReportRuntimeError(message,source,line,col,error){
+ try{
+  const detail={message:String(message||"Unknown error"),source:String(source||""),line:line||0,col:col||0,stack:String(error?.stack||""),href:location.href,userAgent:navigator.userAgent};
+  fetch(ATU_ERROR_ENDPOINT,{method:"POST",headers:{"apikey":ATU_ERROR_KEY,"Authorization":"Bearer "+ATU_ERROR_KEY,"Content-Type":"application/json","Prefer":"return=minimal"},body:JSON.stringify({event_type:"browser_runtime_error",payload:detail})}).catch(()=>{});
+  setTimeout(()=>{
+   if(document.getElementById("atuRuntimeError"))return;
+   const d=document.createElement("div");d.id="atuRuntimeError";
+   d.style.cssText="position:fixed;left:10px;right:10px;top:10px;z-index:999999;background:#fff0f2;border:3px solid #b42336;padding:12px;font:14px Arial;color:#61101d;box-shadow:0 4px 18px #0004";
+   d.innerHTML="<b>ATU Simulation Hospital encountered an error.</b><br>"+String(message||"Unknown error")+"<br><button onclick=\"location.reload()\" style=\"margin-top:8px;padding:6px 12px\">Reload</button>";
+   document.body.appendChild(d);
+  },0);
+ }catch(_){}
+}
+window.addEventListener("error",e=>atuReportRuntimeError(e.message,e.filename,e.lineno,e.colno,e.error));
+window.addEventListener("unhandledrejection",e=>atuReportRuntimeError("Unhandled promise rejection","",0,0,e.reason));
 const STORAGE_KEY="atuSimulationHospitalEHRv1";
 /* ATU_LIVE_CLOUD_V1 */
 const ATU_SUPABASE_URL="https://dfbctsvvkqendktkzejr.supabase.co";
@@ -432,12 +449,12 @@ function loadState(){
  };
 }
 let state=loadState(),currentView="patients",activePatientId=null,patientLevelTab=1;
-for(const p of state.patients)if(PATIENT_OVERRIDES[p.id])Object.assign(p,PATIENT_OVERRIDES[p.id]);
-ensureSeededAmelia();
-ensureSeededJane();
-prepareAdminChartData();
-seedChartPending();
-save();
+try{for(const p of state.patients)if(PATIENT_OVERRIDES[p.id])Object.assign(p,PATIENT_OVERRIDES[p.id])}catch(e){atuReportRuntimeError("Patient override startup: "+e.message,"startup",0,0,e)}
+try{ensureSeededAmelia()}catch(e){atuReportRuntimeError("Amelia seed startup: "+e.message,"startup",0,0,e)}
+try{ensureSeededJane()}catch(e){atuReportRuntimeError("Jane seed startup: "+e.message,"startup",0,0,e)}
+try{prepareAdminChartData()}catch(e){atuReportRuntimeError("Admin chart startup: "+e.message,"startup",0,0,e)}
+try{seedChartPending()}catch(e){atuReportRuntimeError("Pending chart startup: "+e.message,"startup",0,0,e)}
+try{save()}catch(e){atuReportRuntimeError("Initial save startup: "+e.message,"startup",0,0,e)}
 
 
 const TAB_MODE_KEY="atuEhrTabMode";
@@ -1513,8 +1530,12 @@ function renderDebrief(){
 }
 document.querySelectorAll("aside button").forEach(b=>b.onclick=()=>{if(!isFaculty()&&b.classList.contains("facultyOnly")){alert("Faculty Mode is required.");return}currentView=b.dataset.view;render()});
 document.getElementById("toggleMode").onclick=toggleMode;
-applyMode();initializeNativeCharts();initializeAdminEnhancements();initializeMedicationSystem();
-render();atuCloudInit();
+try{applyMode()}catch(e){atuReportRuntimeError("Apply mode: "+e.message,"startup",0,0,e)}
+try{initializeNativeCharts()}catch(e){atuReportRuntimeError("Native charts: "+e.message,"startup",0,0,e)}
+try{initializeAdminEnhancements()}catch(e){atuReportRuntimeError("Admin enhancements: "+e.message,"startup",0,0,e)}
+try{initializeMedicationSystem()}catch(e){atuReportRuntimeError("Medication system: "+e.message,"startup",0,0,e)}
+try{render()}catch(e){atuReportRuntimeError("Initial render: "+e.message,"startup",0,0,e)}
+atuCloudInit();
 </script>
 </body>
 </html>
