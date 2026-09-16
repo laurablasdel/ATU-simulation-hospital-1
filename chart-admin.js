@@ -134,7 +134,69 @@ window.initializeAdminEnhancements=function(){
  for(const [id,edit] of Object.entries(state.chartContentEdits)){const r=CHART_RECORDS.find(x=>x.id===id);if(r){Object.assign(r,edit);r.content=compactContent(r.content);edit.content=r.content;}}
  const baseRelease=releaseItem;releaseItem=function(id){const item=(state.releaseQueue||[]).find(x=>x.id===id),record=item?.chartRecordId&&CHART_RECORDS.find(r=>r.id===item.chartRecordId);if(record)item.kind=record.category==='orders'?'order':record.category==='mar'?'mar':'result';baseRelease(id);if(item&&item.status==='released'){if(item.kind==='chartdata'&&item.targetCollection&&item.rowData){const existing=state[item.targetCollection].find(x=>x.id===item.rowData.id);if(!existing)state[item.targetCollection].push(item.rowData);if(item.targetCollection==='medicationCatalog')Object.assign(existing||item.rowData,{releaseStatus:'released',status:(existing||item.rowData).status==='Pending'?'Due':(existing||item.rowData).status});}const n=(state.notifications||[]).find(x=>x.releaseItemId===item.id);if(n&&record?.category==='mar'){n.title='New MAR Sheet';n.type='mar';}sendReleaseMessage(item);liveSave('released_to_chart',{patientId:item.patientId,itemId:item.id,target:item.targetCollection||record?.category});}};
  const baseChartRecords=chartRecords;chartRecords=function(patientId,categories){return baseChartRecords(patientId,categories).filter(r=>isFaculty()||!state.marHiddenRecords[r.id]);};
- const baseNativeInput=nativeInput;nativeInput=function(label,type='text',options=null){const choices={Orientation:['Oriented ×4','Oriented to person','Oriented to person and place','Disoriented'], 'Level of consciousness':['Alert','Drowsy','Lethargic','Responds to voice','Responds to pain','Unresponsive'],'Breath sounds':['Clear bilaterally','Crackles','Wheezes','Diminished','Absent'], 'Respiratory effort':['Unlabored','Mild retractions','Moderate retractions','Severe retractions','Apnea'], 'Cardiac rhythm':['Regular','Irregular','Sinus tachycardia','Sinus bradycardia','Atrial fibrillation'],Abdomen:['Soft / non-tender','Distended','Tender','Rigid'], 'Bowel sounds':['Normoactive','Hypoactive','Hyperactive','Absent'],Mobility:['Independent','Assist ×1','Assist ×2','Bedrest'], 'IV site condition':['Clean / dry / intact','Redness','Swelling','Pain','Infiltration','Phlebitis'], 'Foley present':['No','Yes'], 'Development appropriate':['Yes','No','Unable to assess'],Behavior:['Appropriate','Irritable','Restless','Lethargic'], 'Feeding type':['Breast','Bottle','NPO','Tube feeding']};return baseNativeInput(label,type,options||choices[label]||null);};
+ const baseNativeInput=nativeInput;nativeInput=function(label,type='text',options=null){
+ const choices={
+  // General head-to-toe assessment
+  'Orientation':['Oriented ×4','Oriented to person','Oriented to person and place','Oriented to person, place, and time','Disoriented','Unable to assess'],
+  'Level of consciousness':['Alert','Drowsy','Lethargic','Responds to voice','Responds to pain','Unresponsive'],
+  'Pupils / speech':['PERRLA / speech clear','Pupils equal and reactive / speech slurred','Pupils unequal','Pupils nonreactive','Speech aphasic','Unable to assess'],
+  'Cardiac rhythm':['Regular','Irregular','Sinus rhythm','Sinus tachycardia','Sinus bradycardia','Atrial fibrillation','Other'],
+  'Pulses / capillary refill / edema':['Pulses 2+ / cap refill <3 sec / no edema','Pulses 1+ / cap refill 3 sec','Pulses 3+ / bounding','Cap refill >3 sec','1+ edema','2+ edema','3+ edema','4+ edema','Other'],
+  'Breath sounds':['Clear bilaterally','Crackles','Wheezes','Rhonchi','Diminished','Absent','Stridor','Other'],
+  'Respiratory effort':['Unlabored','Tachypneic','Mild retractions','Moderate retractions','Severe retractions','Nasal flaring','Grunting','Apnea','Other'],
+  'Oxygen device / flow':['Room air','Nasal cannula','Simple mask','Non-rebreather','Venturi mask','High-flow nasal cannula','CPAP / BiPAP','Mechanical ventilation','Other'],
+  'Abdomen':['Soft / non-tender','Soft / tender','Distended','Firm','Rigid','Guarding','Other'],
+  'Bowel sounds':['Normoactive ×4','Hypoactive','Hyperactive','Absent','Unable to assess'],
+  'Nausea / vomiting':['None','Nausea','Vomiting','Nausea and vomiting'],
+  'Mobility / ROM':['Independent / ROM WDL','Assist ×1','Assist ×2','Limited ROM','Bedrest','Unable to assess'],
+  'Skin / wounds':['Warm / dry / intact','Pale','Flushed','Diaphoretic','Cool / clammy','Cyanotic','Wound / incision present','Pressure injury present','Other'],
+  'IV site':['Left hand','Right hand','Left forearm','Right forearm','Left antecubital','Right antecubital','Other'],
+  'IV gauge':['14 g','16 g','18 g','20 g','22 g','24 g','Other'],
+  'IV site condition':['Clean / dry / intact','Redness','Swelling','Pain','Infiltration','Phlebitis','Leaking','Other'],
+  'Foley present':['No','Yes'],
+  'Urine color':['Clear yellow','Pale yellow','Dark yellow / amber','Pink / blood tinged','Red / bloody','Cloudy','Other'],
+  'Bed / rails / call light':['Bed low / locked; call light in reach','Bed low / locked; rails ×2; call light in reach','Rails ×4','Needs correction'],
+  'Fall precautions / alarm':['Standard precautions','Fall precautions in place','Bed alarm on','Chair alarm on','Not indicated'],
+  'ID band':['Verified','Missing','Incorrect / needs correction'],
+  'Medication documentation':['Complete','Incomplete','Not applicable'],
+  'Report given':['Yes','No','Not yet'],
+  'Needs follow-up':['No','Yes'],
+
+  // Pediatric assessment
+  'Pain scale (FLACC / FACES / numeric)':['FLACC','FACES','Numeric 0–10','NIPS','Unable to assess'],
+  'Behavior':['Appropriate for age','Calm','Playful','Sleeping','Irritable','Restless','Anxious','Lethargic','Difficult to console','Other'],
+  'Cry':['No cry / calm','Strong cry','Whimpering','High-pitched cry','Weak cry','Inconsolable','Unable to assess'],
+  'Fontanelles':['Soft / flat','Sunken','Bulging','Closed / not palpable','Unable to assess','Not age applicable'],
+  'Development appropriate':['Yes','No','Unable to assess'],
+  'Feeding type':['Breast','Bottle / formula','Breast and bottle','Regular diet','Clear liquids','NPO','Tube feeding','Other'],
+  'Amount / tolerance':['Tolerated well','Fair tolerance','Poor intake','Refused','Emesis after feeding','NPO / not applicable'],
+  'Diaper / output':['Wet diaper','Stool diaper','Wet and stool','Dry','Toilet trained / not applicable'],
+  'Skin / tone':['Pink / warm / dry / normal tone','Pale','Flushed','Mottled','Cyanotic','Decreased tone','Increased tone','Other'],
+
+  // Mental status assessment
+  'Appearance':['Well groomed','Appropriately dressed','Disheveled','Poor hygiene','Bizarre appearance','Other'],
+  'Speech':['Normal rate / volume','Pressured','Rapid','Slow','Soft','Loud','Slurred','Mute','Other'],
+  'Mood':['Euthymic','Anxious','Depressed','Irritable','Angry','Elevated / euphoric','Fearful','Other'],
+  'Affect':['Appropriate / congruent','Flat','Blunted','Restricted','Labile','Incongruent','Other'],
+  'Thought process':['Logical / goal directed','Circumstantial','Tangential','Flight of ideas','Disorganized','Thought blocking','Other'],
+  'Thought content':['Appropriate','Delusions','Paranoia','Preoccupation','Obsessions','Grandiosity','Other'],
+  'Perceptual disturbances':['None','Auditory hallucinations','Visual hallucinations','Tactile hallucinations','Other'],
+  'Insight':['Good','Fair','Poor','Absent','Unable to assess'],
+  'Judgment':['Intact','Fair','Impaired','Poor','Unable to assess'],
+  'Suicide / self-harm assessment':['Denies SI / self-harm','Passive suicidal thoughts','Suicidal ideation without plan','Suicidal ideation with plan','Recent self-harm','Unable to assess'],
+  'Harm-to-others assessment':['Denies HI','Homicidal ideation without plan','Homicidal ideation with plan','Threatening behavior','Recent violence','Unable to assess'],
+
+  // Newborn assessment
+  'Delivery type':['Spontaneous vaginal delivery','Assisted vaginal delivery','Cesarean section'],
+  'GBS':['Negative','Positive — treated','Positive — treatment incomplete','Unknown'],
+  'Amniotic fluid':['Clear','Meconium stained','Bloody','Other'],
+  'Suction type':['Bulb syringe','Wall suction','DeLee / catheter','None','Other'],
+  'Color / consistency':['Clear / thin','White / thin','Bloody','Meconium / thick','Other'],
+  'Feeding method':['Breast','Bottle / formula','Breast and bottle','NPO','Other'],
+  'Symptoms observed':['None','Jittery','Lethargic','Poor feeding','Apnea','Cyanosis','Hypothermia','Other']
+ };
+ return baseNativeInput(label,type,options||choices[label]||null);
+};
  const baseSummary=renderSummary;renderSummary=function(){baseSummary();[...document.querySelectorAll('.panel')].find(x=>x.querySelector('h2')?.textContent.includes('Recent Chart Activity'))?.remove();};
  const baseSurgery=renderSurgery;renderSurgery=function(){baseSurgery();[...document.querySelectorAll('.panel')].find(x=>x.querySelector('h2')?.textContent==='Scenario Progression')?.remove();};
  const baseFlows=renderFlowsheets;renderFlowsheets=function(){baseFlows();document.querySelectorAll('#view details').forEach(d=>d.open=true);};
