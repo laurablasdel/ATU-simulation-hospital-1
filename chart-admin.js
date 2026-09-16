@@ -19,6 +19,7 @@ const changes={
  'chart-256195d201d581aebb87f3902a0c5bc0':{status:'pending',title:'Chest X-ray',content:'![Baby Boy Sung chest radiograph](assets/baby-boy-sung-chest-xray.png)\n\n**Chest X-ray Report**\n\nFracture of the left clavicle noted. Full expansion of both right and left lung noted, no lung involvement.'}
 };
 const added=[
+ {id:'admin-molly-parainfluenza',patientId:'molly-thomas',title:'Parainfluenza Result',category:'labs',status:'released',content:'**Parainfluenza: Positive**'},
  {id:'admin-molly-admission',patientId:'molly-thomas',title:'Admission Orders',category:'orders',status:'released',content:'Provider: Dr. Henderson\n\n- Admit to pediatric floor.\n- Full Code.\n- Continuous pulse oximetry.\n- Regular diet; NPO if respiratory rate exceeds 60/min.\n- Call MD with assessment findings.\n- Strict intake and output.\n- Daily weight.\n- Normal saline bolus 20 mL/kg IV over 30 minutes.'},
  {id:'admin-jane-respiratory',patientId:'jane-fowler',title:'Respiratory Depression — MD Orders',category:'orders',status:'pending',content:'**Change in condition:** Patient is unresponsive; respiratory rate 6/min and SpO₂ 85%.\n\n**Provider orders:**\n- Naloxone 0.2 mg IV push every 2–3 minutes PRN respiratory rate less than 6/min or change in level of consciousness.\n- Ketorolac 30 mg IV push once now.'},
  {id:'admin-baby-cxr-order',patientId:'baby-boy-sung',title:'Chest X-ray Order',category:'orders',status:'pending',content:'Chest X-ray. Provider: Dr. Craig.'},
