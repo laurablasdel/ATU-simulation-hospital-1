@@ -1312,8 +1312,7 @@ function renderFaculty(){
 
  document.getElementById("view").innerHTML=
  `<div class="livebar"><span class="liveDot"></span><b>Faculty Live Control — ${esc(p.name)}</b><span class="note" style="color:#dbe9e3">All controls below apply only to this open chart.</span></div>`+
-<div style="margin:10px 0 8px;padding:10px 12px;background:#eef7f2;border:1px solid #a9cdb9;border-left:6px solid var(--green);font-weight:900">MESSAGES — Faculty ↔ Student</div>
-
+`<div style="margin:10px 0 8px;padding:10px 12px;background:#eef7f2;border:1px solid #a9cdb9;border-left:6px solid var(--green);font-weight:900">MESSAGES — Faculty ↔ Student</div>`+
  panel(`Messages (${pendingMessages.length} pending)`,`
    <div class="grid" style="margin-bottom:10px">
     <label>Subject<input id="facultyMessageSubject" placeholder="Message subject"></label>
@@ -1337,9 +1336,7 @@ function renderFaculty(){
     <summary><b>Recent Messages / Read Status (${facultyMessages.length})</b></summary>
     <div style="margin-top:8px">${facultyMessages.map(m=>`<div class="studentMessage"><b>${esc(m.subject||"Faculty Message")}</b><br><span class="note">${esc(m.at||"")} • ${m.read?"Read by student":"Unread"}</span><div style="margin-top:5px">${esc(m.message||"")}</div></div>`).join("")||'<div class="note">No messages have been sent for this patient.</div>'}</div>
    </details>`)+
-
-<div style="margin:12px 0 8px;padding:9px 12px;background:#fff7d6;border:1px solid #dac56f;border-left:6px solid var(--gold);font-weight:900">ACTION ITEMS — Pending Releases</div>
-
+`<div style="margin:12px 0 8px;padding:9px 12px;background:#fff7d6;border:1px solid #dac56f;border-left:6px solid var(--gold);font-weight:900">ACTION ITEMS — Pending Releases</div>`+
  panel(`Chart Updates — Instructor Only (${chartUpdates.length})`,`
    <div class="note" style="margin-bottom:10px"><b>Hidden from students.</b> Review each update, then use the red button when you are ready to place it in this patient's live chart.</div>
    ${chartUpdates.map(item=>`<div class="releaseCard chartUpdateCard">
