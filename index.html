@@ -1135,8 +1135,9 @@ function renderLabs(){
 }
 function renderMAR(){
  if(!requirePatient())return;
- const orders=patientRows(state.orders).filter(o=>o.type==="Medication");
- const baseline=LEVEL3_MAR_MEDICATIONS[activePatientId]||[];
+ const visibleMeds=window.medicationsForPatient?window.medicationsForPatient(activePatientId):[];
+ const orders=patientRows(state.orders).filter(o=>o.type==="Medication"&&(isFaculty()||visibleMeds.some(m=>m.sourceOrderId===o.id||m.id===o.medicationId)));
+ const baseline=visibleMeds.map(m=>[m.name,m.route,m.scheduledTime||m.frequency,m.previouslyGiven||'',m.status]);
  const administrations=patientRows(state.mar).slice().reverse();
  document.getElementById("view").innerHTML=
  panel("Medication Administration Record",`
