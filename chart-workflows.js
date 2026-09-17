@@ -2,7 +2,7 @@
 function renderChartDoc(value){
  const tokens=[];
  const token=html=>`CHARTTOKEN${tokens.push(html)-1}END`;
- let source=String(value||'').replace(/!\[([^\]]*)\]\((assets\/[A-Za-z0-9_.\/-]+)\)/g,(_,alt,path)=>token(`<a href="${esc(path)}" target="_blank" rel="noopener"><img src="${esc(path)}" alt="${esc(alt||'Patient chart attachment')}" loading="lazy" style="display:block;max-width:100%;max-height:800px;object-fit:contain;margin:12px auto"></a>`));
+ let source=String(value||'').replace(/<\/?(?:p|li)[^>]*>/gi,'\n').replace(/<br\s*\/?>/gi,'\n').replace(/!\[([^\]]*)\]\((assets\/[A-Za-z0-9_.\/-]+)\)/g,(_,alt,path)=>token(`<a href="${esc(path)}" target="_blank" rel="noopener"><img src="${esc(path)}" alt="${esc(alt||'Patient chart attachment')}" loading="lazy" style="display:block;max-width:100%;max-height:800px;object-fit:contain;margin:12px auto"></a>`));
  source=source.replace(/\[([^\]]+)\]\((assets\/[A-Za-z0-9_.\/-]+|https:\/\/[^\s)]+)\)/g,(_,label,url)=>token(`<a href="${esc(url)}" target="_blank" rel="noopener">${esc(label)}</a>`));
  let html=legacyRenderChartDoc(source).replace(/(^|<br>)#\s+([^<]+)/g,'$1<h3>$2</h3>');
  return html.replace(/CHARTTOKEN(\d+)END/g,(_,i)=>tokens[Number(i)]||'');
@@ -20,7 +20,7 @@ function renderOrderContent(value){
 function chartRecordCards(records){
  return records.map((r,i)=>{
   const editable=['assessments','flowsheets','io'].includes(r.category)&&/_{3,}|<td>\s*<\/td>|\[ \]/.test(r.content);
-  let body=r.category==='orders'?renderOrderContent(r.content):renderChartDoc(r.content),n=0;
+  let body=r.category==='orders'?renderOrderContent(r.content):['summary','notes'].includes(r.category)&&!/<table\b/i.test(r.content)?r.content.split(/\n\s*\n/).filter(x=>x.trim()).map(text=>`<section class="chartTextSection" style="margin:0 0 12px;padding:8px;border-bottom:1px solid #d5dfe4">${renderChartDoc(text)}</section>`).join(''):renderChartDoc(r.content),n=0;
   if(editable){
    body=body.replace(/_{3,}/g,()=>`<input aria-label="Response ${++n} in ${esc(r.title)}" name="field-${n}" style="display:inline-block;width:130px;margin:3px">`)
     .replace(/☐|☑/g,()=>`<input type="checkbox" aria-label="Selection ${++n} in ${esc(r.title)}" name="field-${n}" style="width:auto">`)

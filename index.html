@@ -143,9 +143,11 @@ fieldset{margin:8px 0;padding:9px}output{margin:5px 0}.patientBanner{padding:8px
 </div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="chart-data.js?v=20260916-stephanie-admission-orders-4"></script>
-<script src="chart-workflows.js?v=20260916-2"></script>
-<script src="chart-admin.js?v=20260916-stephanie-orders-3"></script>
-<script src="medication-system.js?v=20260916-2"></script>
+<script src="chart-workflows.js?v=20260917"></script>
+<script src="chart-admin.js?v=20260917"></script>
+<script src="medication-system.js?v=20260917"></script>
+<script src="simulation-defaults.js?v=20260917"></script>
+<script src="simulation-workflows.js?v=20260917"></script>
 <script>
 const DATA_VERSION="6.3-student-draft-autosave";
 const ATU_ERROR_ENDPOINT="https://dfbctsvvkqendktkzejr.supabase.co/rest/v1/ehr_events";
@@ -522,14 +524,14 @@ function applyMode(){
 function toggleMode(){
  if(isFaculty()){
    setTabMode("student");
-   applyMode();render();setTimeout(showNextNotification,150);
+   window.refreshSimulationRecords?.();applyMode();if(window.simRefreshFromShared)window.simRefreshFromShared();else render();setTimeout(showNextNotification,150);
    return;
  }
  const pin=prompt("Enter faculty PIN:");
  if(pin===null)return;
  if(pin!==String(state.settings?.facultyPin||"2026")){alert("Incorrect faculty PIN.");return}
  setTabMode("faculty");
- applyMode();render();
+ window.refreshSimulationRecords?.();applyMode();if(window.simRefreshFromShared)window.simRefreshFromShared();else render();
 }
 
 
@@ -714,6 +716,8 @@ function showNextNotification(){
 function receiveLiveEvent(evt){
  saveCurrentViewDraft();
  reloadSharedState();
+ window.refreshSimulationRecords?.();
+ if(window.simHasDraft?.()){window.simRefreshFromShared();return;}
  updateNotificationCount();
  if(!isFaculty()){
    if(evt?.eventType==="item_released"||evt?.eventType==="message_sent"){
@@ -742,6 +746,7 @@ function atuCloudBadge(text){
  if(b)b.textContent=text;
 }
 async function atuCloudPull(){
+ saveCurrentViewDraft();
  const {data,error}=await atuSupabase.from("ehr_sync").select("payload,updated_by,updated_at").eq("collection",ATU_CLOUD_ROW_COLLECTION).eq("item_id",ATU_CLOUD_ROW_ID).maybeSingle();
  if(error)throw error;
  if(!data?.payload)return false;
@@ -776,6 +781,7 @@ function atuCloudSchedule(){
  },40);
 }
 async function atuCloudReceive(payload){
+ saveCurrentViewDraft();
  const row=payload.new||payload.old;
  if(!row||row.collection!==ATU_CLOUD_ROW_COLLECTION||row.item_id!==ATU_CLOUD_ROW_ID||row.updated_by===ATU_CLOUD_CLIENT)return;
  if(payload.eventType==="DELETE")return;
@@ -790,7 +796,7 @@ async function atuCloudReceive(payload){
   setTabMode(tabMode);
  }finally{atuCloudApplying=false}
  atuCloudBadge("Cloud: LIVE ✓ • update received");
- applyMode();render();
+ window.refreshSimulationRecords?.();applyMode();if(window.simRefreshFromShared)window.simRefreshFromShared();else render();
  if(!isFaculty())setTimeout(showNextNotification,100);
 }
 async function atuCloudInit(){
@@ -808,7 +814,7 @@ async function atuCloudInit(){
   atuCloudReady=true;
   if(!found||atuStephanieVitalsMigrationDirty){await atuCloudPush();atuStephanieVitalsMigrationDirty=false;}
   atuCloudBadge("Cloud: LIVE ✓");
-  applyMode();render();
+  window.refreshSimulationRecords?.();applyMode();if(window.simRefreshFromShared)window.simRefreshFromShared();else render();
   if(!isFaculty())setTimeout(showNextNotification,100);
  }catch(e){
   console.error("ATU cloud initialization failed",e);
@@ -1401,7 +1407,7 @@ function renderOrders(){
  <label>Entered By<input id="oEnteredBy" placeholder="Faculty/provider"></label></div>
  <div class="actions" style="margin-top:10px"><button id="saveOrder" class="primary">Enter Order</button></div>`)+
  panel("Order List",`<table><thead><tr><th>Time</th><th>Type</th><th>Order</th><th>Provider</th><th>Status</th><th>Entered By</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.time)}</td><td>${esc(r.type)}</td><td>${renderOrderContent(r.text)}</td><td>${esc(r.provider)}</td><td>${esc(r.status)}</td><td>${esc(r.enteredBy)}</td></tr>`).join("")||'<tr><td colspan="6">No orders entered.</td></tr>'}</tbody></table>`);
- saveOrder.onclick=()=>{const r={id:uid("order"),patientId:activePatientId,time:oTime.value,provider:oProvider.value.trim(),type:oType.value,text:oText.value.trim(),status:oStatus.value,enteredBy:oEnteredBy.value.trim()};if(!r.text||!r.provider){alert("Provider and order are required.");return}state.orders.push(r);audit("Order entered",activePatientId,`${r.type}: ${r.text}`);renderOrders()};
+ saveOrder.onclick=()=>{const r={id:uid("order"),patientId:activePatientId,time:oTime.value,provider:oProvider.value.trim(),type:oType.value,text:oText.value.trim(),status:oStatus.value,enteredBy:oEnteredBy.value.trim(),origin:isFaculty()?"faculty":"student"};if(!r.text||!r.provider){alert("Provider and order are required.");return}state.orders.push(r);audit("Order entered",activePatientId,`${r.type}: ${r.text}`);renderOrders()};
 }
 function renderLabs(){
  if(!requirePatient())return;const p=activePatient();
@@ -1716,6 +1722,7 @@ try{applyMode()}catch(e){atuReportRuntimeError("Apply mode: "+e.message,"startup
 try{initializeNativeCharts()}catch(e){atuReportRuntimeError("Native charts: "+e.message,"startup",0,0,e)}
 try{initializeAdminEnhancements()}catch(e){atuReportRuntimeError("Admin enhancements: "+e.message,"startup",0,0,e)}
 try{initializeMedicationSystem()}catch(e){atuReportRuntimeError("Medication system: "+e.message,"startup",0,0,e)}
+try{initializeSimulationWorkflows()}catch(e){atuReportRuntimeError("Simulation workflows: "+e.message,"startup",0,0,e)}
 try{render()}catch(e){atuReportRuntimeError("Initial render: "+e.message,"startup",0,0,e)}
 atuCloudInit();
 </script>
