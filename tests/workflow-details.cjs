@@ -9,4 +9,10 @@ const order=a.state.releaseQueue.find(q=>q.chartRecordId==='admin-stephanie-acet
 a.setView('notes');w.render();$('nNarrative').value='unfinished';$('nNarrative').dispatchEvent(new w.Event('input',{bubbles:true}));w.confirm=()=>false;w.document.querySelector('aside [data-view="io"]').click();assert($('nNarrative'));assert.equal($('nNarrative').value,'unfinished');
 // Named assessment fields are preserved through a redraw too.
 w.clearCurrentViewDraft();a.setView('assessments');w.render();const named=w.document.querySelector('#view input[name]');if(named){named.value='draft assessment';named.dispatchEvent(new w.Event('input',{bubbles:true}));w.saveCurrentViewDraft();w.render();assert([...w.document.querySelectorAll('#view input[name]')].some(e=>e.value==='draft assessment'));}
-console.log('PASS: all three label sizes and numeric codes; current base dates with DOB retained; released order on MAR; navigation warning and named-field drafts.');setTimeout(()=>w.close(),200);
+// Jane keeps her released pre-op medications while each later medication remains separately pending.
+const janeMeds=a.state.medicationCatalog.filter(m=>m.patientId==='jane-fowler'),janePending=a.state.releaseQueue.filter(q=>q.patientId==='jane-fowler'&&q.status==='pending');
+for(const name of ['Cefazolin (Ancef)','Metoclopramide (Reglan)','Midazolam (Versed)']){const med=janeMeds.find(m=>m.name===name);assert(med);assert.equal(med.releaseStatus,'released');}
+for(const name of ['Morphine sulfate (Duramorph)','Ondansetron (Zofran)','Naloxone (Narcan)','Ketorolac (Toradol)']){const med=janeMeds.find(m=>m.name===name);assert(med);assert.equal(med.releaseStatus,'pending');assert(janePending.some(q=>q.title.includes(name)));}
+assert(!janeMeds.some(m=>m.sourceOrderId&&janeMeds.some(other=>other!==m&&!other.sourceOrderId&&other.name.split(' (')[0]===m.name.split(' (')[0])));
+const janeShift2=a.records.find(r=>r.id==='chart-2d6195d201d58030b0ded95695bbcb1e');assert(janeShift2);assert(!/Morphine|Ondansetron|Zofran/.test(janeShift2.content));
+console.log('PASS: labels/codes/dates/drafts; Jane released pre-op meds and individual pending later meds.');setTimeout(()=>w.close(),200);

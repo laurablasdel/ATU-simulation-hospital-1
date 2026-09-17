@@ -52,7 +52,10 @@ function heading(body,title){return panel(title,body);}
 function scanFields(prefix,label){return `<label>${label}<input id="${prefix}" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="Scan or enter four-digit code"></label>`;}
 const chartMedicationLinks={
  'chart-286195d201d580489c7bc8e0770135bf':['Racepinephrine 2.25%','Dexamethasone'],
- 'admin-jane-respiratory':['Naloxone','Ketorolac'],
+ 'admin-jane-postop-morphine':['Morphine sulfate (Duramorph)'],
+ 'admin-jane-postop-ondansetron':['Ondansetron (Zofran)'],
+ 'admin-jane-respiratory-naloxone':['Naloxone (Narcan)'],
+ 'admin-jane-respiratory-ketorolac':['Ketorolac (Toradol)'],
  'admin-sanogo-pph-meds':['Methylergonovine (Methergine)','Carboprost (Hemabate)','Misoprostol','Tranexamic acid (TXA)'],
  'admin-stephanie-acetaminophen':['Acetaminophen'],
  'admin-stephanie-ceftriaxone':['Ceftriaxone']

@@ -22,7 +22,11 @@ const changes={
 const added=[
  {id:'admin-molly-parainfluenza',patientId:'molly-thomas',title:'Parainfluenza Result',category:'labs',status:'released',content:'**Parainfluenza: Positive**'},
  {id:'admin-molly-admission',patientId:'molly-thomas',title:'Admission Orders',category:'orders',status:'released',content:'Provider: Dr. Henderson\n\n- Admit to pediatric floor.\n- Full Code.\n- Continuous pulse oximetry.\n- Regular diet; NPO if respiratory rate exceeds 60/min.\n- Call MD with assessment findings.\n- Strict intake and output.\n- Daily weight.\n- Normal saline bolus 20 mL/kg IV over 30 minutes.'},
- {id:'admin-jane-respiratory',patientId:'jane-fowler',title:'Respiratory Depression — MD Orders',category:'orders',status:'pending',content:'**Change in condition:** Patient is unresponsive; respiratory rate 6/min and SpO₂ 85%.\n\n**Provider orders:**\n- Naloxone 0.2 mg IV push every 2–3 minutes PRN respiratory rate less than 6/min or change in level of consciousness.\n- Ketorolac 30 mg IV push once now.'},
+ {id:'admin-jane-postop-morphine',patientId:'jane-fowler',title:'Morphine sulfate (Duramorph) 2 mg IV push',category:'orders',status:'pending',content:'Provider: Dr. Smith\n\nMorphine sulfate (Duramorph) 2 mg IV push PRN pain; may repeat up to 10 mg every 4 hours.'},
+ {id:'admin-jane-postop-ondansetron',patientId:'jane-fowler',title:'Ondansetron (Zofran) 4 mg IV push',category:'orders',status:'pending',content:'Provider: Dr. Smith\n\nOndansetron (Zofran) 4 mg IV push every 4 hours PRN nausea.'},
+ {id:'admin-jane-respiratory-naloxone',patientId:'jane-fowler',title:'Naloxone (Narcan) 0.2 mg IV push',category:'orders',status:'pending',content:'Provider: Dr. Smith\n\nChange in condition: Patient is unresponsive; respiratory rate 6/min and SpO₂ 85%.\n\nNaloxone (Narcan) 0.2 mg IV push every 2–3 minutes PRN respiratory rate less than 6/min or change in level of consciousness.'},
+ {id:'admin-jane-respiratory-ketorolac',patientId:'jane-fowler',title:'Ketorolac (Toradol) 30 mg IV push',category:'orders',status:'pending',content:'Provider: Dr. Smith\n\nChange in condition: Patient is unresponsive; respiratory rate 6/min and SpO₂ 85%.\n\nKetorolac (Toradol) 30 mg IV push once now.'},
+ {id:'admin-jane-faculty-guide',patientId:'jane-fowler',title:'Jane Fowler Faculty Simulation Guide',category:'faculty',status:'released',content:'Shift 1\n\nSituation\nJane Fowler has experienced pelvic pressure, bloating, and constipation. Her primary provider palpated her right ovary. CT showed a right ovarian tumor with possible invasion. She is scheduled for a total abdominal hysterectomy with bilateral salpingo-oophorectomy and surgical staging.\n\nStarting findings\nT 98.9 F; HR 89; RR 20; BP 124/76; SpO2 97%. Alert and oriented x4; moves all extremities on command; denies pain; normoactive bowel sounds; clear breath sounds.\n\nStudent expectations\nIntroduce self; perform hand hygiene; review orders; verify two identifiers; complete initial assessment and vital signs; explain the plan of care; begin IV fluids; verify consents and complete the pre-op checklist; insert the urinary catheter; teach incentive spirometry, leg exercises, splinting, coughing, and deep breathing; administer the ordered antibiotic using medication rights.\n\nShift 2\n\nSituation\nPostoperative total abdominal hysterectomy with bilateral salpingo-oophorectomy under general anesthesia. The patient tolerated surgery without complications. Abdominal incision is covered with a 4 x 4 gauze dressing with no drainage. Lactated Ringer\'s solution is infusing at 125 mL/hr after 2 L received during surgery. Estimated blood loss was 400 mL. She was extubated in the operating room and is breathing spontaneously. Foley catheter is present with 200 mL urine output.\n\nStarting findings\nT 97.9 F; HR 98; RR 17; BP 143/86; SpO2 93%. Pale; responds to name; moves extremities on command; moaning; hypoactive bowel sounds; clear breath sounds.\n\nStudent expectations\nIntroduce self; perform hand hygiene; review orders; verify two identifiers; complete the initial assessment and apply cardiopulmonary monitoring; recognize the low SpO2 and apply oxygen; assess pain; explain the plan of care. When the patient reports pain 6/10, administer the released analgesic using medication rights. If the patient becomes unresponsive with RR 6 and SpO2 85%, recognize respiratory depression, begin bag-mask ventilation, notify anesthesia, administer released rescue medications, reassess, and monitor stability.'},
  {id:'admin-baby-cxr-order',patientId:'baby-boy-sung',title:'Chest X-ray Order',category:'orders',status:'pending',content:'Chest X-ray. Provider: Dr. Craig.'},
  {id:'admin-sanogo-pph-meds',patientId:'fatima-sanogo',title:'Postpartum Hemorrhage Medication Orders',category:'orders',status:'pending',content:'If hemorrhage is suspected, call MD with assessment findings and bleeding amounts for specific medication orders. Expected orders from Dr. Darnell:\n\n1. Methylergonovine (Methergine) 0.2 mg IM every 2–4 hours as needed.\n2. Carboprost (Hemabate) 250 mcg IM every 15–90 minutes as needed; maximum approximately 2 mg total. Specific provider order required before administration.\n3. Misoprostol 600–1000 mcg PR / SL / PO as needed per protocol. Specific provider order required before administration.\n4. Tranexamic Acid (TXA) 1 g IV over 10 minutes once postpartum hemorrhage is diagnosed. May repeat 1 g after 30 minutes–24 hours if bleeding persists, per protocol. Specific provider order required before administration.'},
  {id:'admin-sanogo-followup',patientId:'fatima-sanogo',title:'Postpartum Hemorrhage Follow-up Orders',category:'orders',status:'pending',content:'Provider: Dr. Darnell/KR\n\n- CBC in 6 hours\n- Foley catheter\n- Fundus checks every 15 minutes'},
@@ -88,6 +92,49 @@ function compactRenderedView(){
  root.querySelectorAll('details.chartRecord').forEach(d=>{if(['flowsheets','io'].includes(currentView))d.open=true;});
  root.querySelectorAll('.panel').forEach(section=>{const heading=section.querySelector(':scope > h2')?.textContent.trim()||'',text=section.textContent;if((currentView==='labs'&&(text.includes('No released laboratory results.')||text.includes('No released diagnostic attachments.')))||(currentView==='mar'&&heading==='Chart Record')||(currentView==='io'&&/Output day 1|Output day 2|\bDay 1\b[\s\S]*\bDay 2\b/i.test(text)))section.remove();});
 }
+function janeMedicationText(value){
+ return String(value??'')
+  .replace(/Ancef\s*\(Cefazolin\)/gi,'Cefazolin (Ancef)')
+  .replace(/Reglan\s*\(Metoclopramide\)/gi,'Metoclopramide (Reglan)')
+  .replace(/Versed\s*\(Midazolam\)/gi,'Midazolam (Versed)')
+  .replace(/Zofran\s*\(Ondansetron\)/gi,'Ondansetron (Zofran)')
+  .replace(/\bCefazolin\b(?!\s*\(Ancef\))/gi,'Cefazolin (Ancef)')
+  .replace(/\bMetoclopramide\b(?!\s*\(Reglan\))/gi,'Metoclopramide (Reglan)')
+  .replace(/\bMidazolam\b(?!\s*\(Versed\))/gi,'Midazolam (Versed)')
+  .replace(/\bOndansetron\b(?!\s*\(Zofran\))/gi,'Ondansetron (Zofran)')
+  .replace(/\bNaloxone\b(?!\s*\(Narcan\))/gi,'Naloxone (Narcan)')
+  .replace(/\bKetorolac\b(?!\s*\(Toradol\))/gi,'Ketorolac (Toradol)')
+  .replace(/\bMorphine sulfate\b(?!\s*\(Duramorph\))/gi,'Morphine sulfate (Duramorph)')
+  .replace(/\bMorphine\b(?!\s+sulfate|\s*\(Duramorph\))/gi,'Morphine sulfate (Duramorph)')
+  .replace(/\bTylenol\b(?!\s*\(Acetaminophen\))/gi,'Acetaminophen (Tylenol)')
+  .replace(/\bMiraLAX\b(?!\s*\(Polyethylene glycol 3350\))/gi,'Polyethylene glycol 3350 (MiraLAX)')
+  .replace(/\bColace\b(?!\s*\(Docusate sodium\))/gi,'Docusate sodium (Colace)')
+  .replace(/\bMelatonin\b(?!\s*\(Natrol\))/gi,'Melatonin (Natrol)')
+  .replace(/\bEscitalopram\b(?!\s*\(Lexapro\))/gi,'Escitalopram (Lexapro)');
+}
+function normalizeJaneMedicationContent(){
+ const retired='admin-jane-respiratory';
+ for(let i=CHART_RECORDS.length-1;i>=0;i--)if(CHART_RECORDS[i].id===retired)CHART_RECORDS.splice(i,1);
+ state.customChartRecords=(state.customChartRecords||[]).filter(x=>x.id!==retired);
+ delete state.chartContentEdits?.[retired];
+ state.releaseQueue=(state.releaseQueue||[]).filter(x=>x.chartRecordId!==retired&&x.id!==`pending-${retired}`);
+ const update=row=>{
+  if(!row||row.patientId&&row.patientId!=='jane-fowler')return;
+  for(const key of ['name','medication','text','title','content'])if(typeof row[key]==='string')row[key]=janeMedicationText(row[key]);
+ };
+ for(const row of CHART_RECORDS.filter(x=>x.patientId==='jane-fowler'))update(row);
+ const shiftTwoOrders=CHART_RECORDS.find(x=>x.id==='chart-2d6195d201d58030b0ded95695bbcb1e');
+ if(shiftTwoOrders)shiftTwoOrders.content=compactContent(shiftTwoOrders.content.replace(/<tr\b[^>]*>(?:(?!<\/tr>)[\s\S])*(?:Morphine|Ondansetron|Zofran)(?:(?!<\/tr>)[\s\S])*<\/tr>/gi,''));
+ for(const row of (state.customChartRecords||[]).filter(x=>x.patientId==='jane-fowler'))update(row);
+ for(const key of ['orders','medicationCatalog'])for(const row of (state[key]||[]).filter(x=>x.patientId==='jane-fowler'))update(row);
+ for(const item of (state.releaseQueue||[]).filter(x=>x.patientId==='jane-fowler')){update(item);update(item.rowData);}
+ const base=state.simulationBases?.['jane-fowler'];
+ if(base){
+  base.chartRecords=(base.chartRecords||[]).filter(x=>x.id!==retired);for(const row of base.chartRecords)update(row);
+  for(const key of ['orders','medicationCatalog'])for(const row of base.collections?.[key]||[])update(row);
+  base.releaseQueue=(base.releaseQueue||[]).filter(x=>x.chartRecordId!==retired&&x.id!==`pending-${retired}`);for(const item of base.releaseQueue){update(item);update(item.rowData);}
+ }
+}
 window.prepareAdminChartData=function(){
  for(let i=CHART_RECORDS.length-1;i>=0;i--)if(removeIds.has(CHART_RECORDS[i].id))CHART_RECORDS.splice(i,1);
  for(let i=CHART_RECORDS.length-1;i>=0;i--)if(CHART_RECORDS[i].category==='io'&&/(?:Output day 1|Output day 2|\bDay 1\b[\s\S]*\bDay 2\b)/i.test(CHART_RECORDS[i].content))CHART_RECORDS.splice(i,1);
@@ -112,6 +159,7 @@ window.prepareAdminChartData=function(){
  if(sanogo)sanogo.content=compactContent(sanogo.content.replace(/<tr><td[^>]*><\/td><td>\*\*If hemorrhage is suspected[\s\S]*?<\/tr>/i,'').replace(/<tr><td[^>]*><\/td><td>(?:cbc in 6 hrs|foley cath|15 min fundus\s+checks)<\/td><td>Dr\. Darnell\/KR<\/td><\/tr>/gi,''));
  for(const item of added)if(!CHART_RECORDS.some(r=>r.id===item.id))CHART_RECORDS.push({...item});
  for(const item of state.customChartRecords||[])if(!removeIds.has(item.id)&&!CHART_RECORDS.some(r=>r.id===item.id))CHART_RECORDS.push({...item});
+ normalizeJaneMedicationContent();
 };
 
 function sendReleaseMessage(item){
@@ -231,6 +279,7 @@ window.initializeAdminEnhancements=function(){
  for(const [id,edit] of Object.entries(state.chartContentEdits)){const r=CHART_RECORDS.find(x=>x.id===id);if(r){Object.assign(r,edit);r.content=compactContent(r.content);edit.content=r.content;}}
  removeSmithIcePackOrders();
  updateSmithTylenolDose();
+ normalizeJaneMedicationContent();
  const baseRelease=releaseItem;releaseItem=function(id){const item=(state.releaseQueue||[]).find(x=>x.id===id),record=item?.chartRecordId&&CHART_RECORDS.find(r=>r.id===item.chartRecordId);if(record)item.kind=record.category==='orders'?'order':record.category==='mar'?'mar':'result';baseRelease(id);if(item&&item.status==='released'){if(item.kind==='chartdata'&&item.targetCollection&&item.rowData){const existing=state[item.targetCollection].find(x=>x.id===item.rowData.id);if(!existing)state[item.targetCollection].push(item.rowData);if(item.targetCollection==='medicationCatalog')Object.assign(existing||item.rowData,{releaseStatus:'released',status:(existing||item.rowData).status==='Pending'?'Due':(existing||item.rowData).status});}const n=(state.notifications||[]).find(x=>x.releaseItemId===item.id);if(n&&record?.category==='mar'){n.title='New MAR Sheet';n.type='mar';}sendReleaseMessage(item);liveSave('released_to_chart',{patientId:item.patientId,itemId:item.id,target:item.targetCollection||record?.category});}};
  const baseChartRecords=chartRecords;chartRecords=function(patientId,categories){return baseChartRecords(patientId,categories).filter(r=>isFaculty()||!state.marHiddenRecords[r.id]);};
  const baseNativeInput=nativeInput;nativeInput=function(label,type='text',options=null){
