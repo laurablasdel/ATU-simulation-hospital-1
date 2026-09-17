@@ -363,28 +363,6 @@ const JANE_SCENARIO={
  }
 };
 
-const JANE_PREOP_ITEMS=[
-"Patient identification verified with 2 identifiers",
-"Allergy status verified",
-"Procedure/site verified",
-"Consent for surgery present",
-"Consent for anesthesia present",
-"Blood transfusion consent present / reviewed",
-"NPO status verified",
-"Pre-op vital signs completed",
-"Initial head-to-toe assessment completed",
-"IV access present and patent",
-"Lactated Ringer's infusing at 125 mL/hr",
-"Indwelling urinary catheter inserted",
-"SCDs applied",
-"Cefazolin 2 g IV administered on call to OR",
-"Pre-op teaching completed: incentive spirometer",
-"Pre-op teaching completed: leg exercises",
-"Pre-op teaching completed: splinting / coughing / deep breathing",
-"Jewelry / valuables addressed",
-"Patient transported / ready for OR"
-];
-
 function ensureSeededJane(){
  state.orders ||= [];
  for(const x of SEED_JANE_ORDERS)if(!state.orders.some(o=>o.id===x.id))state.orders.push({...x});
@@ -1058,7 +1036,6 @@ function renderSummary(){
   <div><b>Full Code</b><br><span class="note">Code status</span></div>
   <div><b>Ovarian cancer</b><br><span class="note">Primary diagnosis</span></div>
   <div><b>TAH-BSO</b><br><span class="note">Procedure</span></div>
-  <div><b>Opioid respiratory depression</b><br><span class="note">Simulation complication</span></div>
  </div>`):"";
  const prenatalQuick=p.id==="amelia-sung"?panel("Prenatal Information",`
  <div class="grid4">
@@ -1081,14 +1058,14 @@ function renderSummary(){
  surgicalQuick+
  prenatalQuick+
  obSnapshot+
- panel("Patient Summary",`<div class="grid3">
+ (p.id==="jane-fowler"?"":panel("Patient Summary",`<div class="grid3">
   <div class="kpi"><span class="note">Active Orders</span><br><b>${counts.orders}</b></div>
   <div class="kpi"><span class="note">Assessments</span><br><b>${counts.assess}</b></div>
   <div class="kpi"><span class="note">Vitals Entries</span><br><b>${counts.vitals}</b></div>
   <div class="kpi"><span class="note">Nursing Notes</span><br><b>${counts.notes}</b></div>
   <div class="kpi"><span class="note">Labs / Diagnostics</span><br><b>${counts.labs}</b></div>
   <div class="kpi"><span class="note">Weight</span><br><b>${esc(p.weightKg)} kg</b></div>
- </div>`);
+ </div>`));
 }
 
 function renderPrenatal(){
@@ -1158,6 +1135,10 @@ function renderSurgery(){
  }
  const stage=janeStage();
  const checklist=(state.surgicalChecklist||[]).find(x=>x.patientId===p.id);
+ const preopChecked=(key,legacyIndex)=>checklist?.checks?.[key]??(legacyIndex==null?false:!!checklist?.items?.[legacyIndex]);
+ const preopValue=key=>checklist?.fields?.[key]||"";
+ const preopCheck=(key,label,legacyIndex=null)=>`<label style="font-weight:normal"><input id="jpc-${key}" type="checkbox" class="janePreopCheck" data-key="${key}" style="width:auto;margin-right:7px" ${preopChecked(key,legacyIndex)?"checked":""}>${esc(label)}</label>`;
+ const preopOptions=(selected,items)=>`<option value="">Select…</option>${items.map(x=>`<option ${selected===x?"selected":""}>${esc(x)}</option>`).join("")}`;
  const assessments=(state.surgicalAssessments||[]).filter(x=>x.patientId===p.id).slice().reverse();
  const stageBanner = stage==="preop" ? `<div class="success"><b>Current Scenario Stage:</b> Pre-Op</div>` :
    stage==="postop" ? `<div class="success"><b>Current Scenario Stage:</b> Immediate Post-Op</div>` :
@@ -1175,11 +1156,44 @@ function renderSurgery(){
  ${stage==="depression"?`<div class="warn" style="margin-top:10px"><b>CHANGE IN CONDITION:</b> ${esc(JANE_SCENARIO.depression.cue)}</div>`:""}
  `)+
  panel("Pre-Op Checklist",`
- <div class="grid">
- ${JANE_PREOP_ITEMS.map((item,i)=>`<label style="font-weight:normal"><input type="checkbox" class="janePreopItem" data-i="${i}" style="width:auto;margin-right:7px" ${checklist?.items?.[i]?"checked":""}>${esc(item)}</label>`).join("")}
- </div>
+ ${checklist?`<div class="success"><b>Saved:</b> ${esc(checklist.time)} by ${esc(checklist.student||"student")} · ${esc(checklist.fields?.readiness||"Checklist in progress")}</div>`:""}
  <div class="grid" style="margin-top:10px"><label>Student Name / Initials<input id="janeChecklistStudent" value="${esc(checklist?.student||"")}"></label><label>Checklist Date/Time<input id="janeChecklistTime" type="datetime-local" value="${esc(checklist?.time||nowLocal())}"></label></div>
- <div class="actions" style="margin-top:10px"><button id="saveJaneChecklist" class="primary">Save Pre-Op Checklist</button></div>`)+
+ <fieldset><legend>Patient and Procedure Verification</legend>
+  <div class="grid">${preopCheck("assessment","Shift assessment completed")}${preopCheck("identifiers","Two patient identifiers verified against ID band and chart",0)}${preopCheck("patientProcedure","Patient states the planned procedure in their own words",2)}</div>
+  <div class="grid3" style="margin-top:8px">
+   <label>Procedure Verification<select id="jpf-procedure" class="janePreopField" data-key="procedure">${preopOptions(preopValue("procedure"),["Matches patient statement, consent, and schedule","Discrepancy — surgery notified","Unable to verify"])}</select></label>
+   <label>Surgical Site Marking<select id="jpf-site" class="janePreopField" data-key="site">${preopOptions(preopValue("site"),["Not applicable","Marked and visible","Not marked","Discrepancy — surgery notified"])}</select></label>
+   <label>Allergy Verification<select id="jpf-allergies" class="janePreopField" data-key="allergies">${preopOptions(preopValue("allergies"),["NKDA verified","Allergies verified and band applied","Discrepancy — provider notified"])}</select></label>
+  </div>
+ </fieldset>
+ <fieldset><legend>Consents and Required Documents</legend>
+  <div class="grid">${preopCheck("surgicalConsent","Surgical consent signed, dated, timed, and matches procedure",3)}${preopCheck("anesthesiaConsent","Anesthesia consent signed, dated, and timed",4)}${preopCheck("bloodConsent","Blood administration consent signed, dated, and timed",5)}${preopCheck("sterilizationConsent","Sterilization consent signed, dated, and timed")}${preopCheck("historyPhysical","History and physical present on chart")}</div>
+  <div class="grid3" style="margin-top:8px"><label>Code Status<select id="jpf-codeStatus" class="janePreopField" data-key="codeStatus">${preopOptions(preopValue("codeStatus"),["Full Code verified","DNR / limitations verified","Order discrepancy — provider notified"])}</select></label><label>Advance Directives<select id="jpf-advanceDirectives" class="janePreopField" data-key="advanceDirectives">${preopOptions(preopValue("advanceDirectives"),["None","On chart","Patient declined","Not applicable"])}</select></label><label>Fall Risk<select id="jpf-fallRisk" class="janePreopField" data-key="fallRisk">${preopOptions(preopValue("fallRisk"),["No","Yes — precautions initiated"])}</select></label></div>
+ </fieldset>
+ <fieldset><legend>Labs, Medications, and NPO Status</legend>
+  <div class="grid3">
+   <label>Admission Labs<select id="jpf-labs" class="janePreopField" data-key="labs">${preopOptions(preopValue("labs"),["Reviewed — no critical results","Reviewed — abnormal results reported","Results pending","Not completed"])}</select></label>
+   <label>Pregnancy Test (hCG)<select id="jpf-hcg" class="janePreopField" data-key="hcg">${preopOptions(preopValue("hcg"),["Negative","Positive — provider notified","Pending","Not applicable"])}</select></label>
+   <label>NPO Status<select id="jpf-npo" class="janePreopField" data-key="npo">${preopOptions(preopValue("npo"),["Verified and documented","Not verified","NPO violation — surgery notified"])}</select></label>
+   <label>Last Solid Food<input id="jpf-lastSolid" class="janePreopField" data-key="lastSolid" type="datetime-local" value="${esc(preopValue("lastSolid")||preopValue("lastIntake"))}"></label>
+   <label>Last Clear Liquids<input id="jpf-lastClearLiquids" class="janePreopField" data-key="lastClearLiquids" type="datetime-local" value="${esc(preopValue("lastClearLiquids"))}"></label>
+   <label>Antibiotic<select id="jpf-antibiotic" class="janePreopField" data-key="antibiotic">${preopOptions(preopValue("antibiotic"),["Cefazolin (Ancef) infusing","Cefazolin (Ancef) completed","Held — provider notified","Not administered"])}</select></label>
+   <label>Antibiotic Start Time<input id="jpf-antibioticTime" class="janePreopField" data-key="antibioticTime" type="time" value="${esc(preopValue("antibioticTime"))}"></label>
+  </div>
+  <div class="grid" style="margin-top:8px">${preopCheck("homeMeds","Home medications reconciled")}<label>Medication Notes / Last Doses<textarea id="jpf-medNotes" class="janePreopField" data-key="medNotes" placeholder="Document only exceptions or important last-dose times">${esc(preopValue("medNotes"))}</textarea></label></div>
+ </fieldset>
+ <fieldset><legend>Baseline Vital Signs</legend><div class="grid4">
+  <label>Temperature °F<input id="jpf-temp" class="janePreopField" data-key="temp" inputmode="decimal" value="${esc(preopValue("temp"))}"></label><label>Heart Rate<input id="jpf-hr" class="janePreopField" data-key="hr" inputmode="numeric" value="${esc(preopValue("hr"))}"></label><label>Respiratory Rate<input id="jpf-rr" class="janePreopField" data-key="rr" inputmode="numeric" value="${esc(preopValue("rr"))}"></label><label>Blood Pressure<input id="jpf-bp" class="janePreopField" data-key="bp" placeholder="120/80" value="${esc(preopValue("bp"))}"></label><label>SpO₂ %<input id="jpf-spo2" class="janePreopField" data-key="spo2" inputmode="numeric" value="${esc(preopValue("spo2"))}"></label><label>Pain Score<select id="jpf-pain" class="janePreopField" data-key="pain">${preopOptions(preopValue("pain"),["0","1","2","3","4","5","6","7","8","9","10","Unable to assess"])}</select></label>
+ </div></fieldset>
+ <fieldset><legend>IV, Equipment, and Physical Preparation</legend>
+  <div class="grid3"><label>IV Location<input id="jpf-ivSite" class="janePreopField" data-key="ivSite" placeholder="Site" value="${esc(preopValue("ivSite"))}"></label><label>IV Gauge<select id="jpf-ivGauge" class="janePreopField" data-key="ivGauge">${preopOptions(preopValue("ivGauge"),["18 gauge","20 gauge","22 gauge","24 gauge","Other"])}</select></label><label>IV Fluid<select id="jpf-ivFluid" class="janePreopField" data-key="ivFluid">${preopOptions(preopValue("ivFluid"),["Lactated Ringer's","0.9% Normal Saline","Other"])}</select></label><label>IV Rate (mL/hr)<input id="jpf-ivRate" class="janePreopField" data-key="ivRate" inputmode="numeric" value="${esc(preopValue("ivRate"))}"></label><label>Foley Inserted At<input id="jpf-foleyTime" class="janePreopField" data-key="foleyTime" type="time" value="${esc(preopValue("foleyTime"))}"></label><label>Inserted By<input id="jpf-foleyBy" class="janePreopField" data-key="foleyBy" value="${esc(preopValue("foleyBy"))}"></label><label>Foley Size (Fr)<input id="jpf-foleySize" class="janePreopField" data-key="foleySize" inputmode="numeric" value="${esc(preopValue("foleySize"))}"></label><label>Balloon Volume (mL)<input id="jpf-balloon" class="janePreopField" data-key="balloon" inputmode="numeric" value="${esc(preopValue("balloon"))}"></label></div>
+  <div class="grid" style="margin-top:8px">${preopCheck("ivPatent","IV present and patent",9)}${preopCheck("abdominalPrep","Preoperative abdominal cleansing completed")}${preopCheck("shavePrep","Shave prep completed")}${preopCheck("jewelry","Jewelry and valuables removed or secured",17)}${preopCheck("personalItems","Dentures, glasses, contact lenses, and hearing aids removed or secured")}${preopCheck("scds","Sequential compression devices applied",12)}${preopCheck("foley","Indwelling Foley catheter inserted",11)}</div>
+ </fieldset>
+ <fieldset><legend>Teaching, Handoff, and OR Readiness</legend>
+  <div class="grid">${preopCheck("expectations","Procedure and perioperative expectations reviewed")}${preopCheck("questions","Patient questions addressed")}${preopCheck("splinting","Postoperative splinting, coughing, and deep breathing taught",16)}${preopCheck("incentiveSpirometer","Incentive spirometer teaching completed",14)}${preopCheck("legExercises","Leg exercise teaching completed",15)}${preopCheck("handoff","Verbal handoff given to surgery")}</div>
+  <div class="grid3" style="margin-top:8px"><label>Handoff Given To<input id="jpf-handoffTo" class="janePreopField" data-key="handoffTo" value="${esc(preopValue("handoffTo"))}"></label><label>Handoff Time<input id="jpf-handoffTime" class="janePreopField" data-key="handoffTime" type="time" value="${esc(preopValue("handoffTime"))}"></label><label>OR Readiness<select id="jpf-readiness" class="janePreopField" data-key="readiness">${preopOptions(preopValue("readiness"),["Ready for OR","Not ready — outstanding items","Hold — surgery/provider notified"])}</select></label><label class="wide">Exceptions / Comments<textarea id="jpf-comments" class="janePreopField" data-key="comments">${esc(preopValue("comments"))}</textarea></label></div>
+ </fieldset>
+ <div class="actions" style="margin-top:10px"><button id="saveJaneChecklist" class="primary">Complete and Save Pre-Op Checklist</button></div>`)+
  panel("Surgical / Post-Op Assessment",`
  <div class="grid3">
   <label>Date/Time<input id="jsTime" type="datetime-local" value="${nowLocal()}"></label><label>Student<input id="jsStudent"></label><label>Pain Score<input id="jsPain"></label>
@@ -1209,11 +1223,14 @@ function renderSurgery(){
 
  saveJaneChecklist.onclick=()=>{
   state.surgicalChecklist ||= [];
-  const items=[...document.querySelectorAll(".janePreopItem")].map(x=>x.checked);
+  const checks=Object.fromEntries([...document.querySelectorAll(".janePreopCheck")].map(x=>[x.dataset.key,x.checked]));
+  const fields=Object.fromEntries([...document.querySelectorAll(".janePreopField")].map(x=>[x.dataset.key,x.value.trim()]));
+  const student=janeChecklistStudent.value.trim();
+  if(!student){alert("Enter student name or initials.");return}
   let rec=state.surgicalChecklist.find(x=>x.patientId===p.id);
   if(!rec){rec={id:uid("preop"),patientId:p.id};state.surgicalChecklist.push(rec)}
-  rec.items=items;rec.student=janeChecklistStudent.value.trim();rec.time=janeChecklistTime.value||nowLocal();
-  audit("Pre-op checklist saved",p.id,`${items.filter(Boolean).length}/${items.length} items completed by ${rec.student||"student"}`);save();renderSurgery();
+  rec.student=student;rec.checks=checks;rec.fields=fields;delete rec.items;rec.time=janeChecklistTime.value||nowLocal();
+  clearCurrentViewDraft();audit("Pre-op checklist saved",p.id,`${Object.values(checks).filter(Boolean).length}/${Object.keys(checks).length} checks completed; ${fields.readiness||"readiness not selected"}; documented by ${rec.student}`);save();renderSurgery();
  };
  saveJaneAssessment.onclick=()=>{
   const r={id:uid("surgassess"),patientId:p.id,time:jsTime.value,student:jsStudent.value.trim(),pain:jsPain.value.trim(),neuro:jsNeuro.value,rr:jsRR.value.trim(),spo2:jsSpo2.value.trim(),lungs:jsLungs.value,o2:jsO2.value.trim(),hr:jsHR.value.trim(),bp:jsBP.value.trim(),temp:jsTemp.value.trim(),bowel:jsBowel.value,incision:jsIncision.value.trim(),iv:jsIV.value.trim(),foley:jsFoley.value.trim(),scd:jsSCD.value,skin:jsSkin.value.trim(),mobility:jsMobility.value.trim(),notes:jsNotes.value.trim()};

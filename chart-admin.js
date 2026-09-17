@@ -6,7 +6,8 @@ const removeIds=new Set([
  'chart-279195d201d580c18d3bcf4493eb6d56','chart-27e195d201d580188376fefb97c68085',
  'chart-1d0195d201d581a696f3d43f99ff1b11','chart-1d0195d201d5813a9544cca0547f2612',
  'chart-318195d201d5805e84bdc3cf5591db4','chart-318195d201d5805e84bdc3cf5591db4e','chart-25d195d201d58111ba41db57ea4e0b76',
- 'chart-form-baby-boy-sung','chart-document-newborn-glucose-protocol.pdf','chart-256195d201d581a1b665e359a34c9c03'
+ 'chart-form-baby-boy-sung','chart-document-newborn-glucose-protocol.pdf','chart-256195d201d581a1b665e359a34c9c03',
+ 'chart-2d6195d201d58013a186edd649f28647','chart-form-jane-fowler','chart-2d6195d201d580a19062cdbe1706684f'
 ]);
 const changes={
  'chart-27e195d201d5801891bbde543471af1e':{status:'pending',title:'Shift 3 New Orders'},
@@ -16,6 +17,7 @@ const changes={
  'chart-279195d201d580c7846ae24b926e5915':{status:'pending',title:'Shift 2 Chest X-ray Results'},
  'chart-293195d201d58002af36d9c313178804':{status:'pending',title:'Shift 4 Follow-up Labs'},
  'chart-1d0195d201d5812d9d21cf4f7bac2e52':{title:'Admission Labs'},
+ 'chart-1d0195d201d581b98e64df9f11bd51d4':{content:'## Surgery Admission Note\n\n**Date of Admission:** Today\n\n**Patient Name:** Jane Fowler  \n**Chief Complaint:** Pelvic pressure, bloating, and constipation  \n**DOB:** 01/28/XXXX  \n**Admitting Physician:** Dr. Smith  \n**Age/Sex:** 79-year-old female  \n**Source of History:** Patient and daughter\n\n### History of Present Illness\n\nJane Fowler has been experiencing pelvic pressure, bloating, and constipation. Her primary provider could palpate her right ovary. An abdominal CT scan showed a tumor with possible invasion of the right ovary. She is here for a total abdominal hysterectomy with bilateral salpingo-oophorectomy and surgical staging.\n\n### Past Medical History\n\n- No history of surgeries\n- No significant medical history\n\n### Allergies\n\n- NKDA\n\n### Social History\n\n- Lives alone\n- No tobacco, alcohol, or drug use\n\n### Home Medications\n\n- Acetaminophen (Tylenol) 650 mg as needed\n- Polyethylene glycol 3350 (MiraLAX) daily\n- Docusate sodium (Colace) daily\n- Melatonin (Natrol) 3 mg every night\n- Escitalopram (Lexapro) 10 mg PO daily\n\n### Assessment\n\nShe is alert and oriented to time, person, place, and situation. Heart rate and rhythm are regular. Lungs are clear to auscultation; oxygen saturation is 97% on room air. The abdomen is slightly distended and tender to light palpation, with rebound tenderness present.\n\n### Plan\n\n1. Total abdominal hysterectomy with bilateral salpingo-oophorectomy and surgical staging.\n2. Cefazolin (Ancef) 2 grams IV once on call to the operating room.\n3. Lactated Ringer\'s solution at 125 mL/hr.\n4. NPO.\n5. Sequential compression devices.\n6. Indwelling Foley catheter.\n7. Admit to the medical-surgical floor for close monitoring.'},
  'chart-286195d201d580489c7bc8e0770135bf':{status:'pending',title:'MD Orders',content:'**Provider Orders — Pending**\n\n- Racepinephrine 2.25% inhalation solution, 0.5 mL mixed with 3 mL of 0.9% Normal Saline, to be given by respiratory therapy. Call respiratory when needed.\n- Dexamethasone 0.6 mg/kg IV now.'},
  'chart-256195d201d581aebb87f3902a0c5bc0':{status:'pending',title:'Chest X-ray',content:'![Baby Boy Sung chest radiograph](assets/baby-boy-sung-chest-xray.png)\n\n**Chest X-ray Report**\n\nFracture of the left clavicle noted. Full expansion of both right and left lung noted, no lung involvement.'}
 };
