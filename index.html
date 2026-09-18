@@ -414,6 +414,9 @@ function appendImportedForView(view){
 }
 function seedChartPending(){
  state.releaseQueue ||= [];
+ // Retire the old combined Fowler scenario card. The rescue medications stay
+ // available as separate pending orders and are intentionally not matched.
+ state.releaseQueue=state.releaseQueue.filter(item=>!(item.patientId==='jane-fowler'&&String(item.title||'').trim()==='Respiratory Depression — MD Orders'));
  for(const item of state.releaseQueue){
   const legacyKey="no"+"tionRecordId";
   if(item[legacyKey]&&!item.chartRecordId){item.chartRecordId=item[legacyKey].replace(/^no\x74ion-/,"chart-");delete item[legacyKey];}
@@ -1534,6 +1537,9 @@ function renderFaculty(){
  const p=activePatient();
  if(!p){requirePatient();return}
  const selectedId=p.id;
+ // Older browser/cloud saves can retain this retired combined card. Remove it
+ // before rendering so Faculty Live Control can never offer it for release.
+ state.releaseQueue=(state.releaseQueue||[]).filter(item=>!(item.patientId==='jane-fowler'&&String(item.title||'').trim()==='Respiratory Depression — MD Orders'));
  const pending=(state.releaseQueue||[]).filter(x=>x.patientId===selectedId&&x.status==="pending").slice().reverse();
  const chartUpdates=pending.filter(x=>x.chartRecordId);
  const pendingMessages=pending.filter(x=>!x.chartRecordId&&x.kind==="message");
