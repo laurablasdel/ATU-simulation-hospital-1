@@ -175,11 +175,20 @@ function normalizeJaneMedicationContent(){
  };
  for(const row of CHART_RECORDS.filter(x=>x.patientId==='jane-fowler'))update(row);
  const postopProgress=CHART_RECORDS.find(x=>x.id===postopProgressNoteId);
- if(postopProgress)postopProgress.content=postopProgress.content
-  .replace(/- Post-op vital signs per protocol\.?/i,'- Post-op vital signs per protocol\n\t- Titrate oxygen to maintain pulse oximetry of 98% or greater.')
-  .replace(/\*\*Oncology consultation\*\* requested/i,'Consult oncology in AM.');
+ if(postopProgress){
+  if(!/Titrate oxygen to maintain pulse oximetry of 98% or greater/i.test(postopProgress.content))postopProgress.content=postopProgress.content.replace(/- Post-op vital signs per protocol\.?/i,'- Post-op vital signs per protocol\n\t- Titrate oxygen to maintain pulse oximetry of 98% or greater.');
+  postopProgress.content=postopProgress.content
+   .replace(/(?:\n\t- Titrate oxygen to maintain pulse oximetry of 98% or greater\.){2,}/gi,'\n\t- Titrate oxygen to maintain pulse oximetry of 98% or greater.')
+   .replace(/\*\*Oncology consultation\*\* requested/i,'Consult oncology in AM.');
+ }
  const shiftTwoOrders=CHART_RECORDS.find(x=>x.id==='chart-2d6195d201d58030b0ded95695bbcb1e');
  if(shiftTwoOrders)shiftTwoOrders.content=compactContent(shiftTwoOrders.content.replace(/<tr\b[^>]*>(?:(?!<\/tr>)[\s\S])*(?:Morphine|Ondansetron|Zofran)(?:(?!<\/tr>)[\s\S])*<\/tr>/gi,''));
+ // Keep persistent edits and already-created Faculty Live Control cards in sync
+ // with the current post-op order and the progress note it releases with it.
+ for(const record of [shiftTwoOrders,postopProgress])if(record){
+  const edit=state.chartContentEdits?.[record.id];if(edit)Object.assign(edit,{title:record.title,content:record.content,status:'pending'});
+  for(const item of state.releaseQueue||[])if(item.chartRecordId===record.id)Object.assign(item,{title:record.title,content:record.content});
+ }
  for(const row of (state.customChartRecords||[]).filter(x=>x.patientId==='jane-fowler'))update(row);
  for(const [id,row] of Object.entries(state.chartContentEdits||{})){const record=CHART_RECORDS.find(x=>x.id===id);if(record?.patientId==='jane-fowler')update(row);}
  for(const key of ['orders','medicationCatalog'])for(const row of (state[key]||[]).filter(x=>x.patientId==='jane-fowler'))update(row);
@@ -192,6 +201,10 @@ function normalizeJaneMedicationContent(){
   base.releaseQueue=(base.releaseQueue||[]).filter(x=>x.chartRecordId!==retired&&x.id!==`pending-${retired}`&&x.chartRecordId!==postopProgressNoteId&&!isRetiredRespiratoryCard(x)&&!isRetiredRespiratoryCard(x.rowData));for(const item of base.releaseQueue){if(postopIds.has(item.chartRecordId)){item.status='pending';item.releasedAt='';}update(item);update(item.rowData);}
   const postOpRelease=base.releaseQueue.find(x=>x.chartRecordId===postopOrderId);
   if(postOpRelease)postOpRelease.linkedChartRecordIds=[...new Set([...(postOpRelease.linkedChartRecordIds||[]),postopProgressNoteId])];
+  for(const record of [shiftTwoOrders,postopProgress])if(record){
+   const saved=base.chartRecords.find(x=>x.id===record.id);if(saved)Object.assign(saved,{title:record.title,content:record.content,status:'pending'});
+   for(const item of base.releaseQueue||[])if(item.chartRecordId===record.id)Object.assign(item,{title:record.title,content:record.content});
+  }
  }
 }
 function migratePacketCharts(){
