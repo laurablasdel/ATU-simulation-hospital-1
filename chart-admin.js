@@ -15,7 +15,7 @@ const removeIds=new Set([
 const changes={
  'chart-2fd195d201d58013ab8bffdf475123e4':{title:'History and Physical',status:'released',content:'## History and Physical\n\n**Date of Admission:** Today  \n**Patient Name:** Jane Fowler  \n**Chief Complaint:** Pelvic pressure, bloating, and constipation  \n**DOB:** 01/28/XXXX  \n**Admitting Physician:** Dr. Smith  \n**Age/Sex:** 79-year-old female  \n**Source of History:** Patient and daughter\n\n### History of Present Illness\n\nJane Fowler has been experiencing pelvic pressure, bloating, and constipation. Her primary provider could palpate her right ovary. An abdominal CT scan showed a tumor with possible invasion of the right ovary. She is admitted for a total abdominal hysterectomy with bilateral salpingo-oophorectomy and surgical staging today.\n\n### Past Medical History\n\n- No history of surgeries\n- No significant medical history\n\n### Allergies\n\n- NKDA\n\n### Social History\n\n- Lives alone\n- No tobacco, alcohol, or drug use\n\n### Home Medications\n\n- Acetaminophen (Tylenol) 650 mg as needed\n- Polyethylene glycol 3350 (MiraLAX) daily\n- Docusate sodium (Colace) daily\n- Melatonin (Natrol) 3 mg every night\n- Escitalopram (Lexapro) 10 mg PO daily\n\n### Assessment\n\nShe is alert and oriented to time, person, place, and situation. Heart rate and rhythm are regular. Lungs are clear to auscultation; oxygen saturation is 97% on room air. The abdomen is slightly distended and tender to light palpation, with rebound tenderness present.\n\n### Plan\n\n1. Total abdominal hysterectomy with bilateral salpingo-oophorectomy and surgical staging.\n   - Cefazolin (Ancef) 2 g IV once on call to the operating room.\n2. Hydration and preoperative care.\n   - Lactated Ringer’s solution (LR) IV at 125 mL/hr.\n   - NPO.\n   - Sequential compression devices.\n   - Indwelling Foley catheter.\n3. Disposition.\n   - Admit to the medical-surgical floor for close monitoring.'},
  'chart-1d0195d201d581d49553e7787bbe1924':{title:'Admission Orders',status:'released',content:'## Jane Fowler — Admission Orders\n\n**Provider: Dr. Smith MD**\n\n1. Admit to Surgical Pre-Op for preoperative total abdominal hysterectomy with bilateral salpingo-oophorectomy.\n2. Vital signs every 30 minutes until surgery.\n3. Diet: NPO.\n4. Code status: Full Code.\n5. Obtain sterilization consent, blood-administration consent, and surgical consent for total abdominal hysterectomy with bilateral salpingo-oophorectomy.\n6. Lactated Ringer’s solution (LR) IV at 125 mL/hr.\n7. Obtain CBC, urine hCG, BMP, and blood type.\n8. Insert indwelling Foley catheter.\n9. Apply bilateral sequential compression devices (SCDs).\n10. Cefazolin (Ancef) 2 g in 250 mL IV on call to the operating room; infuse over 1 hour.\n11. Metoclopramide (Reglan) 10 mg IV; available concentration 10 mg/2 mL.\n12. Midazolam (Versed) 1 mg IV on call to the operating room; available concentration 5 mg/mL.\n13. Prepare the abdomen: shave as needed and cleanse with antibacterial wipes.\n14. Complete the surgical checklist and time-out documentation.\n15. Teach postoperative incision splinting and incentive-spirometer use.'},
- 'chart-1d0195d201d581cf8a0adf7495447769':{status:'pending',title:'Postoperative Progress Note'},
+ 'chart-1d0195d201d581cf8a0adf7495447769':{status:'pending',title:'Postoperative Progress Note',releaseWith:'chart-2d6195d201d58030b0ded95695bbcb1e'},
  'chart-2d6195d201d58023be58fb267a940645':{status:'pending',title:'Postoperative Vital Signs'},
  'chart-2d6195d201d58030b0ded95695bbcb1e':{status:'pending',title:'Post-Op Orders',content:'## Post-Op Orders\n\n**Provider: Dr. Smith MD**\n\n- Diet: Sips of water; advance to clear liquids as tolerated.\n- Activity: Out of bed tonight.\n- Postoperative vital signs per protocol.\n- Lactated Ringer’s solution (LR) IV at 125 mL/hr.\n- Continue sequential compression devices (SCDs).\n- Maintain indwelling Foley catheter.\n- Intake and output every 4 hours; notify the provider for urine output less than 30 mL/hr.\n- Morphine sulfate (Duramorph) 2 mg IV push PRN pain; may repeat up to 10 mg every 4 hours. Available concentration: 2 mg/1 mL.\n- Ondansetron (Zofran) 4 mg IV push every 4 hours PRN nausea. Available concentration: 4 mg/2 mL.\n- Consult Oncology in AM.\n- Transfer to the surgical floor.'},
  'chart-2d6195d201d58077a080faf182983607':{status:'pending',title:'Postoperative MAR'},
@@ -147,6 +147,8 @@ function janeMedicationText(value){
 }
 function normalizeJaneMedicationContent(){
  const retired='admin-jane-respiratory';
+ const postopOrderId='chart-2d6195d201d58030b0ded95695bbcb1e';
+ const postopProgressNoteId='chart-1d0195d201d581cf8a0adf7495447769';
  const isRetiredRespiratoryCard=row=>row?.patientId==='jane-fowler'&&String(row.title||'').trim()==='Respiratory Depression — MD Orders';
  for(let i=CHART_RECORDS.length-1;i>=0;i--)if(CHART_RECORDS[i].id===retired)CHART_RECORDS.splice(i,1);
  for(let i=CHART_RECORDS.length-1;i>=0;i--)if(isRetiredRespiratoryCard(CHART_RECORDS[i]))CHART_RECORDS.splice(i,1);
@@ -156,7 +158,7 @@ function normalizeJaneMedicationContent(){
  // Move the complete postoperative set back to pending once. This preserves
  // each medication as its own release item while holding the post-op order
  // document out of the student chart until faculty chooses to release it.
- const postopIds=new Set(['chart-2d6195d201d58030b0ded95695bbcb1e','admin-jane-respiratory-naloxone','admin-jane-respiratory-ketorolac']);
+ const postopIds=new Set([postopOrderId,postopProgressNoteId,'admin-jane-respiratory-naloxone','admin-jane-respiratory-ketorolac']);
  if(!state.settings?.janePostopOrdersPending20260918){
   for(const row of CHART_RECORDS)if(postopIds.has(row.id))row.status='pending';
   for(const item of state.releaseQueue||[])if(postopIds.has(item.chartRecordId)){item.status='pending';item.releasedAt='';}
@@ -183,7 +185,9 @@ function normalizeJaneMedicationContent(){
   base.chartRecords=(base.chartRecords||[]).filter(x=>x.id!==retired&&!isRetiredRespiratoryCard(x));for(const row of base.chartRecords)update(row);
   for(const row of base.chartRecords)if(postopIds.has(row.id))row.status='pending';
   for(const key of ['orders','medicationCatalog'])for(const row of base.collections?.[key]||[])update(row);
-  base.releaseQueue=(base.releaseQueue||[]).filter(x=>x.chartRecordId!==retired&&x.id!==`pending-${retired}`&&!isRetiredRespiratoryCard(x)&&!isRetiredRespiratoryCard(x.rowData));for(const item of base.releaseQueue){if(postopIds.has(item.chartRecordId)){item.status='pending';item.releasedAt='';}update(item);update(item.rowData);}
+  base.releaseQueue=(base.releaseQueue||[]).filter(x=>x.chartRecordId!==retired&&x.id!==`pending-${retired}`&&x.chartRecordId!==postopProgressNoteId&&!isRetiredRespiratoryCard(x)&&!isRetiredRespiratoryCard(x.rowData));for(const item of base.releaseQueue){if(postopIds.has(item.chartRecordId)){item.status='pending';item.releasedAt='';}update(item);update(item.rowData);}
+  const postOpRelease=base.releaseQueue.find(x=>x.chartRecordId===postopOrderId);
+  if(postOpRelease)postOpRelease.linkedChartRecordIds=[...new Set([...(postOpRelease.linkedChartRecordIds||[]),postopProgressNoteId])];
  }
 }
 function migratePacketCharts(){

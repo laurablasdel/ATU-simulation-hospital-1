@@ -393,7 +393,7 @@ function legacyRenderChartDoc(value){
 }
 function chartRecordReleased(record){
  if(record.status==="released")return true;
- return (state.releaseQueue||[]).some(x=>x.chartRecordId===record.id&&x.status==="released");
+ return (state.releaseQueue||[]).some(x=>(x.chartRecordId===record.id||(x.linkedChartRecordIds||[]).includes(record.id))&&x.status==="released");
 }
 function chartRecords(patientId,categories){
  const wanted=Array.isArray(categories)?categories:[categories];
@@ -423,9 +423,16 @@ function seedChartPending(){
   if(item.chartRecordId){const record=CHART_RECORDS.find(r=>r.id===item.chartRecordId);if(record){item.content=record.content;item.title=record.title;item.createdAt="Chart Record";}}
  }
  state.releaseQueue=state.releaseQueue.filter(item=>!item.chartRecordId||CHART_RECORDS.some(record=>record.id===item.chartRecordId));
- for(const r of CHART_RECORDS.filter(x=>x.status==="pending")){
+ // A record can intentionally share another chart update's release button.
+ // Remove any old standalone card before rebuilding these release links.
+ state.releaseQueue=state.releaseQueue.filter(item=>!CHART_RECORDS.find(record=>record.id===item.chartRecordId)?.releaseWith);
+ for(const r of CHART_RECORDS.filter(x=>x.status==="pending"&&!x.releaseWith)){
   if(state.releaseQueue.some(x=>x.chartRecordId===r.id))continue;
   state.releaseQueue.push({id:`pending-${r.id}`,kind:"result",patientId:r.patientId,title:r.title,content:r.content,status:"pending",createdAt:"Chart Record",releasedAt:"",resultType:"Diagnostic",flag:"Abnormal",chartRecordId:r.id});
+ }
+ for(const r of CHART_RECORDS.filter(x=>x.status==="pending"&&x.releaseWith)){
+  const controller=state.releaseQueue.find(item=>item.chartRecordId===r.releaseWith);
+  if(controller)controller.linkedChartRecordIds=[...new Set([...(controller.linkedChartRecordIds||[]),r.id])];
  }
 }
 function loadState(){
