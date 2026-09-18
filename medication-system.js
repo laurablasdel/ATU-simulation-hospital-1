@@ -97,7 +97,20 @@ function medicationReleased(med){
  if(!med||med.status==='Discontinued'||med.status==='Pending'||med.releaseStatus==='pending')return false;
  return !(state.releaseQueue||[]).some(item=>item.patientId===med.patientId&&item.status==='pending'&&((item.targetCollection==='medicationCatalog'&&item.rowData?.id===med.id)||(med.sourceOrderId&&item.rowData?.id===med.sourceOrderId)||(item.rowData?.medicationId===med.id)));
 }
-function medicationsForPatient(patientId,includePending=isFaculty()){return (state.medicationCatalog||[]).filter(x=>x.patientId===patientId&&x.status!=='Discontinued'&&(includePending||medicationReleased(x)));}
+// A released medication must always reach the MAR.  This reconciliation is
+// intentionally performed when the MAR is read, so a late shared-state refresh
+// or an older pending copy cannot hide a medication that faculty released.
+function reconcileReleasedMedications(patientId){
+ state.medicationCatalog||=[];
+ for(const item of state.releaseQueue||[]){
+  if(item.patientId!==patientId||item.status!=='released'||item.targetCollection!=='medicationCatalog'||!item.rowData)continue;
+  const source=item.rowData;
+  let med=state.medicationCatalog.find(x=>x.patientId===patientId&&(x.id===source.id||medicationGenericKey(x.name)===medicationGenericKey(source.name)));
+  if(!med){med={...source,patientId};state.medicationCatalog.push(med);}
+  Object.assign(med,{...source,patientId,releaseStatus:'released',status:source.status==='Pending'||med.status==='Pending'?'Due':(source.status||med.status||'Due')});
+ }
+}
+function medicationsForPatient(patientId,includePending=isFaculty()){reconcileReleasedMedications(patientId);return (state.medicationCatalog||[]).filter(x=>x.patientId===patientId&&x.status!=='Discontinued'&&(includePending||medicationReleased(x)));}
 window.medicationReleased=medicationReleased;
 window.medicationsForPatient=medicationsForPatient;
 // Four-digit identifiers are retained by record ID, including after simulation resets.
