@@ -1149,11 +1149,10 @@ function renderSurgery(){
  const preopCheck=(key,label,legacyIndex=null)=>`<label style="font-weight:normal"><input id="jpc-${key}" type="checkbox" class="janePreopCheck" data-key="${key}" style="width:auto;margin-right:7px" ${preopChecked(key,legacyIndex)?"checked":""}>${esc(label)}</label>`;
  const preopOptions=(selected,items)=>`<option value="">Select…</option>${items.map(x=>`<option ${selected===x?"selected":""}>${esc(x)}</option>`).join("")}`;
  const assessments=(state.surgicalAssessments||[]).filter(x=>x.patientId===p.id).slice().reverse();
- const stageBanner = !faculty ? "" : stage==="preop" ? `<div class="success"><b>Current Scenario Stage:</b> Pre-Op</div>` :
-   stage==="postop" ? `<div class="success"><b>Current Scenario Stage:</b> Immediate Post-Op</div>` :
-   stage==="pain" ? `<div class="warn"><b>Current Scenario Stage:</b> Pain / Medication Decision</div>` :
-   `<div class="warn" style="border-color:#a82434;color:#8a1c2d"><b>Current Scenario Stage:</b> Respiratory Depression</div>`;
-
+ const stageBanner = !faculty ? "" : stage==="preop" ? `<div class="success facultyOnly"><b>Current Scenario Stage:</b> Pre-Op</div>` :
+   stage==="postop" ? `<div class="success facultyOnly"><b>Current Scenario Stage:</b> Immediate Post-Op</div>` :
+   stage==="pain" ? `<div class="warn facultyOnly"><b>Current Scenario Stage:</b> Pain / Medication Decision</div>` :
+   `<div class="warn facultyOnly" style="border-color:#a82434;color:#8a1c2d"><b>Current Scenario Stage:</b> Respiratory Depression</div>`;
  document.getElementById("view").innerHTML=
  panel("Jane Fowler Surgical Overview",`${stageBanner}
  <div class="grid3" style="margin-top:10px">
