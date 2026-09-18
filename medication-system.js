@@ -59,7 +59,9 @@ function normalizeJaneMARV7(){
  const medicines=ORIGINAL_MAR[patientId]||[];
  const existing=(state.medicationCatalog||[]).filter(m=>m.patientId===patientId);
  const expected=new Map(medicines.map(([name,dose,route,frequency,scheduledTime,,releaseStatus='released'])=>[medicationGenericKey(name),{dose,route,frequency,scheduledTime,releaseStatus}]));
- const alreadyClean=existing.length===medicines.length&&existing.every(m=>{const want=expected.get(medicationGenericKey(m.name));return want&&m.dose===want.dose&&m.route===want.route&&m.frequency===want.frequency&&m.scheduledTime===want.scheduledTime&&m.releaseStatus===want.releaseStatus;});
+ // A faculty release changes a pending medication to released.  Keep that
+ // live change instead of rebuilding the Fowler MAR back to pending.
+ const alreadyClean=existing.length===medicines.length&&existing.every(m=>{const want=expected.get(medicationGenericKey(m.name));const releaseMatches=want&&(m.releaseStatus===want.releaseStatus||(want.releaseStatus==='pending'&&m.releaseStatus==='released'));return releaseMatches&&m.dose===want.dose&&m.route===want.route&&m.frequency===want.frequency&&m.scheduledTime===want.scheduledTime;});
  if(alreadyClean){state.janeMarNormalizedV7=true;return;}
  state.medicationCatalog=(state.medicationCatalog||[]).filter(m=>m.patientId!==patientId);
  state.releaseQueue=(state.releaseQueue||[]).filter(item=>!(item.patientId===patientId&&item.targetCollection==='medicationCatalog'));
