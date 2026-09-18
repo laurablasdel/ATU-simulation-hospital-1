@@ -1588,7 +1588,7 @@ function renderFaculty(){
       <div><span class="pendingBadge">CHART UPDATE</span> <b>${esc(item.title)}</b><br><span class="note">${esc(p.name)} • Instructor-controlled chart update</span></div>
       <button class="releaseChartUpdate releaseNow" data-id="${esc(item.id)}">Release to Student</button>
      </div>
-     <details style="margin-top:10px"><summary><b>Review update before release</b></summary><div class="chartRecordBody">${item.kind==="order"?renderOrderContent(item.content):renderChartDoc(item.content)}</div></details>
+     <details style="margin-top:10px"><summary><b>Review update before release</b></summary><div class="chartRecordBody">${item.kind==="order"?renderOrderContent(item.content):renderChartDoc(item.content)}</div>${(item.linkedChartRecordIds||[]).map(recordId=>{const linked=CHART_RECORDS.find(record=>record.id===recordId);return linked?`<div class="chartRecordBody" style="margin-top:12px"><h3>${esc(linked.title)}</h3>${renderChartDoc(linked.content)}</div>`:""}).join("")}</details>
    </div>`).join("")||'<div class="note">No instructor-only chart updates are waiting for this patient.</div>'}`)+
  panel(`Other Pending Releases (${otherPending.length})`,`
    ${otherPending.map(item=>{
