@@ -170,7 +170,7 @@ function normalizeJaneMedicationContent(){
  }
 }
 function migratePacketCharts(){
- const withoutGlucose=new Set(['fatima-sanogo','molly-thomas','stephanie-smith']);
+ const withoutGlucose=new Set(['jane-fowler','fatima-sanogo','molly-thomas','stephanie-smith']);
  state.glucoseChecks=(state.glucoseChecks||[]).filter(x=>!withoutGlucose.has(x.patientId));
  for(const row of state.vitals||[])if(withoutGlucose.has(row.patientId))delete row.bg;
  state.medicationCatalog=(state.medicationCatalog||[]).filter(x=>!withoutGlucose.has(x.patientId)||!/insulin/i.test(x.name||x.medication||''));

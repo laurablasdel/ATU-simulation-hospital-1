@@ -870,7 +870,7 @@ const PATIENT_SPECIALTY_VIEWS={
  "ruth-livingston":["surgery"],
  "vernon-watkins":["surgery"]
 };
-const PATIENTS_WITHOUT_GLUCOSE_MODULE=new Set(["fatima-sanogo","molly-thomas","stephanie-smith"]);
+const PATIENTS_WITHOUT_GLUCOSE_MODULE=new Set(["jane-fowler","fatima-sanogo","molly-thomas","stephanie-smith"]);
 function applyPatientMenu(){
  const allowed=PATIENT_SPECIALTY_VIEWS[activePatientId]||[];
  document.querySelectorAll("aside [data-specialty]").forEach(button=>{
