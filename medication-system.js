@@ -55,9 +55,12 @@ function cloneMedicationRows(patientId){return (state.medicationCatalog||[]).fil
 // editing notes as medication rows, so this migration deliberately rebuilds
 // the Fowler list once from the canonical medication data above.
 function normalizeJaneMARV7(){
- if(state.janeMarNormalizedV7)return;
  const patientId='jane-fowler',p=state.patients.find(x=>x.id===patientId);
  const medicines=ORIGINAL_MAR[patientId]||[];
+ const existing=(state.medicationCatalog||[]).filter(m=>m.patientId===patientId);
+ const expected=new Map(medicines.map(([name,dose,route,frequency,scheduledTime,,releaseStatus='released'])=>[medicationGenericKey(name),{dose,route,frequency,scheduledTime,releaseStatus}]));
+ const alreadyClean=existing.length===medicines.length&&existing.every(m=>{const want=expected.get(medicationGenericKey(m.name));return want&&m.dose===want.dose&&m.route===want.route&&m.frequency===want.frequency&&m.scheduledTime===want.scheduledTime&&m.releaseStatus===want.releaseStatus;});
+ if(alreadyClean){state.janeMarNormalizedV7=true;return;}
  state.medicationCatalog=(state.medicationCatalog||[]).filter(m=>m.patientId!==patientId);
  state.releaseQueue=(state.releaseQueue||[]).filter(item=>!(item.patientId===patientId&&item.targetCollection==='medicationCatalog'));
  for(const [name,dose,route,frequency,scheduledTime,highAlert,releaseStatus='released'] of medicines){
@@ -75,6 +78,7 @@ function normalizeJaneMARV7(){
  }
  state.janeMarNormalizedV7=true;
 }
+window.normalizeJaneMAR=normalizeJaneMARV7;
 // Apply the corrected admission medication once to existing saved simulations.
 function migrateMollyAdmission(){
  if(state.mollyAdmissionReleasedV1)return;

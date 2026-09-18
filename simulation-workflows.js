@@ -69,7 +69,7 @@ function seedLinkedMedications(){
  }
 }
 function renderGuidedMAR(){
- seedLinkedMedications();ensureMedicationData();if(!requirePatient())return;const p=activePatient();if(!isFaculty()&&state.marVisibility?.[p.id]===false){document.getElementById('view').innerHTML=panel('MAR','Hidden by faculty.');return;}
+ seedLinkedMedications();ensureMedicationData();if(!requirePatient())return;const p=activePatient();if(p.id==='jane-fowler')window.normalizeJaneMAR?.();if(!isFaculty()&&state.marVisibility?.[p.id]===false){document.getElementById('view').innerHTML=panel('MAR','Hidden by faculty.');return;}
  const meds=medicationsForPatient(p.id,false),rows=(state.mar||[]).filter(x=>x.patientId===p.id).slice().reverse();
  document.getElementById('view').innerHTML=panel('Active Medications',`<table><thead><tr><th>Medication</th><th>Dose</th><th>Route / Due</th><th>Last administration</th><th></th></tr></thead><tbody>${meds.map(m=>{const last=rows.find(r=>r.medicationId===m.id||r.medication===m.name);return `<tr><td>${esc(m.name)}</td><td>${esc(m.dose)}</td><td>${esc(m.route)} / ${esc(m.scheduledTime||m.frequency)}</td><td>${last?`${esc(last.status)} — ${esc(last.time)}`:'Not administered'}</td><td><button data-select-med="${esc(m.id)}">Select</button></td></tr>`;}).join('')||'<tr><td colspan="5">No released medications.</td></tr>'}</tbody></table>`)+panel('Administer Medication',`
  <input type="hidden" id="gmSelected"><p id="gmSelectedLabel">1. Select a medication above.</p>
