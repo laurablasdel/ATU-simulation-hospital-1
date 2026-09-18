@@ -53,7 +53,7 @@ function scanFields(prefix,label){return `<label>${label}<input id="${prefix}" i
 // Some scanners send Code 39 start/stop characters (for example, *1000*).
 // Match the printed four-digit identifier whether it was typed or scanned.
 const scanCode=value=>String(value||'').trim().replace(/\s+/g,'').replace(/^\*|\*$/g,'');
-const scanMatches=(value,expected)=>scanCode(value)===scanCode(expected);
+const scanMatches=(value,...expected)=>expected.flat().filter(Boolean).some(code=>scanCode(value)===scanCode(code));
 const chartMedicationLinks={
  'chart-286195d201d580489c7bc8e0770135bf':['Racepinephrine 2.25%','Dexamethasone'],
  'admin-jane-postop-morphine':['Morphine sulfate (Duramorph)'],
@@ -84,19 +84,49 @@ function renderGuidedMAR(){
  <div class="grid3"><label>Student / Initials<input id="gmStudent"></label><label>Administration time<input id="gmTime" type="datetime-local" value="${nowLocal()}"></label><label>Dose<input id="gmDose" readonly></label><label>Independent verifier (high-alert medications)<input id="gmVerifier"></label><label>Manual override reason<input id="gmReason"></label><label>Response / Notes<input id="gmNotes"></label></div>
  <div class="actions"><button id="gmComplete" data-complete class="primary">Complete and Save Administration</button><button id="gmCancel" class="secondary">Save Draft and Leave MAR</button></div><p id="gmResult" role="status"></p>`)+panel('MAR Administration History',`<table><thead><tr><th>Time</th><th>Medication / Dose</th><th>Status</th><th>Student</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.time)}</td><td>${esc(r.medication)} ${esc(r.dose)}</td><td>${esc(r.status)}</td><td>${esc(r.student)}</td></tr>`).join('')||'<tr><td colspan="4">No administrations documented.</td></tr>'}</tbody></table>`);
  const el=id=>document.getElementById(id),med=()=>medicationsForPatient(p.id,false).find(x=>x.id===el('gmSelected').value);
+ const patientCodes=[p.barcode,state.shortBarcodeRegistry?.['patient:'+p.id],p.mrn];
+ const medicationCodes=m=>[m?.barcode,state.shortBarcodeRegistry?.['med:'+m?.id]];
  let patientVerified='',medVerified='';
  const invalidate=()=>{patientVerified='';medVerified='';el('gmPatientResult').textContent='';el('gmMedicationResult').textContent='';};
  document.querySelectorAll('[data-select-med]').forEach(b=>b.onclick=()=>{const m=meds.find(x=>x.id===b.dataset.selectMed);el('gmSelected').value=m.id;el('gmSelectedLabel').textContent=`Selected: ${m.name} ${m.dose} ${m.route}`;el('gmDose').value=m.dose;el('gmMedication').value='';invalidate();el('gmPatient').focus();dirty=true;saveCurrentViewDraft();});
  el('gmPatient').addEventListener('input',invalidate);el('gmMedication').addEventListener('input',()=>{medVerified='';el('gmMedicationResult').textContent='Verify medication again.';});
- el('gmVerifyPatient').onclick=()=>{invalidate();if(!med()){el('gmPatientResult').textContent='Select an active medication first.';return;}if(!scanMatches(el('gmPatient').value,p.barcode)){el('gmPatientResult').textContent='Patient mismatch. Enter the four-digit wristband number or scan the wristband again.';return;}patientVerified=p.barcode;el('gmPatientResult').textContent='Patient verified. Scan the selected medication next.';el('gmMedication').focus();};
- el('gmVerifyMedication').onclick=()=>{medVerified='';const m=med();if(!patientVerified||!scanMatches(el('gmPatient').value,patientVerified)){el('gmMedicationResult').textContent='Verify the patient first.';return;}if(!m||!scanMatches(el('gmMedication').value,m.barcode)){el('gmMedicationResult').textContent='Medication mismatch. Enter the four-digit medication number or scan the selected label again.';return;}medVerified=m.id;el('gmDose').value=m.dose;el('gmMedicationResult').textContent='Medication verified. Complete and save to record administration.';};
+ el('gmVerifyPatient').onclick=()=>{invalidate();if(!med()){el('gmPatientResult').textContent='Select an active medication first.';return;}if(!scanMatches(el('gmPatient').value,patientCodes)){el('gmPatientResult').textContent='Patient mismatch. Enter the four-digit wristband number or scan the wristband again.';return;}patientVerified=p.barcode;el('gmPatientResult').textContent='Patient verified. Scan the selected medication next.';el('gmMedication').focus();};
+ el('gmVerifyMedication').onclick=()=>{medVerified='';let m=med();if(!patientVerified||!scanMatches(el('gmPatient').value,patientCodes)){el('gmMedicationResult').textContent='Verify the patient first.';return;}if(!m||!scanMatches(el('gmMedication').value,medicationCodes(m))){const scanned=meds.find(candidate=>scanMatches(el('gmMedication').value,medicationCodes(candidate)));if(scanned){el('gmSelected').value=scanned.id;el('gmSelectedLabel').textContent=`Selected from scan: ${scanned.name} ${scanned.dose} ${scanned.route}`;el('gmDose').value=scanned.dose;m=scanned;}}if(!m||!scanMatches(el('gmMedication').value,medicationCodes(m))){el('gmMedicationResult').textContent='Medication mismatch. Enter the four-digit medication number or scan the selected label again.';return;}medVerified=m.id;el('gmDose').value=m.dose;el('gmMedicationResult').textContent='Medication verified. Complete and save to record administration.';};
  for(const [input,button] of [['gmPatient','gmVerifyPatient'],['gmMedication','gmVerifyMedication']])el(input).onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();el(button).click();}};
  el('gmComplete').onclick=()=>{const m=med(),student=el('gmStudent').value.trim(),manual=el('gmPatientMethod').value.startsWith('Manual')||el('gmMedicationMethod').value.startsWith('Manual');const fail=t=>el('gmResult').textContent=t;
- if(!m||medVerified!==m.id||patientVerified!==p.barcode||!scanMatches(el('gmPatient').value,patientVerified)||!scanMatches(el('gmMedication').value,m.barcode))return fail('Verify the patient and selected medication before completing.');
+ if(!m||medVerified!==m.id||patientVerified!==p.barcode||!scanMatches(el('gmPatient').value,patientCodes)||!scanMatches(el('gmMedication').value,medicationCodes(m)))return fail('Verify the patient and selected medication before completing.');
  if(!student||!el('gmTime').value)return fail('Enter student initials and administration time.');
  if(m.highAlert&&(!el('gmVerifier').value.trim()||el('gmVerifier').value.trim().toLowerCase()===student.toLowerCase()))return fail('A different independent verifier is required for this high-alert medication.');
  state.mar.push({id:uid('mar'),patientId:p.id,medicationId:m.id,medication:m.name,dose:m.dose,route:m.route,due:m.scheduledTime||m.frequency,time:el('gmTime').value,student,status:'Given',verifiedBy:el('gmVerifier').value.trim(),response:el('gmNotes').value.trim(),patientBarcode:patientVerified,medicationBarcode:m.barcode,patientScanMethod:el('gmPatientMethod').value,medicationScanMethod:el('gmMedicationMethod').value,overrideReason:el('gmReason').value.trim()||(manual?'Manual code override':'')});clearCurrentViewDraft();audit('Medication administration',p.id,`${m.name} ${m.dose} given by ${student}`);liveSave('medication_administration_documented',{patientId:p.id,medicationId:m.id});renderMAR();};
  el('gmCancel').onclick=()=>{saveCurrentViewDraft();currentView='summary';render();};
+ setupDraft();
+}
+// The student MAR intentionally uses direct medication charting.  Barcode
+// scanning remains available in the faculty barcode center for printing and
+// inventory, but it is not required to document a dose in simulation.
+function renderSimpleMAR(){
+ seedLinkedMedications();ensureMedicationData();if(!requirePatient())return;
+ const p=activePatient();
+ if(p.id==='jane-fowler')window.normalizeJaneMAR?.();
+ if(!isFaculty()&&state.marVisibility?.[p.id]===false){document.getElementById('view').innerHTML=panel('MAR','Hidden by faculty.');return;}
+ const showPending=isFaculty(),meds=medicationsForPatient(p.id,showPending),administrations=(state.mar||[]).filter(row=>row.patientId===p.id).slice().reverse();
+ const cells=meds.map(m=>{
+  const released=medicationReleased(m),pending=!released;
+  const entryId=`marEntry-${m.id}`;
+  return `<tr data-mar-medication="${esc(m.id)}"><td><b>${esc(m.name)}</b>${pending?' <span class="pendingBadge">Pending</span>':''}</td><td>${esc(m.dose)}</td><td>${esc(m.route)}</td><td>${esc(m.scheduledTime||m.frequency)}</td><td><input id="${entryId}-time" type="datetime-local" ${pending?'disabled':''}></td><td><input id="${entryId}-student" aria-label="Initials for ${esc(m.name)}" maxlength="12" placeholder="Initials" ${pending?'disabled':''}></td><td><label style="display:flex;align-items:center;gap:6px"><input id="${entryId}-given" type="checkbox" style="width:auto" ${pending?'disabled':''}> Given</label></td><td><button class="primary saveSimpleMar" data-medication-id="${esc(m.id)}" ${pending?'disabled':''}>Save</button></td></tr>`;
+ }).join('');
+ document.getElementById('view').innerHTML=panel('Medication Administration Record',`
+  <div class="note">Enter the date and time, your initials, and check <b>Given</b> for each medication administered. Only released medications are visible to students.</div>
+  <div style="overflow-x:auto"><table class="simpleMAR"><thead><tr><th>Medication</th><th>Dose</th><th>Route</th><th>Due</th><th>Date / Time Given</th><th>Initials</th><th>Given</th><th></th></tr></thead><tbody>${cells||'<tr><td colspan="8">No released medications are available.</td></tr>'}</tbody></table></div>
+ `)+panel('MAR Administration History',`<table><thead><tr><th>Date / Time</th><th>Medication</th><th>Dose / Route</th><th>Due</th><th>Given</th><th>Initials</th></tr></thead><tbody>${administrations.map(row=>`<tr><td>${esc(row.time)}</td><td><b>${esc(row.medication)}</b></td><td>${esc(row.dose)} ${esc(row.route)}</td><td>${esc(row.due)}</td><td>${esc(row.status)}</td><td>${esc(row.student)}</td></tr>`).join('')||'<tr><td colspan="6">No medications have been charted.</td></tr>'}</tbody></table>`);
+ document.querySelectorAll('.saveSimpleMar').forEach(button=>button.onclick=()=>{
+  const med=meds.find(item=>item.id===button.dataset.medicationId),prefix=`marEntry-${med?.id}`;
+  if(!med||!medicationReleased(med)){alert('This medication has not been released by faculty.');return;}
+  const time=document.getElementById(`${prefix}-time`).value,student=document.getElementById(`${prefix}-student`).value.trim(),given=document.getElementById(`${prefix}-given`).checked;
+  if(!time||!student||!given){alert('Enter the date and time, initials, and check Given before saving.');return;}
+  state.mar.push({id:uid('mar'),patientId:p.id,medicationId:med.id,medication:med.name,dose:med.dose,route:med.route,due:med.scheduledTime||med.frequency,time,student,status:'Given',response:''});
+  clearCurrentViewDraft();audit('Medication administration',p.id,`${med.name} ${med.dose} given by ${student}`);liveSave('medication_administration_documented',{patientId:p.id,medicationId:med.id});renderMAR();
+ });
  setupDraft();
 }
 const bloodChecks=['Provider order verified','Consent verified','Patient identity and unit number checked','ABO/Rh compatibility confirmed','Expiration and product appearance checked','Baseline assessment and vital signs recorded','Independent double check completed'];
@@ -161,7 +191,7 @@ window.initializeSimulationWorkflows=function(){
  const originalChartDoc=renderChartDoc;renderChartDoc=function(content){return originalChartDoc(currentChartDates(content));};
  const cards=chartRecordCards;chartRecordCards=function(records){return cards(records.map(r=>({...r,content:currentChartDates(r.content)})));};
  const faculty=renderFaculty;renderFaculty=function(){faculty();facultyLayout();};
- renderMAR=renderGuidedMAR;renderBloodAdministration=renderGuidedBlood;
+ renderMAR=renderSimpleMAR;renderBloodAdministration=renderGuidedBlood;
  // Completion labels and draft restoration apply to direct form redraws as well as navigation.
  for(const name of ['renderFlowsheets','renderIO','renderNotes','renderEducation','renderAssessments','renderPEWS','renderLabor','renderPostpartum','renderSurgery']){
   if(typeof window[name]!=='function')continue;const fn=window[name];window[name]=function(...args){fn(...args);setupDraft();};
