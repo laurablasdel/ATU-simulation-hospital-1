@@ -1,11 +1,11 @@
 /* Simulation starting charts, durable drafts, and guided administration. */
 (function(){
 const copy=x=>JSON.parse(JSON.stringify(x));
-const studentCollections=['vitals','io','assessments','mar','notes','glucoseChecks','laborProgress','postpartumRecovery','pphPads','pphMedications','bloodAdministration','surgicalChecklist','surgicalAssessments','chartEntries','pewsAssessments','audit'];
+const studentCollections=['vitals','io','assessments','mar','glucoseChecks','laborProgress','postpartumRecovery','pphPads','pphMedications','bloodAdministration','surgicalChecklist','surgicalAssessments','chartEntries','pewsAssessments','audit'];
 const today=()=>nowLocal().slice(0,10);
 const shortDate=()=>{const [y,m,d]=today().split('-');return `${m}/${d}/${y}`;};
 function currentChartDates(text){return String(text||'').replace(/<tr/gi,'\n<tr').split(/\n/).map(line=>/\bDOB\b|date of birth|born|history of|past medical/i.test(line)?line:line.replace(/\b\d{1,2}\/\d{1,2}\/(?:\d{4}|\d{2})\b/g,shortDate()).replace(/\b\d{4}-\d{2}-\d{2}\b/g,today())).join('\n');}
-function cleanBase(base){const result=copy(base);for(const k of studentCollections)result.collections[k]=[];result.collections.orders=(result.collections.orders||[]).filter(x=>x.origin!=='student'&&!x.student&&(!x.enteredBy||x.enteredBy===x.provider||/faculty|provider|doctor|physician/i.test(x.enteredBy)));result.collections.messages=[];result.collections.notifications=[];result.cleanBaseVersion=1;return result;}
+function cleanBase(base){const result=copy(base);for(const k of studentCollections)result.collections[k]=[];result.collections.notes=(result.collections.notes||[]).filter(x=>x.origin!=='student'&&!/^(?:note|education)-/.test(String(x.id||'')));result.collections.orders=(result.collections.orders||[]).filter(x=>x.origin!=='student'&&!x.student&&(!x.enteredBy||x.enteredBy===x.provider||/faculty|provider|doctor|physician/i.test(x.enteredBy)));result.collections.messages=[];result.collections.notifications=[];result.cleanBaseVersion=2;return result;}
 function baseFor(id){return cleanBase(state.simulationBases?.[id]||SIMULATION_DEFAULTS[id]);}
 function resetToBase(id){
  const base=baseFor(id);if(!base)return false;

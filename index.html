@@ -178,7 +178,7 @@ sessionStorage.setItem("atuCloudClient",ATU_CLOUD_CLIENT);
 let atuSupabase=null,atuCloudReady=false,atuCloudApplying=false,atuCloudTimer=null,atuCloudChannel=null;
 let atuStephanieVitalsMigrationDirty=false;
 const CHART_RECORDS=window.CHART_RECORDS||[];
-const SEED_PATIENTS=[{"id":"amelia-sung","name":"Amelia Sung","mrn":"SIM-201036","dob":"12/08/XXXX","room":"201","provider":"Dr. Darnell","allergies":["Shellfish","Penicillin"],"weightKg":69,"bloodType":"O+","codeStatus":"Full Code","age":"36","sex":"Female","ethnicity":"Filipino","primaryDiagnosis":"Induction of labor at 39 weeks due to gestational diabetes","gestationalAge":"39 weeks","gravida":"2","para":"1","fetus":"Male","gbs":"Positive","feedingPlan":"Breastfeeding","painPlan":"None","deliveryPreferences":"Delayed cord clamping and skin-to-skin after delivery","pphRisk":"Low","tdap":"Given at 28 weeks","gestationalDiabetes":"Diet controlled"},{"id":"jane-fowler","name":"Jane Fowler","mrn":"SIM-204051","dob":"01/28/XXXX","room":"204","provider":"Dr. Smith","allergies":["NKDA"],"weightKg":60,"bloodType":"A+","codeStatus":"Full Code","age":"79","sex":"Female","primaryDiagnosis":"Ovarian cancer \u2014 postoperative total abdominal hysterectomy with bilateral salpingo-oophorectomy","surgery":"Total abdominal hysterectomy with bilateral salpingo-oophorectomy and surgical staging","scenario":"Postoperative opioid intoxication / respiratory depression"},{"id":"fatima-sanogo","name":"Fatima Sanogo","mrn":"201038","dob":"07/08/XX","room":"211E","provider":"Nelson","allergies":["NKDA"],"weightKg":71,"bloodType":"","codeStatus":"Full Code"},{"id":"molly-thomas","name":"Molly Thomas","mrn":"20139","dob":"07/05/XX","room":"211C","provider":"Henderson","allergies":["NKDA"],"weightKg":7,"bloodType":"","codeStatus":"Full Code"},{"id":"stephanie-smith","name":"Stephanie Smith","mrn":"201040","dob":"07/14/XXXX","room":"211E","provider":"Henderson","allergies":["NKDA"],"weightKg":53.5,"bloodType":"","codeStatus":"Full Code"},{"id":"charles-jones","name":"Charles Jones","mrn":"201041","dob":"04/20/XX","room":"211A","provider":"Burris","allergies":["NKDA"],"weightKg":82,"bloodType":"","codeStatus":"Full Code"},{"id":"baby-boy-sung","name":"BABY BOY SUNG","mrn":"201042","dob":"TODAY","room":"211E","provider":"Craig","allergies":["NKDA"],"weightKg":4.37,"bloodType":"","codeStatus":"Full Code"}];
+const SEED_PATIENTS=[{"id":"amelia-sung","name":"Amelia Sung","mrn":"SIM-201036","dob":"12/08/XXXX","room":"201","provider":"Dr. Darnell","allergies":["Shellfish","Penicillin"],"weightKg":83,"bloodType":"O+","codeStatus":"Full Code","age":"36","sex":"Female","ethnicity":"Filipino","primaryDiagnosis":"Active labor / gestational diabetes","gestationalAge":"39 weeks","gravida":"2","para":"1","fetus":"Male","gbs":"Positive","feedingPlan":"Breastfeeding","painPlan":"Morphine sulfate (Duramorph) 2 mg slow IV push every 2 hours PRN","gestationalDiabetes":"Diet controlled"},{"id":"jane-fowler","name":"Jane Fowler","mrn":"SIM-204051","dob":"01/28/XXXX","room":"204","provider":"Dr. Smith","allergies":["NKDA"],"weightKg":60,"bloodType":"A+","codeStatus":"Full Code","age":"79","sex":"Female","primaryDiagnosis":"Ovarian cancer \u2014 preoperative total abdominal hysterectomy with bilateral salpingo-oophorectomy","surgery":"Total abdominal hysterectomy with bilateral salpingo-oophorectomy and surgical staging","scenario":"Postoperative opioid intoxication / respiratory depression"},{"id":"fatima-sanogo","name":"Fatima Sanogo","mrn":"201038","dob":"07/08/XX","room":"211E","provider":"Dr. Nelson","allergies":["NKDA"],"weightKg":71,"bloodType":"O+","codeStatus":"Full Code","age":"23","sex":"Female","primaryDiagnosis":"Postpartum hemorrhage after vaginal delivery","gravida":"1","para":"1","fetus":"Male"},{"id":"molly-thomas","name":"Molly Thomas","mrn":"20139","dob":"07/05/XX","room":"211C","provider":"Dr. Henderson","allergies":["NKDA"],"weightKg":7,"bloodType":"","codeStatus":"Full Code","age":"7 months","sex":"Female","primaryDiagnosis":"Upper airway obstruction / croup"},{"id":"stephanie-smith","name":"Stephanie Smith","mrn":"201040","dob":"07/14/XXXX","room":"211E","provider":"Henderson","allergies":["NKDA"],"weightKg":53.5,"bloodType":"","codeStatus":"Full Code"},{"id":"charles-jones","name":"Charles Jones","mrn":"201041","dob":"04/20/XX","room":"211A","provider":"Burris","allergies":["NKDA"],"weightKg":82,"bloodType":"","codeStatus":"Full Code"},{"id":"baby-boy-sung","name":"BABY BOY SUNG","mrn":"201042","dob":"TODAY","room":"211E","provider":"Craig","allergies":["NKDA"],"weightKg":4.37,"bloodType":"","codeStatus":"Full Code"}];
 SEED_PATIENTS.push(
  {id:"vincent-brody",name:"Vincent Brody",mrn:"SIM-L3-001",dob:"06/28/XXXX",room:"Level 3",unit:"Medical Surgical and ICU",provider:"Simulation Faculty",allergies:["Not listed"],weightKg:"",bloodType:"",codeStatus:"Full Code"},
  {id:"ruth-livingston",name:"Ruth Livingston",mrn:"SIM-L3-002",dob:"10/08/XXXX",room:"Level 3",unit:"Medical Surgical and ICU",provider:"Simulation Faculty",allergies:["Not listed"],weightKg:"",bloodType:"",codeStatus:"Full Code"},
@@ -190,7 +190,7 @@ SEED_PATIENTS.push(
 const PATIENT_LEVELS={"charles-jones":1,"amelia-sung":2,"jane-fowler":2,"fatima-sanogo":2,"molly-thomas":2,"stephanie-smith":2,"baby-boy-sung":2,"vincent-brody":3,"ruth-livingston":3,"carl-shapiro":3,"karl-sharp":3,"vernon-watkins":3,"david-carter":3};
 const PATIENT_OVERRIDES={
  "charles-jones":{age:"68",primaryDiagnosis:"Congestive Heart Failure",weightKg:82,allergies:["NKDA"]},
- "fatima-sanogo":{age:"23",primaryDiagnosis:"Vaginal Delivery",weightKg:70,bloodType:"O+",allergies:["NKDA"],gravida:"1",para:"1",fetus:"Female"},
+ "fatima-sanogo":{age:"23",primaryDiagnosis:"Postpartum hemorrhage after vaginal delivery",weightKg:71,bloodType:"O+",allergies:["NKDA"],gravida:"1",para:"1",fetus:"Male"},
  "molly-thomas":{age:"7 months",sex:"Female",primaryDiagnosis:"Upper Airway Obstruction",weightKg:7,allergies:["NKDA"]},
  "stephanie-smith":{age:"16",sex:"Female",primaryDiagnosis:"Sickle Cell Crisis",weightKg:53.5,allergies:["NKDA"]},
  "baby-boy-sung":{age:"Newborn",sex:"Male",primaryDiagnosis:"Newborn after vaginal delivery with shoulder dystocia",gestationalAge:"39.1 weeks",weightKg:4.37,allergies:["NKA"]},
@@ -263,12 +263,12 @@ const LEVEL3_MAR_MEDICATIONS={
 
 
 const SEED_AMELIA_ORDERS=[
-{id:"amelia-order-admit",patientId:"amelia-sung",time:"SIM ADMISSION",provider:"Dr. Darnell",type:"Nursing",text:"Admit to Labor & Delivery for induction of labor at 39 weeks due to gestational diabetes.",status:"Active",enteredBy:"Provider"},
-{id:"amelia-order-monitor",patientId:"amelia-sung",time:"SIM ADMISSION",provider:"Dr. Darnell",type:"Nursing",text:"Continue labor monitoring. Monitor fetal heart rate and contractions.",status:"Active",enteredBy:"Provider"},
-{id:"amelia-order-gbs",patientId:"amelia-sung",time:"SIM ADMISSION",provider:"Dr. Darnell",type:"Medication",text:"Continue GBS prophylaxis per provider order.",status:"Active",enteredBy:"Provider"},
-{id:"amelia-order-cervical",patientId:"amelia-sung",time:"SIM ADMISSION",provider:"Dr. Darnell",type:"Nursing",text:"Repeat cervical examination as needed to assess labor progress.",status:"Active",enteredBy:"Provider"},
-{id:"amelia-order-birthplan",patientId:"amelia-sung",time:"SIM ADMISSION",provider:"Dr. Darnell",type:"Nursing",text:"Honor delayed cord clamping and skin-to-skin after delivery when clinically appropriate.",status:"Active",enteredBy:"Provider"},
-{id:"amelia-order-breastfeed",patientId:"amelia-sung",time:"SIM ADMISSION",provider:"Dr. Darnell",type:"Nursing",text:"Provide breastfeeding support after delivery.",status:"Active",enteredBy:"Provider"}];
+{id:"amelia-order-oxytocin",patientId:"amelia-sung",time:"SIM ADMISSION",provider:"Dr. Darnell",type:"Medication",text:"Oxytocin (Pitocin) 30 units in 500 mL sodium chloride 0.9%; start at 2 milliunits/min and increase by 2 milliunits/min every 15 minutes until contractions are every 2–3 minutes.",status:"Active",enteredBy:"Provider"},
+{id:"amelia-order-lr",patientId:"amelia-sung",time:"SIM ADMISSION",provider:"Dr. Darnell",type:"IV / Fluids",text:"Lactated Ringer’s solution (LR) at 125 mL/hr.",status:"Active",enteredBy:"Provider"},
+{id:"amelia-order-clindamycin",patientId:"amelia-sung",time:"SIM ADMISSION",provider:"Dr. Darnell",type:"Medication",text:"Clindamycin (Cleocin) 900 mg IVPB every 6 hours until delivery for GBS prophylaxis.",status:"Active",enteredBy:"Provider"},
+{id:"amelia-order-morphine",patientId:"amelia-sung",time:"SIM ADMISSION",provider:"Dr. Darnell",type:"Medication",text:"Morphine sulfate (Duramorph) 2 mg slow IV push every 2 hours as needed for pain.",status:"Active",enteredBy:"Provider"},
+{id:"amelia-order-lidocaine",patientId:"amelia-sung",time:"SIM ADMISSION",provider:"Dr. Darnell",type:"Medication",text:"Lidocaine (Xylocaine) 1% available at delivery.",status:"Active",enteredBy:"Provider"},
+{id:"amelia-order-monitor",patientId:"amelia-sung",time:"SIM ADMISSION",provider:"Dr. Darnell",type:"Nursing",text:"Continuous fetal monitoring with bathroom privileges; vital signs per protocol. Clear liquid diet. Intake and output every shift.",status:"Active",enteredBy:"Provider"}];
 
 const SEED_AMELIA_LABS=[
 {id:"amelia-lab-hgb",patientId:"amelia-sung",time:"Admission",type:"Laboratory",test:"Hemoglobin (HB)",result:"10.7",reference:"12.1-15.1",flag:"Low",comments:"Admission CBC"},
@@ -284,13 +284,13 @@ const SEED_AMELIA_LABS=[
 {id:"amelia-lab-gbs",patientId:"amelia-sung",time:"Third Trimester",type:"Laboratory",test:"GBS",result:"Positive",reference:"",flag:"Abnormal",comments:"Group B Strep positive"}];
 
 const SEED_AMELIA_NOTES=[{id:"amelia-admission-note",patientId:"amelia-sung",time:"Admission",student:"Dr. Darnell",type:"OB-GYN Admission Note",provider:"Dr. Darnell",
-situation:"36-year-old G2 P1 at 39 weeks gestation admitted for induction of labor due to gestational diabetes. Labor onset associated with spontaneous rupture of membranes with clear fluid. GBS positive.",
-background:"Gestational diabetes is diet controlled. Allergies: shellfish and penicillin. Male fetus. Plans breastfeeding. Requests delayed cord clamping and skin-to-skin after delivery.",
-assessment:"Full Code. Postpartum hemorrhage risk low. Weight 69 kg. Tdap given at 28 weeks. Cervical exam: 3 cm dilated, 100% effaced, -2 station. Contractions every 3 minutes, moderate. Fetal heart rate 140, Category I.",
-recommendation:"Continue labor monitoring, fetal heart rate and contraction monitoring, continue GBS prophylaxis per provider order, repeat cervical exam as needed, support delivery preferences, and provide breastfeeding support."}];
+situation:"36-year-old G2 P1 at 39 weeks gestation, admitted 24 hours ago for induction. She was 4 cm on admission and is now complete after pushing for 2 hours. AROM was 12 hours ago with clear fluid. No epidural. Shoulder dystocia is the simulation complication.",
+background:"Diet-controlled gestational diabetes. Blood type O positive; hepatitis negative; rubella immune; GBS positive. Allergies: shellfish and penicillin.",
+assessment:"BP 138/80; HR 90; RR 22; T 98.9°F. FHR 140 with moderate variability and accelerations. Strong contractions every 3 minutes lasting 45 seconds.",
+recommendation:"Verify two identifiers, complete maternal and fetal assessment, check blood glucose (expected 100 mg/dL), continue ordered oxytocin and IV fluids, and prepare for shoulder-dystocia response and newborn resuscitation."}];
 
 const AMELIA_PRENATAL_VISITS=[
-{visit:"10",weeks:"38",weight:"69 kg",bp:"145/90",fundal:"38 in",fhr:"140",notes:"Trace protein or ketones in urine. + fetal movement. Discussed signs of labor and when to go to L&D. GBS positive; antibiotic prophylaxis discussed."},
+{visit:"10",weeks:"38",weight:"83 kg",bp:"145/90",fundal:"38 in",fhr:"140",notes:"Trace protein or ketones in urine. + fetal movement. Discussed signs of labor and when to go to L&D. GBS positive; antibiotic prophylaxis discussed."},
 {visit:"9",weeks:"37",weight:"68 kg",bp:"134/89",fundal:"37 in",fhr:"145",notes:"No protein or ketones. + fetal movement. Kick counts discussed. Blood sugars reported below 100."},
 {visit:"8",weeks:"36",weight:"68 kg",bp:"138/80",fundal:"36 in",fhr:"140",notes:"No protein or ketones. GBS swab collected."},
 {visit:"7",weeks:"34",weight:"65 kg",bp:"130/70",fundal:"34.5 in",fhr:"135",notes:"No protein or ketones. + fetal movement. Blood sugars reported below 100."},
@@ -306,14 +306,14 @@ patientInformation:{name:"Amelia Sung",dob:"12/08/XXXX",age:"36",insurance:"Self
 pregnancy:{lmp:"9 months ago",edd:"7 days from now",gestationalAge:"39 weeks",bloodType:"O+"},
 obstetric:{gravida:"2",para:"1",living:"1",previous:"1/28/2022 — vaginal delivery of 9 lb 1 oz male; heavy bleeding reported."},
 medical:{conditions:"Gestational diabetes, diet controlled; no other chronic conditions listed.",surgeries:"None",medications:"Prenatal vitamins",allergies:"Shellfish; Penicillin"},
-prenatalLabs:{first:"O+; Rubella immune; Hepatitis B negative; HIV negative; Syphilis negative",second:"Glucose challenge abnormal; Alpha-fetoprotein normal; Multiple marker screen low risk",third:"Group B Strep positive"},
+prenatalLabs:{first:"O+; Rubella immune; Hepatitis B negative; HIV negative; Syphilis negative",second:"Glucose challenge abnormal",third:"Group B Strep positive"},
 ultrasound:"21.3 weeks — normal findings. Infant measuring 22.3 weeks. Male fetus.",
 birthPlan:"Vaginal delivery; no pain medication planned on admission; husband support person; delayed cord clamping and skin-to-skin after delivery; plans to breastfeed.",
 risk:"Gestational diabetes; advanced maternal age."
 };
 
 const AMELIA_LD_BASELINE={
-code:"Full Code",provider:"Darnell",pphRisk:"Low",babySex:"Male",gbs:"Positive",bloodType:"O+",weight:"69 kg",
+code:"Full Code",provider:"Darnell",pphRisk:"Low",babySex:"Male",gbs:"Positive",bloodType:"O+",weight:"83 kg",
 tdap:"Given at 28 weeks",gestationalDiabetes:"Diet controlled",laborOnset:"SROM",fluid:"Clear",effacement:"100%",station:"-2",
 dilation:"3 cm",contractions:"Every 3 minutes — moderate",fhr:"140",fhrCategory:"Category I"
 };
@@ -327,20 +327,24 @@ function ensureSeededAmelia(){
 
 
 const SEED_JANE_ORDERS=[
-{id:"jane-preop-lr",patientId:"jane-fowler",time:"Shift 1",provider:"Dr. Smith",type:"IV / Fluids",text:"Lactated Ringer's solution (LR) at 125 mL/hr.",status:"Active",enteredBy:"Provider"},
-{id:"jane-preop-npo",patientId:"jane-fowler",time:"Shift 1",provider:"Dr. Smith",type:"Diet",text:"NPO.",status:"Active",enteredBy:"Provider"},
-{id:"jane-preop-foley",patientId:"jane-fowler",time:"Shift 1",provider:"Dr. Smith",type:"Nursing",text:"Insert indwelling urinary catheter.",status:"Active",enteredBy:"Provider"},
-{id:"jane-preop-cefazolin",patientId:"jane-fowler",time:"Shift 1",provider:"Dr. Smith",type:"Medication",text:"Cefazolin (Ancef) 2 g IV on call to OR.",status:"Active",enteredBy:"Provider"},
-{id:"jane-preop-scd",patientId:"jane-fowler",time:"Shift 1",provider:"Dr. Smith",type:"Nursing",text:"Apply sequential compression devices (SCDs).",status:"Active",enteredBy:"Provider"},
-{id:"jane-postop-diet",patientId:"jane-fowler",time:"Shift 2",provider:"Dr. Smith",type:"Diet",text:"Sips of water; advance to clear liquids as tolerated.",status:"Active",enteredBy:"Provider"},
-{id:"jane-postop-activity",patientId:"jane-fowler",time:"Shift 2",provider:"Dr. Smith",type:"Activity",text:"Out of bed tonight.",status:"Active",enteredBy:"Provider"},
-{id:"jane-postop-vitals",patientId:"jane-fowler",time:"Shift 2",provider:"Dr. Smith",type:"Nursing",text:"Postoperative vital signs per protocol.",status:"Active",enteredBy:"Provider"},
-{id:"jane-postop-lr",patientId:"jane-fowler",time:"Shift 2",provider:"Dr. Smith",type:"IV / Fluids",text:"Lactated Ringer's solution (LR) at 125 mL/hr.",status:"Active",enteredBy:"Provider"},
-{id:"jane-postop-scd",patientId:"jane-fowler",time:"Shift 2",provider:"Dr. Smith",type:"Nursing",text:"Continue sequential compression devices (SCDs).",status:"Active",enteredBy:"Provider"},
-{id:"jane-postop-foley",patientId:"jane-fowler",time:"Shift 2",provider:"Dr. Smith",type:"Nursing",text:"Maintain indwelling urinary catheter.",status:"Active",enteredBy:"Provider"},
-{id:"jane-postop-io",patientId:"jane-fowler",time:"Shift 2",provider:"Dr. Smith",type:"Nursing",text:"Intake and output every 4 hours; notify provider for urine output less than 30 mL/hr.",status:"Active",enteredBy:"Provider"},
-{id:"jane-postop-oncology",patientId:"jane-fowler",time:"Shift 2",provider:"Dr. Smith",type:"Consult",text:"Consult Oncology.",status:"Active",enteredBy:"Provider"},
-{id:"jane-postop-transfer",patientId:"jane-fowler",time:"Shift 2",provider:"Dr. Smith",type:"Other",text:"Transfer to Surgical Floor.",status:"Active",enteredBy:"Provider"}
+{id:"jane-preop-admit",patientId:"jane-fowler",time:"Admission",provider:"Dr. Smith MD",type:"Admission",text:"Admit to Surgical Pre-Op for preoperative total abdominal hysterectomy with bilateral salpingo-oophorectomy.",status:"Active",enteredBy:"Provider"},
+{id:"jane-preop-vitals",patientId:"jane-fowler",time:"Admission",provider:"Dr. Smith MD",type:"Nursing",text:"Vital signs every 30 minutes until surgery.",status:"Active",enteredBy:"Provider"},
+{id:"jane-preop-lr",patientId:"jane-fowler",time:"Admission",provider:"Dr. Smith MD",type:"IV / Fluids",text:"Lactated Ringer's solution (LR) at 125 mL/hr.",status:"Active",enteredBy:"Provider"},
+{id:"jane-preop-npo",patientId:"jane-fowler",time:"Admission",provider:"Dr. Smith MD",type:"Diet",text:"NPO.",status:"Active",enteredBy:"Provider"},
+{id:"jane-preop-code",patientId:"jane-fowler",time:"Admission",provider:"Dr. Smith MD",type:"Code Status",text:"Full Code.",status:"Active",enteredBy:"Provider"},
+{id:"jane-preop-consents",patientId:"jane-fowler",time:"Admission",provider:"Dr. Smith MD",type:"Consent",text:"Obtain sterilization consent, blood-administration consent, and surgical consent for total abdominal hysterectomy with bilateral salpingo-oophorectomy.",status:"Active",enteredBy:"Provider"},
+{id:"jane-preop-labs",patientId:"jane-fowler",time:"Admission",provider:"Dr. Smith MD",type:"Laboratory",text:"Obtain CBC, urine hCG, BMP, and blood type.",status:"Active",enteredBy:"Provider"},
+{id:"jane-preop-foley",patientId:"jane-fowler",time:"Admission",provider:"Dr. Smith MD",type:"Nursing",text:"Insert indwelling urinary catheter.",status:"Active",enteredBy:"Provider"},
+{id:"jane-preop-cefazolin",patientId:"jane-fowler",time:"Admission",provider:"Dr. Smith MD",type:"Medication",text:"Cefazolin (Ancef) 2 g in 250 mL IV on call to the operating room; infuse over 1 hour.",status:"Active",enteredBy:"Provider"},
+{id:"jane-preop-metoclopramide",patientId:"jane-fowler",time:"Admission",provider:"Dr. Smith MD",type:"Medication",text:"Metoclopramide (Reglan) 10 mg IV; available concentration 10 mg/2 mL.",status:"Active",enteredBy:"Provider"},
+{id:"jane-preop-midazolam",patientId:"jane-fowler",time:"Admission",provider:"Dr. Smith MD",type:"Medication",text:"Midazolam (Versed) 1 mg IV on call to the operating room; available concentration 5 mg/mL.",status:"Active",enteredBy:"Provider"},
+{id:"jane-preop-scd",patientId:"jane-fowler",time:"Admission",provider:"Dr. Smith MD",type:"Nursing",text:"Apply bilateral sequential compression devices (SCDs).",status:"Active",enteredBy:"Provider"},
+{id:"jane-preop-abd",patientId:"jane-fowler",time:"Admission",provider:"Dr. Smith MD",type:"Nursing",text:"Prepare the abdomen: shave as needed and cleanse with antibacterial wipes.",status:"Active",enteredBy:"Provider"},
+{id:"jane-preop-checklist",patientId:"jane-fowler",time:"Admission",provider:"Dr. Smith MD",type:"Nursing",text:"Complete the surgical checklist and time-out documentation.",status:"Active",enteredBy:"Provider"},
+{id:"jane-preop-teaching",patientId:"jane-fowler",time:"Admission",provider:"Dr. Smith MD",type:"Education",text:"Teach postoperative incision splinting and incentive-spirometer use.",status:"Active",enteredBy:"Provider"}
+];
+const SEED_JANE_NOTES=[
+ {id:"jane-admission-nursing-note-row",patientId:"jane-fowler",time:"Today — Admission to 211E",student:"S. Escobar RN",type:"Admission Nursing Note",narrative:"Jane Fowler, a 79-year-old female, was admitted to the surgical unit in preparation for a scheduled total hysterectomy under the care of Dr. Smith. Patient arrived to the unit ambulatory, awake, alert, and oriented ×4, and in no acute distress.",origin:"base"}
 ];
 
 const JANE_SCENARIO={
@@ -364,8 +368,9 @@ const JANE_SCENARIO={
 };
 
 function ensureSeededJane(){
- state.orders ||= [];
+ state.orders ||= [];state.notes ||= [];
  for(const x of SEED_JANE_ORDERS)if(!state.orders.some(o=>o.id===x.id))state.orders.push({...x});
+ for(const x of SEED_JANE_NOTES)if(!state.notes.some(o=>o.id===x.id))state.notes.push({...x});
  state.scenarioStage ||= {};
  state.scenarioStage["jane-fowler"] ||= "preop";
 }
@@ -865,11 +870,14 @@ const PATIENT_SPECIALTY_VIEWS={
  "ruth-livingston":["surgery"],
  "vernon-watkins":["surgery"]
 };
+const PATIENTS_WITHOUT_GLUCOSE_MODULE=new Set(["fatima-sanogo","molly-thomas","stephanie-smith"]);
 function applyPatientMenu(){
  const allowed=PATIENT_SPECIALTY_VIEWS[activePatientId]||[];
  document.querySelectorAll("aside [data-specialty]").forEach(button=>{
   button.classList.toggle("hiddenByPatient",!allowed.includes(button.dataset.specialty));
  });
+ const glucose=document.querySelector('aside [data-view="glucose"]');
+ if(glucose)glucose.classList.toggle("hiddenByPatient",PATIENTS_WITHOUT_GLUCOSE_MODULE.has(activePatientId));
 }
 // v4 tab-local mode handled above
 // v4 applyMode handled above
@@ -885,6 +893,7 @@ function renderBanner(){
  </div>`;
 }
 function render(){
+ if(currentView==="glucose"&&PATIENTS_WITHOUT_GLUCOSE_MODULE.has(activePatientId))currentView="summary";
  document.querySelectorAll("aside button").forEach(b=>b.classList.toggle("active",b.dataset.view===currentView));
  applyPatientMenu();
  renderBanner();
@@ -1051,8 +1060,8 @@ function renderSummary(){
  <div class="note" style="margin-top:8px"><b>Previous pregnancy:</b> Vaginal delivery of a 9 lb 1 oz male with heavy bleeding.</div>`):"";
  const obSnapshot=p.id==="amelia-sung"?panel("L&D Snapshot",`<div class="warn"><b>ALLERGIES:</b> Shellfish / Penicillin</div><div class="grid3" style="margin-top:8px">
  <div><b>39 weeks</b><br><span class="note">Gestation</span></div><div><b>G2 P1</b><br><span class="note">Obstetric history</span></div><div><b>GBS Positive</b><br><span class="note">Prenatal status</span></div>
- <div><b>3 cm / 100% / -2</b><br><span class="note">Baseline cervical exam</span></div><div><b>FHR 140 — Category I</b><br><span class="note">Fetal assessment</span></div><div><b>Q3 min — moderate</b><br><span class="note">Contractions</span></div>
- <div><b>SROM — clear</b><br><span class="note">Membranes</span></div><div><b>Diet controlled</b><br><span class="note">Gestational diabetes</span></div><div><b>Low PPH risk</b><br><span class="note">Hemorrhage risk</span></div></div>`):"";
+ <div><b>Complete / 100% / -2</b><br><span class="note">Current cervical exam</span></div><div><b>FHR 140 — Category I</b><br><span class="note">Fetal assessment</span></div><div><b>Q3 min × 45 sec — strong</b><br><span class="note">Contractions</span></div>
+ <div><b>AROM — clear</b><br><span class="note">Membranes</span></div><div><b>Diet controlled</b><br><span class="note">Gestational diabetes</span></div><div><b>Shoulder dystocia</b><br><span class="note">Simulation complication</span></div></div>`):"";
  document.getElementById("view").innerHTML=
  psychQuick+
  surgicalQuick+
@@ -1088,7 +1097,7 @@ function renderPrenatal(){
  </div>`)+
  panel("OB Admission Snapshot",`<div class="warn"><b>ALLERGIES:</b> Shellfish / Penicillin</div><div class="grid3" style="margin-top:10px">
  <div><b>Age</b><br>36 years</div><div><b>Gestation</b><br>39 weeks</div><div><b>G / P</b><br>G2 P1</div>
- <div><b>Admission</b><br>Induction for gestational diabetes</div><div><b>GBS</b><br>Positive</div><div><b>Fetus</b><br>Male</div>
+ <div><b>Admission</b><br>Active labor / gestational diabetes</div><div><b>GBS</b><br>Positive</div><div><b>Fetus</b><br>Male</div>
  <div><b>Pain Plan</b><br>None</div><div><b>Feeding Plan</b><br>Breastfeeding</div><div><b>Preferences</b><br>Delayed cord clamping; skin-to-skin</div></div>`)+
  panel("Patient Information",`<div class="grid3"><div><b>Name</b><br>${esc(d.patientInformation.name)}</div><div><b>DOB</b><br>${esc(d.patientInformation.dob)}</div><div><b>Age</b><br>${esc(d.patientInformation.age)}</div><div><b>Insurance</b><br>${esc(d.patientInformation.insurance)}</div><div><b>Emergency Contact</b><br>${esc(d.patientInformation.emergencyContact)}</div><div><b>Phone</b><br>${esc(d.patientInformation.phone)}</div></div>`)+
  panel("Current Pregnancy / Obstetric History",`<div class="grid3"><div><b>LMP</b><br>${esc(d.pregnancy.lmp)}</div><div><b>EDD</b><br>${esc(d.pregnancy.edd)}</div><div><b>Gestational Age</b><br>${esc(d.pregnancy.gestationalAge)}</div><div><b>Blood Type</b><br>${esc(d.pregnancy.bloodType)}</div><div><b>G / P</b><br>G${esc(d.obstetric.gravida)} P${esc(d.obstetric.para)}</div><div><b>Living Children</b><br>${esc(d.obstetric.living)}</div></div><div class="note" style="margin-top:8px"><b>Previous pregnancy:</b> ${esc(d.obstetric.previous)}</div>`)+
@@ -1133,27 +1142,27 @@ function renderSurgery(){
   document.getElementById("view").innerHTML=panel("Surgical / Post-Op",`<div class="note">No surgical specialty workflow loaded for this patient yet.</div>`);
   return;
  }
- const stage=janeStage();
+ const stage=janeStage(),faculty=isFaculty();
  const checklist=(state.surgicalChecklist||[]).find(x=>x.patientId===p.id);
  const preopChecked=(key,legacyIndex)=>checklist?.checks?.[key]??(legacyIndex==null?false:!!checklist?.items?.[legacyIndex]);
  const preopValue=key=>checklist?.fields?.[key]||"";
  const preopCheck=(key,label,legacyIndex=null)=>`<label style="font-weight:normal"><input id="jpc-${key}" type="checkbox" class="janePreopCheck" data-key="${key}" style="width:auto;margin-right:7px" ${preopChecked(key,legacyIndex)?"checked":""}>${esc(label)}</label>`;
  const preopOptions=(selected,items)=>`<option value="">Select…</option>${items.map(x=>`<option ${selected===x?"selected":""}>${esc(x)}</option>`).join("")}`;
  const assessments=(state.surgicalAssessments||[]).filter(x=>x.patientId===p.id).slice().reverse();
- const stageBanner = stage==="preop" ? `<div class="success"><b>Current Scenario Stage:</b> Pre-Op</div>` :
+ const stageBanner = !faculty ? "" : stage==="preop" ? `<div class="success"><b>Current Scenario Stage:</b> Pre-Op</div>` :
    stage==="postop" ? `<div class="success"><b>Current Scenario Stage:</b> Immediate Post-Op</div>` :
    stage==="pain" ? `<div class="warn"><b>Current Scenario Stage:</b> Pain / Medication Decision</div>` :
    `<div class="warn" style="border-color:#a82434;color:#8a1c2d"><b>Current Scenario Stage:</b> Respiratory Depression</div>`;
 
  document.getElementById("view").innerHTML=
- panel("Jane Fowler Surgical Scenario",`${stageBanner}
+ panel("Jane Fowler Surgical Overview",`${stageBanner}
  <div class="grid3" style="margin-top:10px">
   <div><b>Diagnosis</b><br>Ovarian cancer</div><div><b>Procedure</b><br>Total abdominal hysterectomy with bilateral salpingo-oophorectomy</div><div><b>Weight</b><br>60 kg</div>
  </div>
- ${stage==="preop"?`<div class="note" style="margin-top:10px"><b>Situation:</b> ${esc(JANE_SCENARIO.preop.situation)}<br><b>Baseline:</b> ${esc(JANE_SCENARIO.preop.vitals)}<br><b>Findings:</b> ${esc(JANE_SCENARIO.preop.findings)}</div>`:""}
- ${stage==="postop"?`<div class="note" style="margin-top:10px"><b>Situation:</b> ${esc(JANE_SCENARIO.postop.situation)}<br><b>Initial post-op vitals:</b> ${esc(JANE_SCENARIO.postop.vitals)}<br><b>Findings:</b> ${esc(JANE_SCENARIO.postop.findings)}</div>`:""}
- ${stage==="pain"?`<div class="warn" style="margin-top:10px">${esc(JANE_SCENARIO.pain.cue)}</div>`:""}
- ${stage==="depression"?`<div class="warn" style="margin-top:10px"><b>CHANGE IN CONDITION:</b> ${esc(JANE_SCENARIO.depression.cue)}</div>`:""}
+ ${faculty&&stage==="preop"?`<div class="note" style="margin-top:10px"><b>Situation:</b> ${esc(JANE_SCENARIO.preop.situation)}<br><b>Baseline:</b> ${esc(JANE_SCENARIO.preop.vitals)}<br><b>Findings:</b> ${esc(JANE_SCENARIO.preop.findings)}</div>`:""}
+ ${faculty&&stage==="postop"?`<div class="note" style="margin-top:10px"><b>Situation:</b> ${esc(JANE_SCENARIO.postop.situation)}<br><b>Initial post-op vitals:</b> ${esc(JANE_SCENARIO.postop.vitals)}<br><b>Findings:</b> ${esc(JANE_SCENARIO.postop.findings)}</div>`:""}
+ ${faculty&&stage==="pain"?`<div class="warn" style="margin-top:10px">${esc(JANE_SCENARIO.pain.cue)}</div>`:""}
+ ${faculty&&stage==="depression"?`<div class="warn" style="margin-top:10px"><b>CHANGE IN CONDITION:</b> ${esc(JANE_SCENARIO.depression.cue)}</div>`:""}
  `)+
  panel("Pre-Op Checklist",`
  ${checklist?`<div class="success"><b>Saved:</b> ${esc(checklist.time)} by ${esc(checklist.student||"student")} · ${esc(checklist.fields?.readiness||"Checklist in progress")}</div>`:""}
@@ -1210,7 +1219,7 @@ function renderSurgery(){
  panel("Assessment History",`<table><thead><tr><th>Time</th><th>Student</th><th>LOC</th><th>RR / SpO₂</th><th>Pain</th><th>Incision</th><th>IV / Foley</th><th>Interventions</th></tr></thead><tbody>
  ${assessments.map(r=>`<tr><td>${esc(r.time)}</td><td>${esc(r.student)}</td><td>${esc(r.neuro)}</td><td>${esc(r.rr)} / ${esc(r.spo2)}</td><td>${esc(r.pain)}</td><td>${esc(r.incision)}</td><td>${esc(r.iv)}<br>${esc(r.foley)}</td><td>${esc(r.notes)}</td></tr>`).join("")||'<tr><td colspan="8">No surgical assessments charted.</td></tr>'}
  </tbody></table>`)+
- panel("Scenario Progression",`
+ (faculty?panel("Scenario Progression",`
  <div class="note">Faculty can release the next stage as the simulation progresses. Students only see the current stage.</div>
  <div class="actions facultyOnly" style="margin-top:8px">
   <button class="secondary janeStageBtn" data-stage="preop">Pre-Op</button>
@@ -1219,7 +1228,7 @@ function renderSurgery(){
   <button class="danger janeStageBtn" data-stage="depression">Release Respiratory Depression</button>
  </div>
  ${stage==="depression"?`<div class="warn" style="margin-top:8px"><b>Faculty verbal orders:</b> ${esc(JANE_SCENARIO.depression.verbalOrders)}</div>`:""}
- `);
+ `):"");
 
  saveJaneChecklist.onclick=()=>{
   state.surgicalChecklist ||= [];
@@ -1271,16 +1280,16 @@ function renderAssessments(){
  };
 }
 function renderFlowsheets(){
- if(!requirePatient())return;const rows=patientRows(state.vitals).slice().reverse();
+ if(!requirePatient())return;const rows=patientRows(state.vitals).slice().reverse(),showGlucose=!PATIENTS_WITHOUT_GLUCOSE_MODULE.has(activePatientId);
  document.getElementById("view").innerHTML=panel("Vitals / Flowsheet",`
  <div class="grid4">
   <label>Date/Time<input id="vTime" type="datetime-local" value="${nowLocal()}"></label><label>Student<input id="vStudent"></label>
   <label>Temp °F<input id="vTemp"></label><label>HR<input id="vHR"></label><label>RR<input id="vRR"></label><label>BP<input id="vBP" placeholder="120/80"></label>
-  <label>SpO₂ %<input id="vSpo2"></label><label>Pain<input id="vPain"></label><label>Blood Glucose<input id="vBG"></label><label>Weight kg<input id="vWt"></label>
+  <label>SpO₂ %<input id="vSpo2"></label><label>Pain<input id="vPain"></label>${showGlucose?'<label>Blood Glucose<input id="vBG"></label>':''}<label>Weight kg<input id="vWt"></label>
   <label class="wide">Comments<input id="vComments"></label>
  </div><div class="actions" style="margin-top:10px"><button id="saveVitals" class="primary">Save Flowsheet Entry</button></div>`)+
- panel("Vitals History",`<table><thead><tr><th>Time</th><th>Temp</th><th>HR</th><th>RR</th><th>BP</th><th>SpO₂</th><th>Pain</th><th>BG</th><th>Student</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.time)}</td><td>${esc(r.temp)}</td><td>${esc(r.hr)}</td><td>${esc(r.rr)}</td><td>${esc(r.bp)}</td><td>${esc(r.spo2)}</td><td>${esc(r.pain)}</td><td>${esc(r.bg)}</td><td>${esc(r.student)}</td></tr>`).join("")||'<tr><td colspan="9">No vitals charted.</td></tr>'}</tbody></table>`);
- saveVitals.onclick=()=>{const r={id:uid("vital"),patientId:activePatientId,time:vTime.value,student:vStudent.value.trim(),temp:vTemp.value.trim(),hr:vHR.value.trim(),rr:vRR.value.trim(),bp:vBP.value.trim(),spo2:vSpo2.value.trim(),pain:vPain.value.trim(),bg:vBG.value.trim(),weight:vWt.value.trim(),comments:vComments.value.trim()};if(!r.student){alert("Enter student.");return}state.vitals.push(r);clearCurrentViewDraft();audit("Flowsheet entry",activePatientId,`Vitals documented by ${r.student}`);atuCloudBadge(atuCloudReady?"Saved & sharing…":"Saved locally");renderFlowsheets()};
+ panel("Vitals History",`<table><thead><tr><th>Time</th><th>Temp</th><th>HR</th><th>RR</th><th>BP</th><th>SpO₂</th><th>Pain</th>${showGlucose?'<th>BG</th>':''}<th>Student</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.time)}</td><td>${esc(r.temp)}</td><td>${esc(r.hr)}</td><td>${esc(r.rr)}</td><td>${esc(r.bp)}</td><td>${esc(r.spo2)}</td><td>${esc(r.pain)}</td>${showGlucose?`<td>${esc(r.bg)}</td>`:''}<td>${esc(r.student)}</td></tr>`).join("")||`<tr><td colspan="${showGlucose?9:8}">No vitals charted.</td></tr>`}</tbody></table>`);
+ saveVitals.onclick=()=>{const r={id:uid("vital"),patientId:activePatientId,time:vTime.value,student:vStudent.value.trim(),temp:vTemp.value.trim(),hr:vHR.value.trim(),rr:vRR.value.trim(),bp:vBP.value.trim(),spo2:vSpo2.value.trim(),pain:vPain.value.trim(),weight:vWt.value.trim(),comments:vComments.value.trim()};if(showGlucose)r.bg=vBG.value.trim();if(!r.student){alert("Enter student.");return}state.vitals.push(r);clearCurrentViewDraft();audit("Flowsheet entry",activePatientId,`Vitals documented by ${r.student}`);atuCloudBadge(atuCloudReady?"Saved & sharing…":"Saved locally");renderFlowsheets()};
 }
 function renderIO(){
  if(!requirePatient())return;const rows=patientRows(state.io).slice().reverse();
@@ -1321,7 +1330,7 @@ function renderEducation(){
  document.getElementById('saveEducation').onclick=()=>{
  const get=id=>document.getElementById(id).value.trim();
  if(!get('edStudent')||!get('edTime')||!get('edContent')||get('edUnderstanding')==='Select evaluation'){alert('Enter the date/time, student initials, education provided, and evaluation.');return;}
- state.notes.push({id:uid('education'),patientId:activePatientId,type:'Patient Education',time:get('edTime'),student:get('edStudent'),topic:get('edTopic'),learner:get('edLearner'),method:get('edMethod'),understanding:get('edUnderstanding'),barriers:get('edBarriers'),narrative:get('edContent'),followup:get('edFollowup')});
+ state.notes.push({id:uid('education'),patientId:activePatientId,type:'Patient Education',time:get('edTime'),student:get('edStudent'),topic:get('edTopic'),learner:get('edLearner'),method:get('edMethod'),understanding:get('edUnderstanding'),barriers:get('edBarriers'),narrative:get('edContent'),followup:get('edFollowup'),origin:'student'});
  clearCurrentViewDraft();audit('Patient education documented',activePatientId,`${get('edTopic')} — ${get('edLearner')}`);renderEducation();
  };
 }
@@ -1333,7 +1342,7 @@ function renderNotes(){
  <label class="wide">Narrative<textarea id="nNarrative" placeholder="Enter the complete nursing narrative note."></textarea></label></div>
  <div class="actions" style="margin-top:10px"><button id="saveNote" class="primary">Sign Note</button></div>`)+
  panel("Signed Notes",`${rows.map(r=>{const narrative=r.narrative||[r.situation,r.background,r.assessment,r.recommendation].filter(Boolean).join(" ");return `<div class="patientCard" style="margin-bottom:8px"><b>${esc(r.type||"Nursing Note")}</b> • ${esc(r.time)} • ${esc(r.student)}<br><span class="note">${esc(narrative)}</span></div>`}).join("")||'<div class="note">No signed notes.</div>'}`);
- saveNote.onclick=()=>{const r={id:uid("note"),patientId:activePatientId,time:nTime.value,student:nStudent.value.trim(),type:"Nursing Note",narrative:nNarrative.value.trim()};if(!r.student||!r.narrative){alert("Student and narrative are required.");return}state.notes.push(r);clearCurrentViewDraft();audit("Nursing note signed",activePatientId,`Nursing Note by ${r.student}`);atuCloudBadge(atuCloudReady?"Saved & sharing…":"Saved locally");renderNotes()};
+ saveNote.onclick=()=>{const r={id:uid("note"),patientId:activePatientId,time:nTime.value,student:nStudent.value.trim(),type:"Nursing Note",narrative:nNarrative.value.trim(),origin:"student"};if(!r.student||!r.narrative){alert("Student and narrative are required.");return}state.notes.push(r);clearCurrentViewDraft();audit("Nursing note signed",activePatientId,`Nursing Note by ${r.student}`);atuCloudBadge(atuCloudReady?"Saved & sharing…":"Saved locally");renderNotes()};
 }
 function renderPostpartum(){
  if(!requirePatient())return;
