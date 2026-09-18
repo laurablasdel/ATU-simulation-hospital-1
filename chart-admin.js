@@ -39,6 +39,50 @@ const changes={
  'chart-256195d201d581aebb87f3902a0c5bc0':{status:'pending',title:'Chest X-ray',content:'![Baby Boy Sung chest radiograph](assets/baby-boy-sung-chest-xray.png)\n\n**Chest X-ray Report**\n\nFracture of the left clavicle noted. Full expansion of both right and left lung noted, no lung involvement.'}
 };
 const added=[
+ {id:'admin-jane-surgery-admit-note',patientId:'jane-fowler',title:'Surgery Admission Note',category:'surgery',status:'released',content:`## Surgery Admission Note
+
+<table>
+<tr><td><b>Date of Admission</b><br>Today</td><td><b>Patient</b><br>Jane Fowler</td><td><b>DOB</b><br>01/28/XXXX</td></tr>
+<tr><td><b>Age / Sex</b><br>79-year-old female</td><td><b>Admitting Physician</b><br>Dr. Smith</td><td><b>Source of History</b><br>Patient and daughter</td></tr>
+</table>
+
+**Chief Complaint:** Pelvic pressure, bloating, and constipation
+
+### History of Present Illness
+
+Jane Fowler has been experiencing pelvic pressure, bloating, and constipation. Her primary provider could palpate her right ovary. An abdominal CT scan showed a tumor with possible invasion of the right ovary. She is admitted for a total abdominal hysterectomy with bilateral salpingo-oophorectomy and surgical staging.
+
+### Medical and Social History
+
+<table>
+<tr><td><b>Past Medical History</b><br>No previous surgeries<br>No significant medical history</td><td><b>Allergies</b><br>NKDA</td><td><b>Social History</b><br>Lives alone<br>No tobacco, alcohol, or drug use</td></tr>
+</table>
+
+### Home Medications
+
+<table>
+<tr><td>Acetaminophen (Tylenol)</td><td>650 mg as needed</td></tr>
+<tr><td>Polyethylene glycol 3350 (MiraLAX)</td><td>Daily</td></tr>
+<tr><td>Docusate sodium (Colace)</td><td>Daily</td></tr>
+<tr><td>Melatonin (Natrol)</td><td>3 mg nightly</td></tr>
+<tr><td>Escitalopram (Lexapro)</td><td>10 mg PO daily</td></tr>
+</table>
+
+### Assessment
+
+Alert and oriented to person, place, time, and situation. Heart rate and rhythm are regular. Lungs are clear to auscultation; oxygen saturation is 97% on room air. Abdomen is slightly distended and tender to light palpation, with rebound tenderness present.
+
+### Plan
+
+<table>
+<tr><td><b>1</b></td><td>Total abdominal hysterectomy with bilateral salpingo-oophorectomy and surgical staging.</td></tr>
+<tr><td><b>2</b></td><td>Cefazolin (Ancef) 2 g IV once on call to the operating room.</td></tr>
+<tr><td><b>3</b></td><td>Lactated Ringer’s solution IV at 125 mL/hr.</td></tr>
+<tr><td><b>4</b></td><td>NPO.</td></tr>
+<tr><td><b>5</b></td><td>Apply sequential compression devices.</td></tr>
+<tr><td><b>6</b></td><td>Insert and maintain indwelling Foley catheter.</td></tr>
+<tr><td><b>7</b></td><td>Admit to the medical-surgical floor for close monitoring.</td></tr>
+</table>`},
  {id:'admin-molly-parainfluenza',patientId:'molly-thomas',title:'Parainfluenza Result',category:'labs',status:'released',content:'**Parainfluenza: Positive**'},
  {id:'admin-molly-admission',patientId:'molly-thomas',title:'Admission Orders',category:'orders',status:'released',content:'Provider: Dr. Henderson\n\n- Admit to pediatric floor.\n- Full Code.\n- Continuous pulse oximetry.\n- Regular diet; NPO if respiratory rate exceeds 60/min.\n- Call MD with assessment findings.\n- Strict intake and output.\n- Daily weight.\n- Sodium chloride 0.9% (Normal Saline) bolus 20 mL/kg IV over 30 minutes.'},
  {id:'admin-jane-ct-results',patientId:'jane-fowler',title:'CT Abdomen and Pelvis',category:'labs',status:'released',content:'![Jane Fowler CT abdomen and pelvis](assets/jane-fowler-ct.png)\n\n**CT Abdomen and Pelvis Result**\n\nLarge right ovarian tumor with possible local invasion. Findings correlate with the patient’s pelvic pressure, bloating, constipation, and palpable right ovary.'},
