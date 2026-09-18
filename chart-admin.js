@@ -180,11 +180,14 @@ function janeMedicationText(value){
   .replace(/\bKetorolac\b(?!\s*\(Toradol\))/gi,'Ketorolac (Toradol)')
   .replace(/\bMorphine sulfate\b(?!\s*\(Duramorph\))/gi,'Morphine sulfate (Duramorph)')
   .replace(/\bMorphine\b(?!\s+sulfate|\s*\(Duramorph\))/gi,'Morphine sulfate (Duramorph)')
-  .replace(/\bTylenol\b(?!\s*\(Acetaminophen\))/gi,'Acetaminophen (Tylenol)')
-  .replace(/\bMiraLAX\b(?!\s*\(Polyethylene glycol 3350\))/gi,'Polyethylene glycol 3350 (MiraLAX)')
-  .replace(/\bColace\b(?!\s*\(Docusate sodium\))/gi,'Docusate sodium (Colace)')
+  .replace(/(?<!Acetaminophen \()\bTylenol\b(?!\s*\(Acetaminophen\))/gi,'Acetaminophen (Tylenol)')
+  .replace(/(?<!Polyethylene glycol 3350 \()\bMiraLAX\b(?!\s*\(Polyethylene glycol 3350\))/gi,'Polyethylene glycol 3350 (MiraLAX)')
+  .replace(/(?<!Docusate sodium \()\bColace\b(?!\s*\(Docusate sodium\))/gi,'Docusate sodium (Colace)')
   .replace(/\bMelatonin\b(?!\s*\(Natrol\))/gi,'Melatonin (Natrol)')
-  .replace(/\bEscitalopram\b(?!\s*\(Lexapro\))/gi,'Escitalopram (Lexapro)');
+  .replace(/\bEscitalopram\b(?!\s*\(Lexapro\))/gi,'Escitalopram (Lexapro)')
+  .replace(/(?:Acetaminophen \(){2,}Tylenol\){2,}/gi,'Acetaminophen (Tylenol)')
+  .replace(/(?:Polyethylene glycol 3350 \(){2,}MiraLAX\){2,}/gi,'Polyethylene glycol 3350 (MiraLAX)')
+  .replace(/(?:Docusate sodium \(){2,}Colace\){2,}/gi,'Docusate sodium (Colace)');
 }
 function normalizeJaneMedicationContent(){
  const retired='admin-jane-respiratory';
