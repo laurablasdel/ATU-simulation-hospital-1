@@ -17,7 +17,7 @@ const changes={
  'chart-1d0195d201d581d49553e7787bbe1924':{title:'Admission Orders',status:'released',content:'## Jane Fowler — Admission Orders\n\n**Provider: Dr. Smith MD**\n\n1. Admit to Surgical Pre-Op for preoperative total abdominal hysterectomy with bilateral salpingo-oophorectomy.\n2. Vital signs every 30 minutes until surgery.\n3. Diet: NPO.\n4. Code status: Full Code.\n5. Obtain sterilization consent, blood-administration consent, and surgical consent for total abdominal hysterectomy with bilateral salpingo-oophorectomy.\n6. Lactated Ringer’s solution (LR) IV at 125 mL/hr.\n7. Obtain CBC, urine hCG, BMP, and blood type.\n8. Insert indwelling Foley catheter.\n9. Apply bilateral sequential compression devices (SCDs).\n10. Cefazolin (Ancef) 2 g in 250 mL IV on call to the operating room; infuse over 1 hour.\n11. Metoclopramide (Reglan) 10 mg IV; available concentration 10 mg/2 mL.\n12. Midazolam (Versed) 1 mg IV on call to the operating room; available concentration 5 mg/mL.\n13. Prepare the abdomen: shave as needed and cleanse with antibacterial wipes.\n14. Complete the surgical checklist and time-out documentation.\n15. Teach postoperative incision splinting and incentive-spirometer use.'},
  'chart-1d0195d201d581cf8a0adf7495447769':{status:'pending',title:'Postoperative Progress Note'},
  'chart-2d6195d201d58023be58fb267a940645':{status:'pending',title:'Postoperative Vital Signs'},
- 'chart-2d6195d201d58030b0ded95695bbcb1e':{status:'pending',title:'Post-Op Orders',content:'## Post-Op Orders\n\n**Provider: Dr. Smith MD**\n\n- Diet: Sips of water; advance to clear liquids as tolerated.\n- Activity: Out of bed tonight.\n- Postoperative vital signs per protocol.\n- Lactated Ringer’s solution (LR) IV at 125 mL/hr.\n- Continue sequential compression devices (SCDs).\n- Maintain indwelling Foley catheter.\n- Intake and output every 4 hours; notify the provider for urine output less than 30 mL/hr.\n- Morphine sulfate (Duramorph) 2 mg IV push PRN pain; may repeat up to 10 mg every 4 hours. Available concentration: 2 mg/1 mL.\n- Ondansetron (Zofran) 4 mg IV push every 4 hours PRN nausea. Available concentration: 4 mg/2 mL.\n- Consult Oncology.\n- Transfer to the surgical floor.'},
+ 'chart-2d6195d201d58030b0ded95695bbcb1e':{status:'pending',title:'Post-Op Orders',content:'## Post-Op Orders\n\n**Provider: Dr. Smith MD**\n\n- Diet: Sips of water; advance to clear liquids as tolerated.\n- Activity: Out of bed tonight.\n- Postoperative vital signs per protocol.\n- Lactated Ringer’s solution (LR) IV at 125 mL/hr.\n- Continue sequential compression devices (SCDs).\n- Maintain indwelling Foley catheter.\n- Intake and output every 4 hours; notify the provider for urine output less than 30 mL/hr.\n- Morphine sulfate (Duramorph) 2 mg IV push PRN pain; may repeat up to 10 mg every 4 hours. Available concentration: 2 mg/1 mL.\n- Ondansetron (Zofran) 4 mg IV push every 4 hours PRN nausea. Available concentration: 4 mg/2 mL.\n- Consult Oncology in AM.\n- Transfer to the surgical floor.'},
  'chart-2d6195d201d58077a080faf182983607':{status:'pending',title:'Postoperative MAR'},
  'chart-amelia-sung-overview':{content:'## Patient Overview\n\n- 36-year-old Filipino female; G2 P1; 39 weeks\n- Weight: 83 kg\n- Allergies: Shellfish and Penicillin\n- Blood type: O positive\n- GBS: Positive\n- Diet-controlled gestational diabetes\n- Admitted in active labor; 4 cm on admission; no epidural\n- AROM 12 hours ago with clear fluid'},
  'chart-256195d201d581218206ef01a346f788':{content:'## Admission CBC\n\n| Test | Result | Reference |\n|---|---:|---:|\n| Hemoglobin | 10.7 | 12.1–15.1 |\n| Hematocrit | 31.2 | 36.1–44.3 |\n| WBC | 12 | 4.5–10 |\n| RBC | 3.24 | 4.2–5.4 |\n| MCV | 96 | 80–99 |\n| MCH | 30 | 27–31 |\n| MCHC | 34.2 | 32–36 |\n| Platelets | 140 | 140–400 |\n\nBlood type: O positive  \nHIV: Negative  \nGBS: Positive'},
@@ -149,13 +149,16 @@ function janeMedicationText(value){
 }
 function normalizeJaneMedicationContent(){
  const retired='admin-jane-respiratory';
+ const isRetiredRespiratoryCard=row=>row?.patientId==='jane-fowler'&&String(row.title||'').trim()==='Respiratory Depression — MD Orders';
  for(let i=CHART_RECORDS.length-1;i>=0;i--)if(CHART_RECORDS[i].id===retired)CHART_RECORDS.splice(i,1);
- state.customChartRecords=(state.customChartRecords||[]).filter(x=>x.id!==retired);
+ for(let i=CHART_RECORDS.length-1;i>=0;i--)if(isRetiredRespiratoryCard(CHART_RECORDS[i]))CHART_RECORDS.splice(i,1);
+ state.customChartRecords=(state.customChartRecords||[]).filter(x=>x.id!==retired&&!isRetiredRespiratoryCard(x));
  delete state.chartContentEdits?.[retired];
- state.releaseQueue=(state.releaseQueue||[]).filter(x=>x.chartRecordId!==retired&&x.id!==`pending-${retired}`);
+ state.releaseQueue=(state.releaseQueue||[]).filter(x=>x.chartRecordId!==retired&&x.id!==`pending-${retired}`&&!isRetiredRespiratoryCard(x)&&!isRetiredRespiratoryCard(x.rowData));
  const update=row=>{
   if(!row||row.patientId&&row.patientId!=='jane-fowler')return;
   for(const key of ['name','medication','text','title','content'])if(typeof row[key]==='string')row[key]=janeMedicationText(row[key]);
+  for(const key of ['content','text'])if(typeof row[key]==='string')row[key]=row[key].replace(/\bConsult Oncology\.(?!\s*in AM)/g,'Consult Oncology in AM.');
   const morphine=/morphine sulfate\s*\(duramorph\)/i.test([row.name,row.medication,row.text,row.title,row.content].filter(Boolean).join(' '));
   if(!morphine)return;
   if(/^2 mg\s*\(10 mg\/mL\)$/i.test(String(row.dose||'')))row.dose='2 mg/1 mL';
@@ -170,9 +173,9 @@ function normalizeJaneMedicationContent(){
  for(const item of (state.releaseQueue||[]).filter(x=>x.patientId==='jane-fowler')){update(item);update(item.rowData);}
  const base=state.simulationBases?.['jane-fowler'];
  if(base){
-  base.chartRecords=(base.chartRecords||[]).filter(x=>x.id!==retired);for(const row of base.chartRecords)update(row);
+  base.chartRecords=(base.chartRecords||[]).filter(x=>x.id!==retired&&!isRetiredRespiratoryCard(x));for(const row of base.chartRecords)update(row);
   for(const key of ['orders','medicationCatalog'])for(const row of base.collections?.[key]||[])update(row);
-  base.releaseQueue=(base.releaseQueue||[]).filter(x=>x.chartRecordId!==retired&&x.id!==`pending-${retired}`);for(const item of base.releaseQueue){update(item);update(item.rowData);}
+  base.releaseQueue=(base.releaseQueue||[]).filter(x=>x.chartRecordId!==retired&&x.id!==`pending-${retired}`&&!isRetiredRespiratoryCard(x)&&!isRetiredRespiratoryCard(x.rowData));for(const item of base.releaseQueue){update(item);update(item.rowData);}
  }
 }
 function migratePacketCharts(){
@@ -253,12 +256,14 @@ const simulationPatientCollections=['orders','labs','notes','vitals','io','asses
 const cloneData=value=>JSON.parse(JSON.stringify(value));
 function captureSimulationBase(patientId){
  const patient=state.patients.find(x=>x.id===patientId);
- return {savedAt:new Date().toISOString(),patient:cloneData(patient),collections:Object.fromEntries(simulationPatientCollections.map(key=>[key,cloneData((state[key]||[]).filter(x=>x.patientId===patientId))])),chartRecords:cloneData(CHART_RECORDS.filter(x=>x.patientId===patientId)),releaseQueue:cloneData((state.releaseQueue||[]).filter(x=>x.patientId===patientId&&x.status==='pending')),scenarioStage:cloneData(state.scenarioStage?.[patientId]||null),marVisibility:state.marVisibility?.[patientId]!==false,marHiddenRecords:cloneData(Object.fromEntries(Object.entries(state.marHiddenRecords||{}).filter(([recordId])=>CHART_RECORDS.some(r=>r.id===recordId&&r.patientId===patientId))))};
+ const base={savedAt:new Date().toISOString(),patient:cloneData(patient),collections:Object.fromEntries(simulationPatientCollections.map(key=>[key,cloneData((state[key]||[]).filter(x=>x.patientId===patientId))])),chartRecords:cloneData(CHART_RECORDS.filter(x=>x.patientId===patientId)),releaseQueue:cloneData((state.releaseQueue||[]).filter(x=>x.patientId===patientId&&x.status==='pending')),scenarioStage:cloneData(state.scenarioStage?.[patientId]||null),marVisibility:state.marVisibility?.[patientId]!==false,marHiddenRecords:cloneData(Object.fromEntries(Object.entries(state.marHiddenRecords||{}).filter(([recordId])=>CHART_RECORDS.some(r=>r.id===recordId&&r.patientId===patientId))))};
+ base.collections.mar=[];base.collections.bloodAdministration=[];
+ return base;
 }
 function restoreSimulationBase(patientId){
  const base=state.simulationBases?.[patientId];if(!base)return false;
  const patientIndex=state.patients.findIndex(x=>x.id===patientId);state.patients[patientIndex]=cloneData(base.patient);
- for(const key of simulationPatientCollections){const others=(state[key]||[]).filter(x=>x.patientId!==patientId),starting=cloneData(base.collections[key]||[]),janeAdmissionOrders=patientId==='jane-fowler'&&key==='orders'?starting.filter(x=>String(x.id||'').startsWith('jane-preop-')):[];state[key]=others.concat(key==='orders'?janeAdmissionOrders:key==='labs'?[]:starting);}
+ for(const key of simulationPatientCollections){const others=(state[key]||[]).filter(x=>x.patientId!==patientId);let starting=cloneData(base.collections[key]||[]);if(key==='mar'||key==='bloodAdministration')starting=[];const janeAdmissionOrders=patientId==='jane-fowler'&&key==='orders'?starting.filter(x=>String(x.id||'').startsWith('jane-preop-')):[];state[key]=others.concat(key==='orders'?janeAdmissionOrders:key==='labs'?[]:starting);}
  for(let i=CHART_RECORDS.length-1;i>=0;i--)if(CHART_RECORDS[i].patientId===patientId)CHART_RECORDS.splice(i,1);CHART_RECORDS.push(...cloneData(base.chartRecords));
  state.chartContentEdits ||= {};for(const id of Object.keys(state.chartContentEdits))if(!CHART_RECORDS.some(r=>r.id===id))delete state.chartContentEdits[id];
  state.customChartRecords=(state.customChartRecords||[]).filter(x=>x.patientId!==patientId).concat(cloneData(base.chartRecords.filter(x=>(state.customChartRecords||[]).some(c=>c.id===x.id))));

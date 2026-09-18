@@ -152,6 +152,36 @@ function renderGuidedBlood(){
  if([el('gbPatientMethod').value,el('gbUnitMethod').value].some(v=>v.startsWith('Manual'))&&!el('gbReason').value.trim())return fail('Enter the manual override reason.');
  state.bloodAdministration||=[];const existing=state.bloodAdministration.find(r=>r.bloodUnitId===u.id&&!r.endTime),record={id:existing?.id||uid('blood'),patientId:p.id,product:u.product,unit:u.unitNumber,bloodUnitId:u.id,barcode:u.barcode,patientVerification:pv,bloodType:u.unitType,expiry:u.expiration,startTime:el('gbStart').value,endTime:el('gbEnd').value,volume:el('gbVolume').value,student,verifiedBy:verifier,reaction:el('gbReaction').value,baselineVitals:el('gbBaseline').value,fifteenMinuteVitals:el('gb15').value,completionVitals:el('gbFinal').value,response:el('gbNotes').value,checklist:bloodChecks.slice(),patientScanMethod:el('gbPatientMethod').value,bloodScanMethod:el('gbUnitMethod').value,overrideReason:el('gbReason').value};if(existing)Object.assign(existing,record);else state.bloodAdministration.push(record);u.status=el('gbEnd').value?'Transfused':'Started';clearCurrentViewDraft();audit('Blood administered',p.id,`Unit ${u.unitNumber}, verified by ${verifier}`);renderBloodAdministration();};setupDraft();
 }
+// Blood documentation follows the same direct-entry approach as the MAR.
+// Students enter the verified unit number and verification time; no scanning
+// is required to complete a simulated blood-administration record.
+function renderSimpleBlood(){
+ ensureMedicationData();if(!requirePatient())return;
+ const p=activePatient();
+ if(!['fatima-sanogo','stephanie-smith'].includes(p.id)){document.getElementById('view').innerHTML=panel('Blood Administration','No blood administration record is assigned to this patient.');return;}
+ const units=(state.bloodUnits||[]).filter(unit=>unit.patientId===p.id&&unit.status!=='Transfused');
+ const rows=(state.bloodAdministration||[]).filter(row=>row.patientId===p.id).slice().reverse();
+ document.getElementById('view').innerHTML=panel('Blood Verification and Administration',`
+  <div class="note">Enter the blood-product unit number and the date and time verification was completed. Electronic verification is not required.</div>
+  <div class="grid3"><label>Blood Product<select id="sbProduct"><option value="">Select product</option>${units.map(unit=>`<option value="${esc(unit.id)}">${esc(unit.product)}${unit.unitType?` (${esc(unit.unitType)})`:''}</option>`).join('')}<option value="manual">Other / manually entered product</option></select></label><label>Unit Number<input id="sbUnit" placeholder="Enter blood-product unit number"></label><label>Verification Date / Time<input id="sbVerifiedAt" type="datetime-local" value="${nowLocal()}"></label><label>Administering Student / Initials<input id="sbStudent"></label><label>Independent Verifier<input id="sbVerifier"></label><label>Start Time<input id="sbStart" type="datetime-local" value="${nowLocal()}"></label><label>Completion Time<input id="sbEnd" type="datetime-local"></label><label>Volume (mL)<input id="sbVolume" type="number" min="0"></label><label>Reaction<select id="sbReaction"><option>None</option><option>Suspected reaction — stopped</option><option>Confirmed reaction — stopped</option></select></label><label>Baseline Vital Signs<input id="sbBaseline" placeholder="T / HR / RR / BP / SpO₂"></label><label>15-minute Vital Signs<input id="sb15" placeholder="T / HR / RR / BP / SpO₂"></label><label>Completion Vital Signs<input id="sbFinal" placeholder="T / HR / RR / BP / SpO₂"></label><label class="wide">Notes<textarea id="sbNotes"></textarea></label></div>
+  <fieldset><legend>Blood Administration Checklist</legend>${bloodChecks.map((text,index)=>`<label style="display:block"><input id="sbCheck${index}" type="checkbox" style="width:auto"> ${text}</label>`).join('')}</fieldset>
+  <div class="actions"><button id="sbSave" data-complete class="primary">Complete and Save Blood Record</button></div><p id="sbResult" role="status"></p>
+ `)+panel('Blood Administration Record',`<table><thead><tr><th>Verification Date / Time</th><th>Product / Unit Number</th><th>Start / End</th><th>Volume</th><th>Student / Verifier</th></tr></thead><tbody>${rows.map(row=>`<tr><td>${esc(row.verifiedAt||'')}</td><td>${esc(row.product)}<br>${esc(row.unit)}</td><td>${esc(row.startTime)} / ${esc(row.endTime||'In progress')}</td><td>${esc(row.volume||'')}</td><td>${esc(row.student)} / ${esc(row.verifiedBy)}</td></tr>`).join('')||'<tr><td colspan="5">No blood products documented.</td></tr>'}</tbody></table>`);
+ const el=id=>document.getElementById(id);
+ el('sbProduct').onchange=()=>{const selected=units.find(unit=>unit.id===el('sbProduct').value);if(selected){el('sbUnit').value=selected.unitNumber||'';}};
+ el('sbSave').onclick=()=>{
+  const selected=units.find(unit=>unit.id===el('sbProduct').value),unit=el('sbUnit').value.trim(),verifiedAt=el('sbVerifiedAt').value,student=el('sbStudent').value.trim(),verifier=el('sbVerifier').value.trim();
+  const fail=text=>{el('sbResult').textContent=text;};
+  if(!unit||!verifiedAt||!student||!verifier)return fail('Enter the unit number, verification date and time, administering student, and independent verifier.');
+  if(student.toLowerCase()===verifier.toLowerCase())return fail('A different independent verifier is required.');
+  if(!el('sbStart').value||!el('sbBaseline').value.trim()||!bloodChecks.every((_,index)=>el(`sbCheck${index}`).checked))return fail('Complete the checklist, start time, and baseline vital signs.');
+  if(el('sbEnd').value&&el('sbEnd').value<el('sbStart').value)return fail('Completion time cannot be before start time.');
+  const product=selected?.product||(el('sbProduct').value==='manual'?'Blood product':el('sbProduct').value||'Blood product');
+  const record={id:uid('blood'),patientId:p.id,product,unit,bloodUnitId:selected?.id||'',barcode:selected?.barcode||'',bloodType:selected?.unitType||'',expiry:selected?.expiration||'',verifiedAt,startTime:el('sbStart').value,endTime:el('sbEnd').value,volume:el('sbVolume').value,student,verifiedBy:verifier,reaction:el('sbReaction').value,baselineVitals:el('sbBaseline').value.trim(),fifteenMinuteVitals:el('sb15').value.trim(),completionVitals:el('sbFinal').value.trim(),response:el('sbNotes').value.trim(),checklist:bloodChecks.slice()};
+  state.bloodAdministration||=[];state.bloodAdministration.push(record);if(selected)selected.status=el('sbEnd').value?'Transfused':'Started';clearCurrentViewDraft();audit('Blood administration',p.id,`${product}, unit ${unit}, verified ${verifiedAt}`);liveSave('blood_administration_documented',{patientId:p.id,bloodUnitId:selected?.id||''});renderBloodAdministration();
+ };
+ setupDraft();
+}
 function facultyLayout(){
  const root=document.getElementById('view');if(!isFaculty()||!activePatient())return;
  document.getElementById('saveSimulationBase')?.remove();document.getElementById('resetPatient')?.remove();
@@ -191,7 +221,7 @@ window.initializeSimulationWorkflows=function(){
  const originalChartDoc=renderChartDoc;renderChartDoc=function(content){return originalChartDoc(currentChartDates(content));};
  const cards=chartRecordCards;chartRecordCards=function(records){return cards(records.map(r=>({...r,content:currentChartDates(r.content)})));};
  const faculty=renderFaculty;renderFaculty=function(){faculty();facultyLayout();};
- renderMAR=renderSimpleMAR;renderBloodAdministration=renderGuidedBlood;
+ renderMAR=renderSimpleMAR;renderBloodAdministration=renderSimpleBlood;
  // Completion labels and draft restoration apply to direct form redraws as well as navigation.
  for(const name of ['renderFlowsheets','renderIO','renderNotes','renderEducation','renderAssessments','renderPEWS','renderLabor','renderPostpartum','renderSurgery']){
   if(typeof window[name]!=='function')continue;const fn=window[name];window[name]=function(...args){fn(...args);setupDraft();};
