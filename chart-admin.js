@@ -8,7 +8,8 @@ const removeIds=new Set([
  'chart-318195d201d5805e84bdc3cf5591db4','chart-318195d201d5805e84bdc3cf5591db4e','chart-25d195d201d58111ba41db57ea4e0b76',
  'chart-form-baby-boy-sung','chart-document-newborn-glucose-protocol.pdf','chart-256195d201d581a1b665e359a34c9c03',
  'chart-2d6195d201d58013a186edd649f28647','chart-form-jane-fowler','chart-2d6195d201d580a19062cdbe1706684f','chart-1d0195d201d581b98e64df9f11bd51d4'
- ,'chart-283195d201d5808bbeb5e24d75f4d33f','chart-284195d201d581908c27c50dbf996e0f','chart-284195d201d5810a91e5ff040ed8a383','chart-28b195d201d5805ca4d1c8978c9278be','packet-amelia-hydromorphone'
+ ,'chart-283195d201d5808bbeb5e24d75f4d33f','chart-284195d201d581908c27c50dbf996e0f','chart-284195d201d5810a91e5ff040ed8a383','chart-28b195d201d5805ca4d1c8978c9278be','packet-amelia-hydromorphone',
+ 'chart-2d6195d201d58023be58fb267a940645'
 ]);
 const changes={
  'chart-2fd195d201d58013ab8bffdf475123e4':{title:'History and Physical',status:'released',content:'## History and Physical\n\n**Date of Admission:** Today  \n**Patient Name:** Jane Fowler  \n**Chief Complaint:** Pelvic pressure, bloating, and constipation  \n**DOB:** 01/28/XXXX  \n**Admitting Physician:** Dr. Smith  \n**Age/Sex:** 79-year-old female  \n**Source of History:** Patient and daughter\n\n### History of Present Illness\n\nJane Fowler has been experiencing pelvic pressure, bloating, and constipation. Her primary provider could palpate her right ovary. An abdominal CT scan showed a tumor with possible invasion of the right ovary. She is admitted for a total abdominal hysterectomy with bilateral salpingo-oophorectomy and surgical staging today.\n\n### Past Medical History\n\n- No history of surgeries\n- No significant medical history\n\n### Allergies\n\n- NKDA\n\n### Social History\n\n- Lives alone\n- No tobacco, alcohol, or drug use\n\n### Home Medications\n\n- Acetaminophen (Tylenol) 650 mg as needed\n- Polyethylene glycol 3350 (MiraLAX) daily\n- Docusate sodium (Colace) daily\n- Melatonin (Natrol) 3 mg every night\n- Escitalopram (Lexapro) 10 mg PO daily\n\n### Assessment\n\nShe is alert and oriented to time, person, place, and situation. Heart rate and rhythm are regular. Lungs are clear to auscultation; oxygen saturation is 97% on room air. The abdomen is slightly distended and tender to light palpation, with rebound tenderness present.\n\n### Plan\n\n1. Total abdominal hysterectomy with bilateral salpingo-oophorectomy and surgical staging.\n   - Cefazolin (Ancef) 2 g IV once on call to the operating room.\n2. Hydration and preoperative care.\n   - Lactated Ringer’s solution (LR) IV at 125 mL/hr.\n   - NPO.\n   - Sequential compression devices.\n   - Indwelling Foley catheter.\n3. Disposition.\n   - Admit to the medical-surgical floor for close monitoring.'},
@@ -35,54 +36,10 @@ const changes={
  'chart-293195d201d58002af36d9c313178804':{status:'pending',title:'Shift 4 Follow-up Labs'},
  'chart-1d0195d201d5812d9d21cf4f7bac2e52':{title:'Admission Labs'},
  'chart-1d0195d201d581b98e64df9f11bd51d4':{content:'## Surgery Admission Note\n\n**Date of Admission:** Today\n\n**Patient Name:** Jane Fowler  \n**Chief Complaint:** Pelvic pressure, bloating, and constipation  \n**DOB:** 01/28/XXXX  \n**Admitting Physician:** Dr. Smith  \n**Age/Sex:** 79-year-old female  \n**Source of History:** Patient and daughter\n\n### History of Present Illness\n\nJane Fowler has been experiencing pelvic pressure, bloating, and constipation. Her primary provider could palpate her right ovary. An abdominal CT scan showed a tumor with possible invasion of the right ovary. She is here for a total abdominal hysterectomy with bilateral salpingo-oophorectomy and surgical staging.\n\n### Past Medical History\n\n- No history of surgeries\n- No significant medical history\n\n### Allergies\n\n- NKDA\n\n### Social History\n\n- Lives alone\n- No tobacco, alcohol, or drug use\n\n### Home Medications\n\n- Acetaminophen (Tylenol) 650 mg as needed\n- Polyethylene glycol 3350 (MiraLAX) daily\n- Docusate sodium (Colace) daily\n- Melatonin (Natrol) 3 mg every night\n- Escitalopram (Lexapro) 10 mg PO daily\n\n### Assessment\n\nShe is alert and oriented to time, person, place, and situation. Heart rate and rhythm are regular. Lungs are clear to auscultation; oxygen saturation is 97% on room air. The abdomen is slightly distended and tender to light palpation, with rebound tenderness present.\n\n### Plan\n\n1. Total abdominal hysterectomy with bilateral salpingo-oophorectomy and surgical staging.\n2. Cefazolin (Ancef) 2 grams IV once on call to the operating room.\n3. Lactated Ringer\'s solution at 125 mL/hr.\n4. NPO.\n5. Sequential compression devices.\n6. Indwelling Foley catheter.\n7. Admit to the medical-surgical floor for close monitoring.'},
- 'chart-286195d201d580489c7bc8e0770135bf':{status:'pending',title:'MD Orders',content:'**Provider Orders — Pending**\n\n- Racepinephrine 2.25% inhalation solution, 0.5 mL mixed with 3 mL of 0.9% Normal Saline, to be given by respiratory therapy. Call respiratory when needed.\n- Dexamethasone 0.6 mg/kg IV now.'},
+ 'chart-286195d201d580489c7bc8e0770135bf':{status:'pending',title:'MD Orders',content:'**Provider Orders — Pending**\n\n- Racepinephrine (Asthmanefrin) 2.25% inhalation solution, 0.5 mL mixed with 3 mL of sodium chloride 0.9% (Normal Saline), to be given by respiratory therapy. Call respiratory when needed.\n- Dexamethasone (Decadron) 0.6 mg/kg IV now.'},
  'chart-256195d201d581aebb87f3902a0c5bc0':{status:'pending',title:'Chest X-ray',content:'![Baby Boy Sung chest radiograph](assets/baby-boy-sung-chest-xray.png)\n\n**Chest X-ray Report**\n\nFracture of the left clavicle noted. Full expansion of both right and left lung noted, no lung involvement.'}
 };
 const added=[
- {id:'admin-jane-surgery-admit-note',patientId:'jane-fowler',title:'Surgery Admission Note',category:'surgery',status:'released',content:`## Surgery Admission Note
-
-<table>
-<tr><td><b>Date of Admission</b><br>Today</td><td><b>Patient</b><br>Jane Fowler</td><td><b>DOB</b><br>01/28/XXXX</td></tr>
-<tr><td><b>Age / Sex</b><br>79-year-old female</td><td><b>Admitting Physician</b><br>Dr. Smith</td><td><b>Source of History</b><br>Patient and daughter</td></tr>
-</table>
-
-**Chief Complaint:** Pelvic pressure, bloating, and constipation
-
-### History of Present Illness
-
-Jane Fowler has been experiencing pelvic pressure, bloating, and constipation. Her primary provider could palpate her right ovary. An abdominal CT scan showed a tumor with possible invasion of the right ovary. She is admitted for a total abdominal hysterectomy with bilateral salpingo-oophorectomy and surgical staging.
-
-### Medical and Social History
-
-<table>
-<tr><td><b>Past Medical History</b><br>No previous surgeries<br>No significant medical history</td><td><b>Allergies</b><br>NKDA</td><td><b>Social History</b><br>Lives alone<br>No tobacco, alcohol, or drug use</td></tr>
-</table>
-
-### Home Medications
-
-<table>
-<tr><td>Acetaminophen (Tylenol)</td><td>650 mg as needed</td></tr>
-<tr><td>Polyethylene glycol 3350 (MiraLAX)</td><td>Daily</td></tr>
-<tr><td>Docusate sodium (Colace)</td><td>Daily</td></tr>
-<tr><td>Melatonin (Natrol)</td><td>3 mg nightly</td></tr>
-<tr><td>Escitalopram (Lexapro)</td><td>10 mg PO daily</td></tr>
-</table>
-
-### Assessment
-
-Alert and oriented to person, place, time, and situation. Heart rate and rhythm are regular. Lungs are clear to auscultation; oxygen saturation is 97% on room air. Abdomen is slightly distended and tender to light palpation, with rebound tenderness present.
-
-### Plan
-
-<table>
-<tr><td><b>1</b></td><td>Total abdominal hysterectomy with bilateral salpingo-oophorectomy and surgical staging.</td></tr>
-<tr><td><b>2</b></td><td>Cefazolin (Ancef) 2 g IV once on call to the operating room.</td></tr>
-<tr><td><b>3</b></td><td>Lactated Ringer’s solution IV at 125 mL/hr.</td></tr>
-<tr><td><b>4</b></td><td>NPO.</td></tr>
-<tr><td><b>5</b></td><td>Apply sequential compression devices.</td></tr>
-<tr><td><b>6</b></td><td>Insert and maintain indwelling Foley catheter.</td></tr>
-<tr><td><b>7</b></td><td>Admit to the medical-surgical floor for close monitoring.</td></tr>
-</table>`},
  {id:'admin-molly-parainfluenza',patientId:'molly-thomas',title:'Parainfluenza Result',category:'labs',status:'released',content:'**Parainfluenza: Positive**'},
  {id:'admin-molly-admission',patientId:'molly-thomas',title:'Admission Orders',category:'orders',status:'released',content:'Provider: Dr. Henderson\n\n- Admit to pediatric floor.\n- Full Code.\n- Continuous pulse oximetry.\n- Regular diet; NPO if respiratory rate exceeds 60/min.\n- Call MD with assessment findings.\n- Strict intake and output.\n- Daily weight.\n- Sodium chloride 0.9% (Normal Saline) bolus 20 mL/kg IV over 30 minutes.'},
  {id:'admin-jane-ct-results',patientId:'jane-fowler',title:'CT Abdomen and Pelvis',category:'labs',status:'released',content:'![Jane Fowler CT abdomen and pelvis](assets/jane-fowler-ct.png)\n\n**CT Abdomen and Pelvis Result**\n\nLarge right ovarian tumor with possible local invasion. Findings correlate with the patient’s pelvic pressure, bloating, constipation, and palpable right ovary.'},
@@ -92,7 +49,7 @@ Alert and oriented to person, place, time, and situation. Heart rate and rhythm 
  {id:'admin-jane-respiratory-ketorolac',patientId:'jane-fowler',title:'Ketorolac (Toradol) 30 mg IV push',category:'orders',status:'pending',content:'Provider: Dr. Smith MD\n\nKetorolac (Toradol) 30 mg IV push once now. Available concentration: 30 mg/mL.'},
  {id:'admin-jane-faculty-guide',patientId:'jane-fowler',title:'Jane Fowler Faculty Simulation Guide',category:'faculty',status:'released',content:'Shift 1\n\nSituation\nJane Fowler has experienced pelvic pressure, bloating, and constipation. Her primary provider palpated her right ovary. CT showed a right ovarian tumor with possible invasion. She is scheduled for a total abdominal hysterectomy with bilateral salpingo-oophorectomy and surgical staging.\n\nStarting findings\nT 98.9 F; HR 89; RR 20; BP 124/76; SpO2 97%. Alert and oriented x4; moves all extremities on command; denies pain; normoactive bowel sounds; clear breath sounds.\n\nStudent expectations\nIntroduce self; perform hand hygiene; review orders; verify two identifiers; complete initial assessment and vital signs; explain the plan of care; begin IV fluids; verify consents and complete the pre-op checklist; insert the urinary catheter; teach incentive spirometry, leg exercises, splinting, coughing, and deep breathing; administer the ordered antibiotic using medication rights.\n\nShift 2\n\nSituation\nPostoperative total abdominal hysterectomy with bilateral salpingo-oophorectomy under general anesthesia. The patient tolerated surgery without complications. Abdominal incision is covered with a 4 x 4 gauze dressing with no drainage. Lactated Ringer\'s solution is infusing at 125 mL/hr after 2 L received during surgery. Estimated blood loss was 400 mL. She was extubated in the operating room and is breathing spontaneously. Foley catheter is present with 200 mL urine output.\n\nStarting findings\nT 97.9 F; HR 98; RR 17; BP 143/86; SpO2 93%. Pale; responds to name; moves extremities on command; moaning; hypoactive bowel sounds; clear breath sounds.\n\nStudent expectations\nIntroduce self; perform hand hygiene; review orders; verify two identifiers; complete the initial assessment and apply cardiopulmonary monitoring; recognize the low SpO2 and apply oxygen; assess pain; explain the plan of care. When the patient reports pain 6/10, administer the released analgesic using medication rights. If the patient becomes unresponsive with RR 6 and SpO2 85%, recognize respiratory depression, begin bag-mask ventilation, notify anesthesia, administer released rescue medications, reassess, and monitor stability.'},
  {id:'admin-baby-cxr-order',patientId:'baby-boy-sung',title:'Chest X-ray Order',category:'orders',status:'pending',content:'Chest X-ray. Provider: Dr. Craig.'},
- {id:'admin-sanogo-pph-meds',patientId:'fatima-sanogo',title:'Postpartum Hemorrhage Medication Orders',category:'orders',status:'pending',content:'If hemorrhage is suspected, call MD with assessment findings and bleeding amounts for specific medication orders. Expected orders from Dr. Darnell:\n\n1. Methylergonovine (Methergine) 0.2 mg IM every 2–4 hours as needed.\n2. Carboprost (Hemabate) 250 mcg IM every 15–90 minutes as needed; maximum approximately 2 mg total. Specific provider order required before administration.\n3. Misoprostol 600–1000 mcg PR / SL / PO as needed per protocol. Specific provider order required before administration.\n4. Tranexamic Acid (TXA) 1 g IV over 10 minutes once postpartum hemorrhage is diagnosed. May repeat 1 g after 30 minutes–24 hours if bleeding persists, per protocol. Specific provider order required before administration.'},
+ {id:'admin-sanogo-pph-meds',patientId:'fatima-sanogo',title:'Postpartum Hemorrhage Medication Orders',category:'orders',status:'pending',content:'If hemorrhage is suspected, call MD with assessment findings and bleeding amounts for specific medication orders. Expected orders from Dr. Darnell:\n\n1. Methylergonovine (Methergine) 0.2 mg IM every 2–4 hours as needed. Do not administer with elevated blood pressure.\n2. Carboprost tromethamine (Hemabate) 250 mcg IM every 15–90 minutes as needed; maximum approximately 2 mg total. Specific provider order required before administration.\n3. Misoprostol (Cytotec) 800 mcg rectally; 600–1000 mcg PR / SL / PO as needed per protocol. Specific provider order required before administration.\n4. Tranexamic acid (Cyklokapron; TXA) 1 g IV over 10 minutes once postpartum hemorrhage is diagnosed. May repeat 1 g after 30 minutes–24 hours if bleeding persists, per protocol. Specific provider order required before administration.'},
  {id:'admin-sanogo-followup',patientId:'fatima-sanogo',title:'Postpartum Hemorrhage Follow-up Orders',category:'orders',status:'pending',content:'Provider: Dr. Darnell/KR\n\n- CBC in 6 hours\n- Foley catheter\n- Fundus checks every 15 minutes'},
  {id:'admin-stephanie-chest-xray',patientId:'stephanie-smith',title:'Chest X-Ray',category:'orders',status:'pending',content:'Provider: Henderson\n\nChest X-Ray.'},
  {id:'admin-stephanie-prbc-2units',patientId:'stephanie-smith',title:'Infuse 2 Units PRBC',category:'orders',status:'pending',content:'Provider: Henderson\n\nInfuse 2 units packed red blood cells (PRBCs). Complete blood-product verification and transfusion monitoring per protocol.'},
@@ -168,6 +125,9 @@ function compactRenderedView(){
 }
 function janeMedicationText(value){
  return String(value??'')
+  .replace(/Acetaminophen\s*\((?:Acetaminophen\s*\()+Tylenol\)+/gi,'Acetaminophen (Tylenol)')
+  .replace(/Polyethylene glycol 3350\s*\((?:Polyethylene glycol 3350\s*\()+MiraLAX\)+/gi,'Polyethylene glycol 3350 (MiraLAX)')
+  .replace(/Docusate sodium\s*\((?:Docusate sodium\s*\()+Colace\)+/gi,'Docusate sodium (Colace)')
   .replace(/Ancef\s*\(Cefazolin\)/gi,'Cefazolin (Ancef)')
   .replace(/Reglan\s*\(Metoclopramide\)/gi,'Metoclopramide (Reglan)')
   .replace(/Versed\s*\(Midazolam\)/gi,'Midazolam (Versed)')
@@ -180,14 +140,11 @@ function janeMedicationText(value){
   .replace(/\bKetorolac\b(?!\s*\(Toradol\))/gi,'Ketorolac (Toradol)')
   .replace(/\bMorphine sulfate\b(?!\s*\(Duramorph\))/gi,'Morphine sulfate (Duramorph)')
   .replace(/\bMorphine\b(?!\s+sulfate|\s*\(Duramorph\))/gi,'Morphine sulfate (Duramorph)')
-  .replace(/(?<!Acetaminophen \()\bTylenol\b(?!\s*\(Acetaminophen\))/gi,'Acetaminophen (Tylenol)')
-  .replace(/(?<!Polyethylene glycol 3350 \()\bMiraLAX\b(?!\s*\(Polyethylene glycol 3350\))/gi,'Polyethylene glycol 3350 (MiraLAX)')
-  .replace(/(?<!Docusate sodium \()\bColace\b(?!\s*\(Docusate sodium\))/gi,'Docusate sodium (Colace)')
+  .replace(/(^|[^\w(])Tylenol\b/gi,'$1Acetaminophen (Tylenol)')
+  .replace(/(^|[^\w(])MiraLAX\b/gi,'$1Polyethylene glycol 3350 (MiraLAX)')
+  .replace(/(^|[^\w(])Colace\b/gi,'$1Docusate sodium (Colace)')
   .replace(/\bMelatonin\b(?!\s*\(Natrol\))/gi,'Melatonin (Natrol)')
-  .replace(/\bEscitalopram\b(?!\s*\(Lexapro\))/gi,'Escitalopram (Lexapro)')
-  .replace(/(?:Acetaminophen \(){2,}Tylenol\){2,}/gi,'Acetaminophen (Tylenol)')
-  .replace(/(?:Polyethylene glycol 3350 \(){2,}MiraLAX\){2,}/gi,'Polyethylene glycol 3350 (MiraLAX)')
-  .replace(/(?:Docusate sodium \(){2,}Colace\){2,}/gi,'Docusate sodium (Colace)');
+  .replace(/\bEscitalopram\b(?!\s*\(Lexapro\))/gi,'Escitalopram (Lexapro)');
 }
 function normalizeJaneMedicationContent(){
  const retired='admin-jane-respiratory';
@@ -398,6 +355,7 @@ window.initializeAdminEnhancements=function(){
  removeSmithIcePackOrders();
  updateSmithTylenolDose();
  normalizeJaneMedicationContent();
+ migratePacketCharts();
  const baseRelease=releaseItem;releaseItem=function(id){const item=(state.releaseQueue||[]).find(x=>x.id===id),record=item?.chartRecordId&&CHART_RECORDS.find(r=>r.id===item.chartRecordId);if(record)item.kind=record.category==='orders'?'order':record.category==='mar'?'mar':'result';baseRelease(id);if(item&&item.status==='released'){if(item.kind==='chartdata'&&item.targetCollection&&item.rowData){const existing=state[item.targetCollection].find(x=>x.id===item.rowData.id);if(!existing)state[item.targetCollection].push(item.rowData);if(item.targetCollection==='medicationCatalog')Object.assign(existing||item.rowData,{releaseStatus:'released',status:(existing||item.rowData).status==='Pending'?'Due':(existing||item.rowData).status});}const n=(state.notifications||[]).find(x=>x.releaseItemId===item.id);if(n&&record?.category==='mar'){n.title='New MAR Sheet';n.type='mar';}sendReleaseMessage(item);liveSave('released_to_chart',{patientId:item.patientId,itemId:item.id,target:item.targetCollection||record?.category});}};
  const baseChartRecords=chartRecords;chartRecords=function(patientId,categories){return baseChartRecords(patientId,categories).filter(r=>isFaculty()||!state.marHiddenRecords[r.id]);};
  const baseNativeInput=nativeInput;nativeInput=function(label,type='text',options=null){
