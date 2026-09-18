@@ -56,8 +56,7 @@ const scanCode=value=>String(value||'').trim().replace(/\s+/g,'').replace(/^\*|\
 const scanMatches=(value,...expected)=>expected.flat().filter(Boolean).some(code=>scanCode(value)===scanCode(code));
 const chartMedicationLinks={
  'chart-286195d201d580489c7bc8e0770135bf':['Racepinephrine 2.25%','Dexamethasone'],
- 'admin-jane-postop-morphine':['Morphine sulfate (Duramorph)'],
- 'admin-jane-postop-ondansetron':['Ondansetron (Zofran)'],
+ 'chart-2d6195d201d58030b0ded95695bbcb1e':['Morphine sulfate (Duramorph)','Ondansetron (Zofran)'],
  'admin-jane-respiratory-naloxone':['Naloxone (Narcan)'],
  'admin-jane-respiratory-ketorolac':['Ketorolac (Toradol)'],
  'admin-sanogo-pph-meds':['Methylergonovine (Methergine)','Carboprost (Hemabate)','Misoprostol','Tranexamic acid (TXA)'],
