@@ -121,13 +121,14 @@ function renderGuidedBlood(){
 function facultyLayout(){
  const root=document.getElementById('view');if(!isFaculty()||!activePatient())return;
  document.getElementById('saveSimulationBase')?.remove();document.getElementById('resetPatient')?.remove();
- root.insertAdjacentHTML('afterbegin',panel('Base Patient Controls',`<div class="actions"><button id="simResetBase" class="danger">Reset to Base Patient</button><button id="simUpdateBase" class="primary">Update Base Patient</button></div><p class="note">Reset restores the saved starting chart, or the built-in starting chart if no base has been saved. Updating the base keeps faculty content and excludes student documentation.</p>`));
+ root.insertAdjacentHTML('afterbegin',panel('Simulation Controls',`<div class="actions"><button id="simResetBase" class="danger">Reset Patient for New Simulation</button><button id="simUpdateBase" class="primary">Update Base Patient</button></div><p class="note">Reset restores the saved starting chart, or the built-in starting chart if no base has been saved. Updating the base keeps faculty content and excludes student documentation.</p>`));
  document.getElementById('simResetBase').onclick=()=>{if(confirm('Return this patient to the simulation starting chart and clear student documentation?')){resetToBase(activePatientId);dirty=false;renderFaculty();}};
  document.getElementById('simUpdateBase').onclick=()=>{if(confirm('Update this patient’s starting chart with the current faculty content? Student documentation will not be included.')){updateBase(activePatientId);dirty=false;renderFaculty();}};
  const panels=[...root.querySelectorAll(':scope > .panel')],messaging=panels.find(p=>p.querySelector('h2')?.textContent.includes('Message'));
  if(messaging)root.children[0].after(messaging);
- const pending=panels.find(p=>p.querySelector('h2')?.textContent==='Edit Pending Releases');
- if(pending)(messaging||root.children[0]).after(pending);
+ const pendingPanels=panels.filter(p=>/^(Chart Updates|Other Pending Releases|Edit Pending Releases)/.test(p.querySelector('h2')?.textContent||''));
+ let pendingAnchor=messaging||root.children[0];
+ for(const pending of pendingPanels){pendingAnchor.after(pending);pendingAnchor=pending;}
  // Pending structured data use the same labeled fields as completed chart data.
  for(const card of root.querySelectorAll('[data-edit-pending]')){
   const item=state.releaseQueue.find(x=>x.id===card.dataset.editPending);
