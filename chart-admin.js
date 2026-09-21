@@ -40,6 +40,117 @@ const changes={
  'chart-286195d201d580489c7bc8e0770135bf':{status:'pending',title:'MD Orders',content:'**Provider Orders — Pending**\n\n- Racepinephrine (Asthmanefrin) 2.25% inhalation solution, 0.5 mL mixed with 3 mL of sodium chloride 0.9% (Normal Saline), to be given by respiratory therapy. Call respiratory when needed.\n- Dexamethasone (Decadron) 0.6 mg/kg IV now.'},
  'chart-256195d201d581aebb87f3902a0c5bc0':{status:'pending',title:'Chest X-ray',content:'![Baby Boy Sung chest radiograph](assets/baby-boy-sung-chest-xray.png)\n\n**Chest X-ray Report**\n\nFracture of the left clavicle noted. Full expansion of both right and left lung noted, no lung involvement.'}
 };
+const newbornGlucosePolicyContent=`## Newborn Glucose Management Policy
+
+**Patient:** Baby Boy Sung
+**Policy area:** Newborn care
+**Purpose:** Provide a consistent process for prevention, screening, treatment, monitoring, and documentation of neonatal hypoglycemia.
+
+---
+
+### Policy
+
+Follow this policy for newborns at risk for unstable blood glucose and for any newborn with signs or symptoms of hypoglycemia. For simulation use, follow the provider's orders and notify the provider for any concerning result or change in condition.
+
+### Definitions
+
+| Term | Definition |
+|---|---|
+| **Hypoglycemia** | Less than **45 mg/dL** in a symptomatic newborn or less than **40 mg/dL** in an asymptomatic newborn. |
+| **LGA** | Large for gestational age: 4,000 g or at or above the 90th percentile. |
+| **AGA** | Appropriate for gestational age: 2,500-4,000 g. |
+| **SGA** | Small for gestational age: below 2,500 g or at or below the 10th percentile. |
+| **Macrosomia** | Birth weight greater than 4,500 g. |
+| **IUGR / FGR** | Intrauterine or fetal growth restriction. |
+
+### Prevention of hypoglycemia
+
+1. Promote skin-to-skin care after delivery and cover the parent-newborn dyad to conserve heat.
+2. Monitor newborn temperature and support thermoregulation of the infant and environment.
+3. Offer an early feed during transition. If breastfeeding, offer the first nursing opportunity within 30-60 minutes after birth.
+4. For at-risk newborns, encourage regular, frequent feeds.
+
+### Who requires glucose screening
+
+Perform a glucose screen **within 30 minutes after feeding** for a newborn who is SGA, LGA, IUGR/FGR, late preterm (34-36 weeks), or born to a parent with gestational diabetes or diabetes.
+
+Check blood glucose **immediately** when any symptom of hypoglycemia is present:
+
+- Jitteriness, irritability, or high-pitched cry
+- Apnea, cyanosis, irregular or rapid respirations
+- Hypotonia or seizures
+- Temperature instability or hypothermia
+- Poor suck, poor feeding, or refusal to eat
+
+### Clinical pathway for glucose management
+
+| Newborn status / result | Nursing action | Recheck / next step |
+|---|---|---|
+| **Asymptomatic, no risk factors** | No additional glucose action required. | Continue routine newborn care. |
+| **Asymptomatic, risk factors; BG greater than 40 mg/dL** | Continue feeding plan. | Check BG before feeds every 2-3 hours for 2 more consecutive feeds. Stop checks when BG remains greater than 40 mg/dL before 24 hours of age or greater than 50 mg/dL from 24-48 hours of age. |
+| **Asymptomatic, risk factors; BG 25-40 mg/dL** | Apply glucose gel and refeed. | Recheck BG 1 hour after gel. Up to 3 separate gel doses may be given in the first 48 hours. Notify provider to initiate IV dextrose treatment when indicated. |
+| **Asymptomatic, risk factors; BG less than 25 mg/dL** | Apply glucose gel and refeed; notify provider. | Recheck BG 1 hour after gel. Follow provider management plan; consider IV dextrose treatment. |
+| **Symptomatic; BG greater than 45 mg/dL** | Notify provider of symptoms. | Continue provider-directed management. |
+| **Symptomatic; BG 45 mg/dL or less** | Notify provider immediately. | Obtain management plan; consider IV dextrose treatment. |
+
+### Glucose gel protocol
+
+1. For infants greater than 35 weeks who meet criteria, use glucose gel according to the clinical pathway and the infant's weight. Pharmacy supplies gel in 2 mL prefilled syringes.
+2. Administer the gel with a gloved finger to the buccal mucosa of each cheek in **0.5 mL increments**. Massage gently into gums and cheek, alternating sides until the full dose is given.
+3. A maximum of **3 gel doses** may be given in the first 48 hours.
+4. If BG remains below 40 mg/dL after the second gel dose and a third dose is necessary, notify the pediatrician and initiate IV glucose therapy per provider order.
+5. Glucose gel is for treatment of **asymptomatic** hypoglycemia as outlined in this pathway.
+
+| Weight | Glucose gel dose |
+|---:|---:|
+| 2 kg | 1 mL |
+| 2.5 kg | 1.25 mL |
+| 3 kg | 1.5 mL |
+| 3.5 kg | 1.75 mL |
+| 4 kg | 2 mL |
+| 4.5 kg | 2.25 mL |
+| 5 kg | 2.5 mL |
+
+**Baby Boy Sung:** 4.37 kg. Use the facility weight-based glucose-gel dose and clarify the exact dose with the pediatrician/pharmacy when needed.
+
+### NPO newborns
+
+For a newborn with NPO orders, continue glucose monitoring every **6 hours** once glucose values have stabilized.
+
+### Heel-stick glucose specimen collection
+
+1. Explain the procedure to the parent(s).
+2. Perform hand hygiene and don gloves.
+3. Place the infant securely.
+4. Select a heel-stick site; cleanse with alcohol and allow to air dry.
+5. Perform the heel stick with an approved lancet.
+6. Remove the lancet and gently wipe away the first drop with gauze.
+7. Immediately process the specimen on the approved glucose monitor and verify patient information on the log.
+8. Apply pressure with gauze and/or an adhesive bandage.
+9. Document the glucose result. For a heel-stick result below 40 mg/dL, obtain serum glucose by venipuncture.
+
+### IV glucose therapy and monitoring
+
+Initiate IV therapy only with the appropriate provider order.
+
+- Administer **D10W 2 mL/kg IV push** and begin continuous **D10W at 3.3 mL/kg/hr** (80 mL/kg/day) when ordered.
+- Recheck BG **15-30 minutes** after the bolus.
+- Obtain plasma glucose 30-45 minutes after IV therapy begins; adjust infusion rate or dextrose concentration as ordered to maintain BG above 45 mg/dL during the first 48 hours, generally not exceeding 90-100 mg/dL.
+- Recheck BG 30-45 minutes after a change in IV dextrose infusion rate.
+- Notify the pediatrician for glucose infusion requirements above 12 mg/kg/min or fluids above 160 mL/kg/day; obtain an order for D12.5 if indicated.
+- Monitor fluid balance and clinical status for volume overload.
+- When BG is within target range, gradually transition to oral feeds. Begin weaning after values remain in range for 6-9 hours. Decrease fluids by 2 mL/hr and recheck glucose in 3 hours when ordered; do not titrate fluids when BG is 45 mg/dL or lower.
+
+### Required documentation
+
+Document the risk factor or symptom, feeding, glucose result, collection method, gel or IV treatment, dose, time of recheck, provider notification, orders received, and newborn response.
+
+### References
+
+- American Academy of Pediatrics, Committee on Fetus and Newborn: neonatal hypoglycemia guidance.
+- Conway Regional Health System, Women's and Infants' Services, **Glucose Management Protocol: Newborn**, last reviewed April 2024.
+`;
+
 const added=[
  {id:'admin-molly-parainfluenza',patientId:'molly-thomas',title:'Parainfluenza Result',category:'labs',status:'released',content:'**Parainfluenza: Positive**'},
  {id:'admin-molly-admission',patientId:'molly-thomas',title:'Admission Orders',category:'orders',status:'released',content:'Provider: Dr. Henderson\n\n- Admit to pediatric floor.\n- Full Code.\n- Continuous pulse oximetry.\n- Regular diet; NPO if respiratory rate exceeds 60/min.\n- Call MD with assessment findings.\n- Strict intake and output.\n- Daily weight.\n- Sodium chloride 0.9% (Normal Saline) bolus 20 mL/kg IV over 30 minutes.'},
@@ -278,6 +389,8 @@ window.prepareAdminChartData=function(){
  const sanogo=CHART_RECORDS.find(r=>r.id==='chart-28b195d201d5805ca4d1c8978c9278be');
  if(sanogo)sanogo.content=compactContent(sanogo.content.replace(/<tr><td[^>]*><\/td><td>\*\*If hemorrhage is suspected[\s\S]*?<\/tr>/i,'').replace(/<tr><td[^>]*><\/td><td>(?:cbc in 6 hrs|foley cath|15 min fundus\s+checks)<\/td><td>Dr\. Darnell\/KR<\/td><\/tr>/gi,''));
  for(const item of added)if(!CHART_RECORDS.some(r=>r.id===item.id))CHART_RECORDS.push({...item});
+ const newbornProtocol=CHART_RECORDS.find(r=>r.id==='admin-baby-glucose-protocol');
+ if(newbornProtocol)Object.assign(newbornProtocol,{title:'Newborn Glucose Management Policy',category:'orders',status:'released',content:newbornGlucosePolicyContent});
  for(const item of state.customChartRecords||[])if(!removeIds.has(item.id)&&!CHART_RECORDS.some(r=>r.id===item.id))CHART_RECORDS.push({...item});
  normalizeJaneMedicationContent();
 };
