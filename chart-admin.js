@@ -42,64 +42,80 @@ const changes={
 };
 const newbornGlucosePolicyContent=`## Newborn Glucose Management Policy
 
-**Patient:** Baby Boy Sung
-**Policy area:** Newborn care
-**Purpose:** Provide a consistent process for prevention, screening, treatment, monitoring, and documentation of neonatal hypoglycemia.
+<ul>
+<li><strong>Patient:</strong> Baby Boy Sung</li>
+<li><strong>Policy area:</strong> Newborn care</li>
+<li><strong>Purpose:</strong> Prevention, screening, treatment, monitoring, and documentation of neonatal hypoglycemia.</li>
+</ul>
 
 ---
 
 ### Policy
 
-Follow this policy for newborns at risk for unstable blood glucose and for any newborn with signs or symptoms of hypoglycemia. For simulation use, follow the provider's orders and notify the provider for any concerning result or change in condition.
+<ul>
+<li>Use for newborns at risk for unstable blood glucose or with signs or symptoms of hypoglycemia.</li>
+<li>Follow the provider's orders and notify the provider of any concerning result or change in condition.</li>
+</ul>
 
 ### Definitions
 
-| Term | Definition |
-|---|---|
-| **Hypoglycemia** | Less than **45 mg/dL** in a symptomatic newborn or less than **40 mg/dL** in an asymptomatic newborn. |
-| **LGA** | Large for gestational age: 4,000 g or at or above the 90th percentile. |
-| **AGA** | Appropriate for gestational age: 2,500-4,000 g. |
-| **SGA** | Small for gestational age: below 2,500 g or at or below the 10th percentile. |
-| **Macrosomia** | Birth weight greater than 4,500 g. |
-| **IUGR / FGR** | Intrauterine or fetal growth restriction. |
+<table>
+<tr><td><strong>Term</strong></td><td><strong>Definition</strong></td></tr>
+<tr><td><strong>Hypoglycemia</strong></td><td>Less than <strong>45 mg/dL</strong> in a symptomatic newborn or less than <strong>40 mg/dL</strong> in an asymptomatic newborn.</td></tr>
+<tr><td><strong>LGA</strong></td><td>Large for gestational age: 4,000 g or at or above the 90th percentile.</td></tr>
+<tr><td><strong>AGA</strong></td><td>Appropriate for gestational age: 2,500-4,000 g.</td></tr>
+<tr><td><strong>SGA</strong></td><td>Small for gestational age: below 2,500 g or at or below the 10th percentile.</td></tr>
+<tr><td><strong>Macrosomia</strong></td><td>Birth weight greater than 4,500 g.</td></tr>
+<tr><td><strong>IUGR / FGR</strong></td><td>Intrauterine or fetal growth restriction.</td></tr>
+</table>
 
 ### Prevention of hypoglycemia
 
-1. Promote skin-to-skin care after delivery and cover the parent-newborn dyad to conserve heat.
-2. Monitor newborn temperature and support thermoregulation of the infant and environment.
-3. Offer an early feed during transition. If breastfeeding, offer the first nursing opportunity within 30-60 minutes after birth.
-4. For at-risk newborns, encourage regular, frequent feeds.
+<ol>
+<li>Promote skin-to-skin care after delivery and cover the parent-newborn dyad to conserve heat.</li>
+<li>Monitor newborn temperature and support thermoregulation of the infant and environment.</li>
+<li>Offer an early feed during transition. If breastfeeding, offer the first nursing opportunity within 30-60 minutes after birth.</li>
+<li>For at-risk newborns, encourage regular, frequent feeds.</li>
+</ol>
 
 ### Who requires glucose screening
 
-Perform a glucose screen **within 30 minutes after feeding** for a newborn who is SGA, LGA, IUGR/FGR, late preterm (34-36 weeks), or born to a parent with gestational diabetes or diabetes.
+<ul>
+<li>Screen <strong>within 30 minutes after feeding</strong> for SGA, LGA, IUGR/FGR, late-preterm (34-36 weeks), or infant-of-diabetic-parent risk factors.</li>
+<li>Check blood glucose <strong>immediately</strong> for any sign or symptom of hypoglycemia.</li>
+</ul>
 
-Check blood glucose **immediately** when any symptom of hypoglycemia is present:
+<strong>Symptoms of hypoglycemia:</strong>
 
-- Jitteriness, irritability, or high-pitched cry
-- Apnea, cyanosis, irregular or rapid respirations
-- Hypotonia or seizures
-- Temperature instability or hypothermia
-- Poor suck, poor feeding, or refusal to eat
+<ul>
+<li>Jitteriness, irritability, or high-pitched cry</li>
+<li>Apnea, cyanosis, irregular or rapid respirations</li>
+<li>Hypotonia or seizures</li>
+<li>Temperature instability or hypothermia</li>
+<li>Poor suck, poor feeding, or refusal to eat</li>
+</ul>
 
 ### Clinical pathway for glucose management
 
-| Newborn status / result | Nursing action | Recheck / next step |
-|---|---|---|
-| **Asymptomatic, no risk factors** | No additional glucose action required. | Continue routine newborn care. |
-| **Asymptomatic, risk factors; BG greater than 40 mg/dL** | Continue feeding plan. | Check BG before feeds every 2-3 hours for 2 more consecutive feeds. Stop checks when BG remains greater than 40 mg/dL before 24 hours of age or greater than 50 mg/dL from 24-48 hours of age. |
-| **Asymptomatic, risk factors; BG 25-40 mg/dL** | Apply glucose gel and refeed. | Recheck BG 1 hour after gel. Up to 3 separate gel doses may be given in the first 48 hours. Notify provider to initiate IV dextrose treatment when indicated. |
-| **Asymptomatic, risk factors; BG less than 25 mg/dL** | Apply glucose gel and refeed; notify provider. | Recheck BG 1 hour after gel. Follow provider management plan; consider IV dextrose treatment. |
-| **Symptomatic; BG greater than 45 mg/dL** | Notify provider of symptoms. | Continue provider-directed management. |
-| **Symptomatic; BG 45 mg/dL or less** | Notify provider immediately. | Obtain management plan; consider IV dextrose treatment. |
+<table>
+<tr><td><strong>Newborn status / result</strong></td><td><strong>Nursing action</strong></td><td><strong>Recheck / next step</strong></td></tr>
+<tr><td><strong>Asymptomatic, no risk factors</strong></td><td>No additional glucose action required.</td><td>Continue routine newborn care.</td></tr>
+<tr><td><strong>Asymptomatic, risk factors; BG greater than 40 mg/dL</strong></td><td>Continue feeding plan.</td><td>Check BG before feeds every 2-3 hours for 2 more consecutive feeds. Stop checks when BG remains greater than 40 mg/dL before 24 hours of age or greater than 50 mg/dL from 24-48 hours of age.</td></tr>
+<tr><td><strong>Asymptomatic, risk factors; BG 25-40 mg/dL</strong></td><td>Apply glucose gel and refeed.</td><td>Recheck BG 1 hour after gel. Up to 3 separate gel doses may be given in the first 48 hours. Notify provider to initiate IV dextrose treatment when indicated.</td></tr>
+<tr><td><strong>Asymptomatic, risk factors; BG less than 25 mg/dL</strong></td><td>Apply glucose gel and refeed; notify provider.</td><td>Recheck BG 1 hour after gel. Follow provider management plan; consider IV dextrose treatment.</td></tr>
+<tr><td><strong>Symptomatic; BG greater than 45 mg/dL</strong></td><td>Notify provider of symptoms.</td><td>Continue provider-directed management.</td></tr>
+<tr><td><strong>Symptomatic; BG 45 mg/dL or less</strong></td><td>Notify provider immediately.</td><td>Obtain management plan; consider IV dextrose treatment.</td></tr>
+</table>
 
 ### Glucose gel protocol
 
-1. For infants greater than 35 weeks who meet criteria, use glucose gel according to the clinical pathway and the infant's weight. Pharmacy supplies gel in 2 mL prefilled syringes.
-2. Administer the gel with a gloved finger to the buccal mucosa of each cheek in **0.5 mL increments**. Massage gently into gums and cheek, alternating sides until the full dose is given.
-3. A maximum of **3 gel doses** may be given in the first 48 hours.
-4. If BG remains below 40 mg/dL after the second gel dose and a third dose is necessary, notify the pediatrician and initiate IV glucose therapy per provider order.
-5. Glucose gel is for treatment of **asymptomatic** hypoglycemia as outlined in this pathway.
+<ol>
+<li>For infants greater than 35 weeks who meet criteria, use glucose gel according to the clinical pathway and the infant's weight. Pharmacy supplies gel in 2 mL prefilled syringes.</li>
+<li>Administer the gel with a gloved finger to the buccal mucosa of each cheek in <strong>0.5 mL increments</strong>. Massage gently into gums and cheek, alternating sides until the full dose is given.</li>
+<li>A maximum of <strong>3 gel doses</strong> may be given in the first 48 hours.</li>
+<li>If BG remains below 40 mg/dL after the second gel dose and a third dose is necessary, notify the pediatrician and initiate IV glucose therapy per provider order.</li>
+<li>Glucose gel is for treatment of <strong>asymptomatic</strong> hypoglycemia as outlined in this pathway.</li>
+</ol>
 
 <table>
 <tr><td><strong>Weight in kilograms</strong></td><td><strong>Dosage amount</strong></td></tr>
@@ -112,44 +128,58 @@ Check blood glucose **immediately** when any symptom of hypoglycemia is present:
 <tr><td>5 kg</td><td>2.5 mL</td></tr>
 </table>
 
-**Baby Boy Sung:** 4.37 kg. Use the facility weight-based glucose-gel dose and clarify the exact dose with the pediatrician/pharmacy when needed.
+<ul><li><strong>Baby Boy Sung:</strong> 4.37 kg. Use the facility weight-based glucose-gel dose and clarify the exact dose with the pediatrician/pharmacy when needed.</li></ul>
 
 ### NPO newborns
 
-For a newborn with NPO orders, continue glucose monitoring every **6 hours** once glucose values have stabilized.
+<ul><li>For NPO orders, continue glucose monitoring every <strong>6 hours</strong> after values have stabilized.</li></ul>
 
 ### Heel-stick glucose specimen collection
 
-1. Explain the procedure to the parent(s).
-2. Perform hand hygiene and don gloves.
-3. Place the infant securely.
-4. Select a heel-stick site; cleanse with alcohol and allow to air dry.
-5. Perform the heel stick with an approved lancet.
-6. Remove the lancet and gently wipe away the first drop with gauze.
-7. Immediately process the specimen on the approved glucose monitor and verify patient information on the log.
-8. Apply pressure with gauze and/or an adhesive bandage.
-9. Document the glucose result. For a heel-stick result below 40 mg/dL, obtain serum glucose by venipuncture.
+<ol>
+<li>Explain the procedure to the parent(s).</li>
+<li>Perform hand hygiene and don gloves.</li>
+<li>Place the infant securely.</li>
+<li>Select a heel-stick site; cleanse with alcohol and allow to air dry.</li>
+<li>Perform the heel stick with an approved lancet.</li>
+<li>Remove the lancet and gently wipe away the first drop with gauze.</li>
+<li>Immediately process the specimen on the approved glucose monitor and verify patient information on the log.</li>
+<li>Apply pressure with gauze and/or an adhesive bandage.</li>
+<li>Document the glucose result. For a heel-stick result below 40 mg/dL, obtain serum glucose by venipuncture.</li>
+</ol>
 
 ### IV glucose therapy and monitoring
 
-Initiate IV therapy only with the appropriate provider order.
+<ul><li>Initiate IV therapy only with the appropriate provider order.</li></ul>
 
-- Administer **D10W 2 mL/kg IV push** and begin continuous **D10W at 3.3 mL/kg/hr** (80 mL/kg/day) when ordered.
-- Recheck BG **15-30 minutes** after the bolus.
-- Obtain plasma glucose 30-45 minutes after IV therapy begins; adjust infusion rate or dextrose concentration as ordered to maintain BG above 45 mg/dL during the first 48 hours, generally not exceeding 90-100 mg/dL.
-- Recheck BG 30-45 minutes after a change in IV dextrose infusion rate.
-- Notify the pediatrician for glucose infusion requirements above 12 mg/kg/min or fluids above 160 mL/kg/day; obtain an order for D12.5 if indicated.
-- Monitor fluid balance and clinical status for volume overload.
-- When BG is within target range, gradually transition to oral feeds. Begin weaning after values remain in range for 6-9 hours. Decrease fluids by 2 mL/hr and recheck glucose in 3 hours when ordered; do not titrate fluids when BG is 45 mg/dL or lower.
+<ul>
+<li>Administer <strong>D10W 2 mL/kg IV push</strong> and begin continuous <strong>D10W at 3.3 mL/kg/hr</strong> (80 mL/kg/day) when ordered.</li>
+<li>Recheck BG <strong>15-30 minutes</strong> after the bolus.</li>
+<li>Obtain plasma glucose 30-45 minutes after IV therapy begins; adjust infusion rate or dextrose concentration as ordered to maintain BG above 45 mg/dL during the first 48 hours, generally not exceeding 90-100 mg/dL.</li>
+<li>Recheck BG 30-45 minutes after a change in IV dextrose infusion rate.</li>
+<li>Notify the pediatrician for glucose infusion requirements above 12 mg/kg/min or fluids above 160 mL/kg/day; obtain an order for D12.5 if indicated.</li>
+<li>Monitor fluid balance and clinical status for volume overload.</li>
+<li>When BG is within target range, gradually transition to oral feeds. Begin weaning after values remain in range for 6-9 hours. Decrease fluids by 2 mL/hr and recheck glucose in 3 hours when ordered; do not titrate fluids when BG is 45 mg/dL or lower.</li>
+</ul>
 
 ### Required documentation
 
-Document the risk factor or symptom, feeding, glucose result, collection method, gel or IV treatment, dose, time of recheck, provider notification, orders received, and newborn response.
+<ul>
+<li>Risk factor or symptom</li>
+<li>Feeding and glucose result</li>
+<li>Collection method</li>
+<li>Gel or IV treatment and dose</li>
+<li>Time of recheck</li>
+<li>Provider notification and orders received</li>
+<li>Newborn response</li>
+</ul>
 
 ### References
 
-- American Academy of Pediatrics, Committee on Fetus and Newborn: neonatal hypoglycemia guidance.
-- Conway Regional Health System, Women's and Infants' Services, **Glucose Management Protocol: Newborn**, last reviewed April 2024.
+<ul>
+<li>American Academy of Pediatrics, Committee on Fetus and Newborn: neonatal hypoglycemia guidance.</li>
+<li>Conway Regional Health System, Women's and Infants' Services, <strong>Glucose Management Protocol: Newborn</strong>, last reviewed April 2024.</li>
+</ul>
 `;
 
 const added=[

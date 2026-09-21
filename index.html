@@ -129,7 +129,6 @@ fieldset{margin:8px 0;padding:9px}output{margin:5px 0}.patientBanner{padding:8px
  <button data-view="glucose">Blood Glucose &amp; Insulin</button>
  <button data-view="blood" data-specialty="blood">Blood Administration</button>
  <button data-view="imported" class="facultyOnly">Complete Chart Record</button>
- <button data-view="history" class="facultyOnly">Chart History</button>
  <button data-view="inbox">Messages / Alerts</button>
  <div class="group">Faculty</div>
  <button data-view="faculty" class="facultyOnly">Faculty Live Control</button>
@@ -144,9 +143,9 @@ fieldset{margin:8px 0;padding:9px}output{margin:5px 0}.patientBanner{padding:8px
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="chart-data.js?v=20260916-stephanie-admission-orders-4"></script>
 <script src="chart-workflows.js?v=20260917"></script>
-<script src="chart-admin.js?v=20260918-remove-fowler-shift2-vitals"></script>
+<script src="chart-admin.js?v=20260919-jane-progress-release-v2"></script>
 <script src="medication-system.js?v=20260918-simple-mar-morphine"></script>
-<script src="simulation-defaults.js?v=20260917"></script>
+<script src="simulation-defaults.js?v=20260919-jane-progress-release-v2"></script>
 <script src="simulation-workflows.js?v=20260918-simple-mar"></script>
 <script>
 const DATA_VERSION="6.3-student-draft-autosave";
@@ -1300,6 +1299,22 @@ function renderFlowsheets(){
  panel("Vitals History",`<table><thead><tr><th>Time</th><th>Temp</th><th>HR</th><th>RR</th><th>BP</th><th>SpO₂</th><th>Pain</th>${showGlucose?'<th>BG</th>':''}<th>Student</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.time)}</td><td>${esc(r.temp)}</td><td>${esc(r.hr)}</td><td>${esc(r.rr)}</td><td>${esc(r.bp)}</td><td>${esc(r.spo2)}</td><td>${esc(r.pain)}</td>${showGlucose?`<td>${esc(r.bg)}</td>`:''}<td>${esc(r.student)}</td></tr>`).join("")||`<tr><td colspan="${showGlucose?9:8}">No vitals charted.</td></tr>`}</tbody></table>`);
  saveVitals.onclick=()=>{const r={id:uid("vital"),patientId:activePatientId,time:vTime.value,student:vStudent.value.trim(),temp:vTemp.value.trim(),hr:vHR.value.trim(),rr:vRR.value.trim(),bp:vBP.value.trim(),spo2:vSpo2.value.trim(),pain:vPain.value.trim(),weight:vWt.value.trim(),comments:vComments.value.trim()};if(showGlucose)r.bg=vBG.value.trim();if(!r.student){alert("Enter student.");return}state.vitals.push(r);clearCurrentViewDraft();audit("Flowsheet entry",activePatientId,`Vitals documented by ${r.student}`);atuCloudBadge(atuCloudReady?"Saved & sharing…":"Saved locally");renderFlowsheets()};
 }
+function postpartumBleedingInIO(){
+ if(activePatientId!=="fatima-sanogo")return "";
+ const pads=patientRows(state.pphPads||[]).slice().reverse();
+ const totalQbl=pads.reduce((sum,r)=>sum+(Number(r.bloodLoss)||0),0);
+ return panel("Postpartum Bleeding — Quantified Blood Loss",`
+  <div class="qblTotal">Total quantified blood loss: <b>${totalQbl} mL</b></div>
+  <div class="note" style="margin:8px 0">Enter the dry and wet pad weights in grams. The system calculates wet minus dry; 1 gram equals approximately 1 mL of blood loss.</div>
+  <div class="grid4">
+   <label>Date/Time<input id="ioQblTime" type="datetime-local" value="${nowLocal()}"></label><label>Student / Initials<input id="ioQblStudent"></label>
+   <label>Pad / Item Type<input id="ioQblItem" placeholder="Peripad, underpad, linen"></label><label>Number of Items<input id="ioQblCount" type="number" min="1" value="1"></label>
+   <label>Dry Pad Weight (g)<input id="ioQblDry" type="number" min="0" step="0.1"></label><label>Wet Pad Weight (g)<input id="ioQblWet" type="number" min="0" step="0.1"></label>
+   <div class="kpi"><span class="note">Calculated Blood Loss</span><br><b id="ioQblCalculated">0 mL</b></div>
+   <label>Notes<input id="ioQblNotes" placeholder="Clots, saturation, source"></label>
+  </div><div class="actions" style="margin-top:10px"><button id="saveIoQbl" class="primary">Add Postpartum Blood-Loss Entry</button></div>`)+
+ panel("Postpartum Blood-Loss History",`<table><thead><tr><th>Time</th><th>Pad / Item</th><th>Count</th><th>Dry Weight</th><th>Wet Weight</th><th>Blood Loss</th><th>Student</th><th>Notes</th></tr></thead><tbody>${pads.map(r=>`<tr><td>${esc(r.time)}</td><td>${esc(r.item)}</td><td>${esc(r.count)}</td><td>${esc(r.dryWeight)} g</td><td>${esc(r.wetWeight)} g</td><td><b>${esc(r.bloodLoss)} mL</b></td><td>${esc(r.student)}</td><td>${esc(r.notes)}</td></tr>`).join("")||'<tr><td colspan="8">No postpartum blood loss charted.</td></tr>'}</tbody></table>`);
+}
 function renderIO(){
  if(!requirePatient())return;const rows=patientRows(state.io).slice().reverse();
  const tin=rows.reduce((s,r)=>s+(Number(r.intake)||0),0),tout=rows.reduce((s,r)=>s+(Number(r.output)||0),0);
@@ -1309,8 +1324,19 @@ function renderIO(){
  <label>Intake mL<input id="ioIn" type="number"></label><label>Output mL<input id="ioOut" type="number"></label><label>Description<input id="ioDesc"></label></div>
  <div class="actions" style="margin-top:10px"><button id="saveIO" class="primary">Add I&O Entry</button></div>
  <div class="success" style="margin-top:10px"><b>Total Intake:</b> ${tin} mL &nbsp; <b>Total Output:</b> ${tout} mL &nbsp; <b>Balance:</b> ${tin-tout} mL</div>`)+
- panel("I&O History",`<table><thead><tr><th>Time</th><th>Type</th><th>Intake</th><th>Output</th><th>Description</th><th>Student</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.time)}</td><td>${esc(r.type)}</td><td>${esc(r.intake)}</td><td>${esc(r.output)}</td><td>${esc(r.description)}</td><td>${esc(r.student)}</td></tr>`).join("")||'<tr><td colspan="6">No I&O charted.</td></tr>'}</tbody></table>`);
+ panel("I&O History",`<table><thead><tr><th>Time</th><th>Type</th><th>Intake</th><th>Output</th><th>Description</th><th>Student</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.time)}</td><td>${esc(r.type)}</td><td>${esc(r.intake)}</td><td>${esc(r.output)}</td><td>${esc(r.description)}</td><td>${esc(r.student)}</td></tr>`).join("")||'<tr><td colspan="6">No I&O charted.</td></tr>'}</tbody></table>`)+postpartumBleedingInIO();
  saveIO.onclick=()=>{const r={id:uid("io"),patientId:activePatientId,time:ioTime.value,student:ioStudent.value.trim(),type:ioType.value,intake:ioIn.value,output:ioOut.value,description:ioDesc.value.trim()};if(!r.student){alert("Enter student.");return}state.io.push(r);clearCurrentViewDraft();audit("I&O charted",activePatientId,`${r.type}: in ${r.intake||0} mL / out ${r.output||0} mL`);atuCloudBadge(atuCloudReady?"Saved & sharing…":"Saved locally");renderIO()};
+ if(activePatientId==="fatima-sanogo"){
+  const updateIoQbl=()=>{const dry=Number(ioQblDry.value)||0,wet=Number(ioQblWet.value)||0;ioQblCalculated.textContent=`${Math.max(0,Math.round((wet-dry)*10)/10)} mL`};
+  ioQblDry.oninput=updateIoQbl;ioQblWet.oninput=updateIoQbl;
+  saveIoQbl.onclick=()=>{
+   const dry=Number(ioQblDry.value),wet=Number(ioQblWet.value),loss=Math.round((wet-dry)*10)/10;
+   if(!ioQblStudent.value.trim()||!ioQblItem.value.trim()){alert("Enter the student and pad/item type.");return}
+   if(ioQblDry.value===""||ioQblWet.value===""||!Number.isFinite(dry)||!Number.isFinite(wet)||wet<dry){alert("Enter valid weights. Wet weight must be equal to or greater than dry weight.");return}
+   state.pphPads.push({id:uid("qbl"),patientId:activePatientId,time:ioQblTime.value,student:ioQblStudent.value.trim(),item:ioQblItem.value.trim(),count:ioQblCount.value,dryWeight:dry,wetWeight:wet,bloodLoss:loss,notes:ioQblNotes.value.trim()});
+   audit("Quantified blood loss charted",activePatientId,`${ioQblItem.value.trim()}: ${loss} mL`);renderIO();
+  };
+ }
 }
 function renderEducation(){
  if(!requirePatient())return;
@@ -1535,9 +1561,16 @@ function renderInbox(){
 }
 
 function renderHistory(){
- if(!isFaculty()){currentView="patients";render();return}
- if(!requirePatient())return;const rows=state.audit.filter(a=>a.patientId===activePatientId).slice().reverse();
- document.getElementById("view").innerHTML=panel("Chart History",`<table><thead><tr><th>Date/Time</th><th>Event</th><th>Details</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.at)}</td><td>${esc(r.type)}</td><td>${esc(r.details)}</td></tr>`).join("")||'<tr><td colspan="3">No chart activity.</td></tr>'}</tbody></table>`);
+ if(!requirePatient())return;
+ const chartingEvents=new Set([
+  "Assessment charted","Flowsheet entry","I&O charted","Nursing note signed","Order entered",
+  "Medication administration","Blood product administration","Labor progress charted",
+  "Postpartum recovery charted","Quantified blood loss charted","PPH medication administered",
+  "PEWS documented","Pre-op checklist saved","Surgical assessment charted","Patient education documented",
+  "Chart form signed"
+ ]);
+ const rows=(state.audit||[]).filter(a=>a.patientId===activePatientId&&chartingEvents.has(a.type)).slice().reverse();
+ document.getElementById("view").innerHTML=panel("Charting History",`<div class="note">Saved documentation for this patient is shown below. Faculty release actions and internal audit activity are not included.</div><table><thead><tr><th>Date/Time</th><th>Charted Item</th><th>Details</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.at)}</td><td>${esc(r.type)}</td><td>${esc(r.details)}</td></tr>`).join("")||'<tr><td colspan="3">No student charting has been saved yet.</td></tr>'}</tbody></table>`);
 }
 function renderFaculty(){
  if(!isFaculty()){currentView="patients";render();return}
