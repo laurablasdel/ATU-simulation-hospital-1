@@ -101,15 +101,16 @@ Check blood glucose **immediately** when any symptom of hypoglycemia is present:
 4. If BG remains below 40 mg/dL after the second gel dose and a third dose is necessary, notify the pediatrician and initiate IV glucose therapy per provider order.
 5. Glucose gel is for treatment of **asymptomatic** hypoglycemia as outlined in this pathway.
 
-| Weight | Glucose gel dose |
-|---:|---:|
-| 2 kg | 1 mL |
-| 2.5 kg | 1.25 mL |
-| 3 kg | 1.5 mL |
-| 3.5 kg | 1.75 mL |
-| 4 kg | 2 mL |
-| 4.5 kg | 2.25 mL |
-| 5 kg | 2.5 mL |
+<table>
+<tr><td><strong>Weight in kilograms</strong></td><td><strong>Dosage amount</strong></td></tr>
+<tr><td>2 kg</td><td>1 mL</td></tr>
+<tr><td>2.5 kg</td><td>1.25 mL</td></tr>
+<tr><td>3 kg</td><td>1.5 mL</td></tr>
+<tr><td>3.5 kg</td><td>1.75 mL</td></tr>
+<tr><td>4 kg</td><td>2 mL</td></tr>
+<tr><td>4.5 kg</td><td>2.25 mL</td></tr>
+<tr><td>5 kg</td><td>2.5 mL</td></tr>
+</table>
 
 **Baby Boy Sung:** 4.37 kg. Use the facility weight-based glucose-gel dose and clarify the exact dose with the pediatrician/pharmacy when needed.
 
